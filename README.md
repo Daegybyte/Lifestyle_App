@@ -1,14 +1,12 @@
 # 6018 MSD project
-## Created By:
-
-## Diego, Jon, Kelan 
+## Created By: Diego, Jon, Kelan 
 
 ### Phase 1 roles:
 * Kelan - Team lead
 * Jon - Design Lead
 * Diego - Test Lead
 
-### Phase 1 Notes
+### Phase 1 meeting notes:
 MainActivity will be the homepage with the requested modules 
 
 Will do a check to see if the user profile was already created, and if not it will redirect to the input page
@@ -31,3 +29,25 @@ Use metric units under the hood for height, weight, basal, etc. We can convert l
 Implicit intent to switch to google maps and search "hiking trails near {current location}", do the same thing for the weather
 
 Put the profile picture on the left because it is cleaner with the edit button
+
+# Design mockups:
+## login activity
+<img src="./designFiles/Login.png" width="50%" height="50%">
+## Register
+<img src="./designFiles/Login-register.png" width="50%" height="50%"> 
+
+
+## Main activity
+<img src="./designFiles/MainActivity.png" width="50%" height="50%">
+## Main dropdown open
+<img src="./designFiles/MainActivity-dropdown--open.png" width="50%" height="50%">
+## Profile
+<img src="./designFiles/Profile.png" width="50%" height="50%">
+
+
+
+
+
+
+
+
