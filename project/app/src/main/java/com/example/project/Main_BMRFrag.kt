@@ -17,14 +17,9 @@ class Main_BMRFrag : Fragment() {
     private var alHeavy: String = "Heavy (2200 kcal/day)"
     private var alExtreme: String = "Extreme (2400 kcal/day)"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val spinner: Spinner = findViewById(R.id.spActivityLevel)
-        val activityLevels = arrayOf<String?>(alChange, alSedentary, alMild, alModerate, alHeavy, alExtreme)
-        val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(this, R.layout.spinner_list, activityLevels)
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_list)
-        spinner.adapter = arrayAdapter
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +27,14 @@ class Main_BMRFrag : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_b_m_r, container, false)
+        val view = inflater.inflate(R.layout.fragment_main_b_m_r, container, false)
+
+        val spinner: Spinner = view.findViewById(R.id.spActivityLevel)
+        val activityLevels = arrayOf<String?>(alChange, alSedentary, alMild, alModerate, alHeavy, alExtreme)
+        val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list, activityLevels)
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_list)
+        spinner.adapter = arrayAdapter
+
+        return view
     }
 }

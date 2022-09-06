@@ -45,6 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userBMRContainer"
+        android:name="com.example.project.Main_ButtonFrag"
         tools:layout="@layout/fragment_main_button"
         />
 

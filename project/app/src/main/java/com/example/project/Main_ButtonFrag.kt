@@ -47,17 +47,17 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
         btnHikes.setOnClickListener(this)
         btnWeather.setOnClickListener(this)
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
 
         return view
     }
 
     override fun onClick(view: View) {
         if (ActivityCompat.checkSelfPermission(
-                this,
+                view.context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
+                view.context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -129,7 +129,4 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
             }
         }
     }
-    }
-
-
 }
