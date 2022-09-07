@@ -1,6 +1,7 @@
 package com.example.project
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,12 +14,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import kotlinx.coroutines.NonDisposableHandle.parent
 
+@SuppressLint("MissingPermission")
 class Main_ButtonFrag : Fragment(), View.OnClickListener {
 
     private var mHikesButton: Button? = null
@@ -52,52 +59,108 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
         return view
     }
 
-    override fun onClick(view: View) {
-        if (ActivityCompat.checkSelfPermission(
-                view.context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                view.context,
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val btnHikes: Button = view.findViewById(R.id.btnHikes)
+        val btnWeather: Button = view.findViewById(R.id.btnWeather)
+
+        btnHikes.setOnClickListener{
+            val appPerms = arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
+            )
+            activityResultLauncher.launch(appPerms)
+        }
+        btnWeather.setOnClickListener{
+            val appPerms = arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            activityResultLauncher.launch(appPerms)
+        }
+    }
+
+    // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
+    private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            var allAreGranted = true
+            for(b in result.values) {
+                allAreGranted = allAreGranted && b
+            }
+
+            if(allAreGranted) {
+                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+                val cancellationTokenSource = CancellationTokenSource()
+
+                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+                    .addOnSuccessListener { location: Location? ->
+                        // getting the last known or current location
+                        mLatitude = location!!.latitude
+                        mLongitude = location!!.longitude
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(activity, "Failed on getting current location",
+                            Toast.LENGTH_SHORT).show()
+                    }
+
+                Toast.makeText(
+                    activity,
+                    "Latitude:$mLatitude\nLongitude:$mLongitude",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
-        val priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        val cancellationTokenSource = CancellationTokenSource()
+    override fun onClick(view: View) {
+//        if (ActivityCompat.checkSelfPermission(
+//                view.context,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                view.context,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+////            ActivityCompat.requestPermissions(this, String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, 0)
+//            return
+//        }
 
-        mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-            .addOnSuccessListener { location: Location? ->
-                // getting the last known or current location
-                mLatitude = location!!.latitude
-                mLongitude = location!!.longitude
-            }
-            .addOnFailureListener {
-                Toast.makeText(activity, "Failed on getting current location",
-                    Toast.LENGTH_SHORT).show()
-            }
 
-        Toast.makeText(
-            activity,
-            "Latitude:$mLatitude\nLongitude:$mLongitude",
-            Toast.LENGTH_SHORT
-        ).show()
+
+//        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+//        val cancellationTokenSource = CancellationTokenSource()
+//
+//        mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+//            .addOnSuccessListener { location: Location? ->
+//                // getting the last known or current location
+//                mLatitude = location!!.latitude
+//                mLongitude = location!!.longitude
+//            }
+//            .addOnFailureListener {
+//                Toast.makeText(activity, "Failed on getting current location",
+//                    Toast.LENGTH_SHORT).show()
+//            }
+//
+//        Toast.makeText(
+//            activity,
+//            "Latitude:$mLatitude\nLongitude:$mLongitude",
+//            Toast.LENGTH_SHORT
+//        ).show()
 
 //        WEB coordinates
 //        val latitude = 40.767778
 //        val longitude = -111.845205
 
-//        new york coordinates
-        val latitude = 40.7128
-        val longitude = -74.0060
+////        new york coordinates
+//        val latitude = 40.7128
+//        val longitude = -74.0060
 
         when (view.id) {
             R.id.btnHikes -> {
