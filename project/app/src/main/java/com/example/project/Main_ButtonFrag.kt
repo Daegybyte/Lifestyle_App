@@ -70,6 +70,18 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
             activityResultLauncher.launch(appPerms)
+
+            val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+
+            //Create the implicit intent
+            val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+
+            //If there's an activity associated with this intent, launch it
+            try {
+                startActivity(mapIntent)
+            } catch (ex: ActivityNotFoundException) {
+                //handle errors here
+            }
         }
         btnWeather.setOnClickListener{
             val appPerms = arrayOf(
@@ -77,6 +89,15 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
             activityResultLauncher.launch(appPerms)
+
+            val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
+            val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            //If there's an activity associated with this intent, launch it
+            try {
+                startActivity(weatherIntent)
+            } catch (ex: ActivityNotFoundException) {
+                //handle errors here
+            }
         }
     }
 
@@ -162,34 +183,34 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
 //        val latitude = 40.7128
 //        val longitude = -74.0060
 
-        when (view.id) {
-            R.id.btnHikes -> {
-//                val searchUri = Uri.parse("geo:$latitude, $longitude?q=" + Uri.encode("hiking trails"))
-                val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
-
-                //Create the implicit intent
-                val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
-
-                //If there's an activity associated with this intent, launch it
-                try {
-                    startActivity(mapIntent)
-                } catch (ex: ActivityNotFoundException) {
-                    //handle errors here
-                }
-            }
-
-            R.id.btnWeather -> {
-//                val url = "https://www.timeanddate.com/weather/usa/salt-lake-city"
-//                val url = "https://forecast.weather.gov/MapClick.php?textField1=$latitude&textField2=$longitude"
-                val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
-                val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                //If there's an activity associated with this intent, launch it
-                try {
-                    startActivity(weatherIntent)
-                } catch (ex: ActivityNotFoundException) {
-                    //handle errors here
-                }
-            }
-        }
+//        when (view.id) {
+//            R.id.btnHikes -> {
+////                val searchUri = Uri.parse("geo:$latitude, $longitude?q=" + Uri.encode("hiking trails"))
+//                val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+//
+//                //Create the implicit intent
+//                val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+//
+//                //If there's an activity associated with this intent, launch it
+//                try {
+//                    startActivity(mapIntent)
+//                } catch (ex: ActivityNotFoundException) {
+//                    //handle errors here
+//                }
+//            }
+//
+//            R.id.btnWeather -> {
+////                val url = "https://www.timeanddate.com/weather/usa/salt-lake-city"
+////                val url = "https://forecast.weather.gov/MapClick.php?textField1=$latitude&textField2=$longitude"
+//                val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
+//                val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//                //If there's an activity associated with this intent, launch it
+//                try {
+//                    startActivity(weatherIntent)
+//                } catch (ex: ActivityNotFoundException) {
+//                    //handle errors here
+//                }
+//            }
+//        }
     }
 }
