@@ -15,7 +15,7 @@
         android:outlineAmbientShadowColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/anon_profile_pic"
+        android:src="@drawable/anon_profile_pic"
         />
 
     <TextView
