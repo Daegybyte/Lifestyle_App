@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -50,7 +51,9 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
 
         // get the buttons
         val btnHikes: Button = view.findViewById(R.id.btnHikes)
+        Log.d("Main_ButtonFrag", "btnHikes: created successfully")
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
+        Log.d("Main_ButtonFrag", "btnWeather: created successfully")
         btnHikes.setOnClickListener(this)
         btnWeather.setOnClickListener(this)
 
@@ -60,6 +63,7 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d("Main_ButtonFrag", "onViewCreated: called")
         super.onViewCreated(view, savedInstanceState)
         val btnHikes: Button = view.findViewById(R.id.btnHikes)
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
@@ -69,17 +73,22 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
+            Log.d("Main_ButtonFrag", "onViewCreated: appPerms: $appPerms")
             activityResultLauncher.launch(appPerms)
 
             val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+            Log.d("Main_ButtonFrag", "onViewCreated: searchUri created successfully")
 
             //Create the implicit intent
             val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+            Log.d("Main_ButtonFrag", "onViewCreated: mapIntent created successfully")
 
             //If there's an activity associated with this intent, launch it
             try {
                 startActivity(mapIntent)
+                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) called successfully")
             } catch (ex: ActivityNotFoundException) {
+                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
                 //handle errors here
             }
         }
@@ -95,7 +104,9 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
             //If there's an activity associated with this intent, launch it
             try {
                 startActivity(weatherIntent)
+                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
             } catch (ex: ActivityNotFoundException) {
+                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) failed")
                 //handle errors here
             }
         }

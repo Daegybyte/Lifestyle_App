@@ -30,18 +30,34 @@ Implicit intent to switch to google maps and search "hiking trails near {current
 
 Put the profile picture on the left because it is cleaner with the edit button
 
+We he have decided for variable names, we will use the naming convention `typeName`, anf the style of camel case
+
+eg:
+
+* btnHikes, btnWeather
+
+Log.d print is as following: `Log.d("Class", "functionName: message")`
+
 # Design mockups:
+
+Made with figma
+
 ## login activity
+
 <img src="./designFiles/Login.png" width="50%" height="50%">
 ## Register
+
 <img src="./designFiles/Login-register.png" width="50%" height="50%"> 
 
 
 ## Main activity
+
 <img src="./designFiles/MainActivity.png" width="50%" height="50%">
 ## Main dropdown open
+
 <img src="./designFiles/MainActivity-dropdown--open.png" width="50%" height="50%">
 ## Profile
+
 <img src="./designFiles/Profile.png" width="50%" height="50%">
 
 

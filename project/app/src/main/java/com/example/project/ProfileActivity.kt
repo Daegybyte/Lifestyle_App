@@ -1,6 +1,7 @@
 package com.example.project
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -42,6 +43,18 @@ class ProfileActivity : AppCompatActivity() {
         mLocationET = findViewById(R.id.locationET)
         mLocationButton = findViewById(R.id.locationButton)
         mSaveButton = findViewById(R.id.saveButton)
+
+        Log.d("ProfileActivity", "onCreate: mFirstNameET = $mFirstNameET")
+        Log.d("ProfileActivity", "onCreate: mLastNameET = $mLastNameET")
+        Log.d("ProfileActivity", "onCreate: mAgeSpinner = $mAgeSpinner")
+        Log.d("ProfileActivity", "onCreate: mHeightSpinner = $mHeightSpinner")
+        Log.d("ProfileActivity", "onCreate: mWeightSpinner = $mWeightSpinner")
+        Log.d("ProfileActivity", "onCreate: mActivitySpinner = $mActivitySpinner")
+        Log.d("ProfileActivity", "onCreate: mSexSpinner = $mSexSpinner")
+        Log.d("ProfileActivity", "onCreate: mLocationET = $mLocationET")
+        Log.d("ProfileActivity", "onCreate: mLocationButton = $mLocationButton")
+        Log.d("ProfileActivity", "onCreate: mSaveButton = $mSaveButton")
+
 
         // populate the spinners
         // Creating adapter for spinner
