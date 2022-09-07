@@ -76,21 +76,64 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
             Log.d("Main_ButtonFrag", "onViewCreated: appPerms: $appPerms")
             activityResultLauncher.launch(appPerms)
 
-            val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
-            Log.d("Main_ButtonFrag", "onViewCreated: searchUri created successfully")
+            val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+            val cancellationTokenSource = CancellationTokenSource()
 
-            //Create the implicit intent
-            val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
-            Log.d("Main_ButtonFrag", "onViewCreated: mapIntent created successfully")
+            mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+                .addOnSuccessListener { location: Location? ->
+                    // getting the last known or current location
+                    mLatitude = location!!.latitude
+                    mLongitude = location.longitude
 
-            //If there's an activity associated with this intent, launch it
-            try {
-                startActivity(mapIntent)
-                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) called successfully")
-            } catch (ex: ActivityNotFoundException) {
-                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
-                //handle errors here
-            }
+                    Toast.makeText(
+                        activity,
+                        "Latitude:$mLatitude\nLongitude:$mLongitude",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+                    Log.d("Main_ButtonFrag", "onViewCreated: searchUri created successfully")
+
+                    //Create the implicit intent
+                    val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+                    Log.d("Main_ButtonFrag", "onViewCreated: mapIntent created successfully")
+
+                    //If there's an activity associated with this intent, launch it
+                    try {
+                        startActivity(mapIntent)
+                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) called successfully")
+                    } catch (ex: ActivityNotFoundException) {
+                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+                        //handle errors here
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(activity, "Failed on getting current location",
+                        Toast.LENGTH_SHORT).show()
+                }
+
+//            Toast.makeText(
+//                activity,
+//                "Latitude:$mLatitude\nLongitude:$mLongitude",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//
+//            val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+//            Log.d("Main_ButtonFrag", "onViewCreated: searchUri created successfully")
+//
+//            //Create the implicit intent
+//            val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+//            Log.d("Main_ButtonFrag", "onViewCreated: mapIntent created successfully")
+//
+//            //If there's an activity associated with this intent, launch it
+//            try {
+//                startActivity(mapIntent)
+//                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) called successfully")
+//            } catch (ex: ActivityNotFoundException) {
+//                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+//                //handle errors here
+//            }
+
         }
         btnWeather.setOnClickListener{
             val appPerms = arrayOf(
@@ -99,16 +142,53 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
             )
             activityResultLauncher.launch(appPerms)
 
-            val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
-            val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            //If there's an activity associated with this intent, launch it
-            try {
-                startActivity(weatherIntent)
-                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
-            } catch (ex: ActivityNotFoundException) {
-                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) failed")
-                //handle errors here
-            }
+            val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+            val cancellationTokenSource = CancellationTokenSource()
+
+            mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+                .addOnSuccessListener { location: Location? ->
+                    // getting the last known or current location
+                    mLatitude = location!!.latitude
+                    mLongitude = location!!.longitude
+
+                    Toast.makeText(
+                        activity,
+                        "Latitude:$mLatitude\nLongitude:$mLongitude",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
+                    val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    //If there's an activity associated with this intent, launch it
+                    try {
+                        startActivity(weatherIntent)
+                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
+                    } catch (ex: ActivityNotFoundException) {
+                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) failed")
+                        //handle errors here
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(activity, "Failed on getting current location",
+                        Toast.LENGTH_SHORT).show()
+                }
+
+//            Toast.makeText(
+//                activity,
+//                "Latitude:$mLatitude\nLongitude:$mLongitude",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//
+//            val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
+//            val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//            //If there's an activity associated with this intent, launch it
+//            try {
+//                startActivity(weatherIntent)
+//                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
+//            } catch (ex: ActivityNotFoundException) {
+//                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) failed")
+//                //handle errors here
+//            }
         }
     }
 
@@ -122,25 +202,25 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
             }
 
             if(allAreGranted) {
-                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-                val cancellationTokenSource = CancellationTokenSource()
-
-                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-                    .addOnSuccessListener { location: Location? ->
-                        // getting the last known or current location
-                        mLatitude = location!!.latitude
-                        mLongitude = location!!.longitude
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(activity, "Failed on getting current location",
-                            Toast.LENGTH_SHORT).show()
-                    }
-
-                Toast.makeText(
-                    activity,
-                    "Latitude:$mLatitude\nLongitude:$mLongitude",
-                    Toast.LENGTH_SHORT
-                ).show()
+//                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+//                val cancellationTokenSource = CancellationTokenSource()
+//
+//                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+//                    .addOnSuccessListener { location: Location? ->
+//                        // getting the last known or current location
+//                        mLatitude = location!!.latitude
+//                        mLongitude = location!!.longitude
+//                    }
+//                    .addOnFailureListener {
+//                        Toast.makeText(activity, "Failed on getting current location",
+//                            Toast.LENGTH_SHORT).show()
+//                    }
+//
+//                Toast.makeText(
+//                    activity,
+//                    "Latitude:$mLatitude\nLongitude:$mLongitude",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
         }
 
