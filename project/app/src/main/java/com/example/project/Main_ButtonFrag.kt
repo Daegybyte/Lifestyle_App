@@ -104,6 +104,11 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
                         Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) called successfully")
                     } catch (ex: ActivityNotFoundException) {
                         Log.d("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+                        Toast.makeText(
+                            activity,
+                            "There's no app that can handle this action.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         //handle errors here
                     }
                 }
@@ -164,8 +169,13 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
                         startActivity(weatherIntent)
                         Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
                     } catch (ex: ActivityNotFoundException) {
-                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) failed")
-                        //handle errors here
+                        Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+                        //If there's no activity associated with this intent, display an error message
+                        Toast.makeText(
+                            activity,
+                            "No activity found to handle this intent",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 .addOnFailureListener {
