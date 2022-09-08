@@ -38,27 +38,39 @@ eg:
 
 Log.d print is as following: `Log.d("Class", "functionName: message")`
 
+We discussed making a loading screen to mask the time taken to get permissions, and the time it takes to get location data.
+
 # Design mockups:
 
-Made with figma
+Made with Figma
 
 ## login activity
 
-<img src="./designFiles/Login.png" width="50%" height="50%">
+<img src="./designFiles/Login.png" width="25%" height="25%">
 ## Register
 
-<img src="./designFiles/Login-register.png" width="50%" height="50%"> 
+<img src="./designFiles/Login-register.png" width="25%" height="25%"> 
 
 
 ## Main activity
 
-<img src="./designFiles/MainActivity.png" width="50%" height="50%">
+<img src="./designFiles/MainActivity.png" width="25%" height="25%">
 ## Main dropdown open
 
-<img src="./designFiles/MainActivity-dropdown--open.png" width="50%" height="50%">
+<img src="./designFiles/MainActivity-dropdown--open.png" width="25%" height="25%">
 ## Profile
 
-<img src="./designFiles/Profile.png" width="50%" height="50%">
+<img src="./designFiles/Profile.png" width="25%" height="25%">
+
+# Testing
+
+We used five locations in four different quadrants of the planet to test our location detection. MEB and NYC were in the same quadrant. MEB was a good test location to veryify with because of our familiarity with the area, and NYC was chosen because we would know we weren't getting faulty location data from the locality of our machines.
+
+<img src="./src/testingLocation.png" width="50%" height="50%">
+
+## Espresso
+
+## Monkey Runner
 
 
 

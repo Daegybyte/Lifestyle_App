@@ -54,8 +54,8 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
         Log.d("Main_ButtonFrag", "btnHikes: created successfully")
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
         Log.d("Main_ButtonFrag", "btnWeather: created successfully")
-        btnHikes.setOnClickListener(this)
-        btnWeather.setOnClickListener(this)
+//        btnHikes.setOnClickListener(this)
+//        btnWeather.setOnClickListener(this)
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
 
@@ -90,6 +90,26 @@ class Main_ButtonFrag : Fragment(), View.OnClickListener {
                         "Latitude:$mLatitude\nLongitude:$mLongitude",
                         Toast.LENGTH_SHORT
                     ).show()
+
+//                    // New York coordinates
+//                    mLatitude = 40.7128
+//                    mLongitude = -74.0060
+//
+//                    //Moscow coordinates
+//                    mLatitude = 55.7558
+//                    mLongitude = 37.6173
+//
+//                    //Auckland coordinates
+//                    mLatitude = -36.8485
+//                    mLongitude = 174.7633
+//
+//                    //salt lake city coordinates
+//                    mLatitude = 40.7608
+//                    mLongitude = -111.8910
+//
+//                    //rio de janeiro coordinates
+//                    mLatitude = -22.9068
+//                    mLongitude = -43.1729
 
                     val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
                     Log.d("Main_ButtonFrag", "onViewCreated: searchUri created successfully")

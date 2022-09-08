@@ -2,10 +2,7 @@ package com.example.project
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
 class ProfileActivity : AppCompatActivity() {
@@ -24,7 +21,7 @@ class ProfileActivity : AppCompatActivity() {
     private var mActivitySpinner: Spinner? = null
     private var mSexSpinner: Spinner? = null
     private var mLocationET: EditText? = null
-    private var mLocationButton: Button? = null
+    private var mLocationButton: ImageButton? = null
     private var mSaveButton: Button? = null
 
 
