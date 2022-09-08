@@ -15,7 +15,7 @@ class BMR {
     private var sedentary = 1.2
     private var mildActivity = 1.375
     private var moderateActivity = 1.55
-    private var heavyActivity = 1.725
+    private var heavyActivity = 1.7
     private var extremeActivity = 1.9
 
     /**
