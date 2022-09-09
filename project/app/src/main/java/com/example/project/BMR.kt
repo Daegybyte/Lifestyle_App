@@ -13,7 +13,7 @@ class BMR {
     private var sedentary = 1.2
     private var mildActivity = 1.375
     private var moderateActivity = 1.55
-    private var heavyActivity = 1.7
+    private var heavyActivity = 1.7         // 1.725 ??
     private var extremeActivity = 1.9
 
     /**
@@ -26,7 +26,7 @@ class BMR {
      */
     fun calculateBMRMen(age: Int, height: Double, weight: Double): Double {
 //        Log.d("BMR", "calculateBMRMen: $bmr")
-        return 66.47 + (13.75 * weight) + (5.003 * height) - (6.755 * age)
+        return (10 * weight) + (6.25 * height) - (5 * age) + 5
 
     }
 
@@ -39,8 +39,7 @@ class BMR {
      * @return Double
      */
     fun calculateBMRWomen(age: Int, height: Double, weight: Double): Double {
-        return 655.1 + (9.563 * weight) + (1.850 * height) - (4.676 * age)
-
+        return (10 * weight) + (6.25 * height) - (5 * age) - 161
     }
 
     /**
