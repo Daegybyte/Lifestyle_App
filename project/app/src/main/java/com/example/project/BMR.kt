@@ -1,7 +1,7 @@
 package com.example.project
 
 /**
-This is a class for calculating the Basal Metabolic rate of a person
+ * This is a class for calculating the Basal Metabolic rate of a person
  */
 class BMR {
 
@@ -12,7 +12,7 @@ class BMR {
     private val extremeActivity = 1.9
 
     /**
-     * function to calculate the BMR of a man
+     * Calculates the BMR of a man
      * returns Double
      * @param age: Int
      * @param height: Float
@@ -22,11 +22,10 @@ class BMR {
     fun calculateBMRMen(age: Int, height: Double, weight: Double): Double {
 //        Log.d("BMR", "calculateBMRMen: $bmr")
         return (10 * weight) + (6.25 * height) - (5 * age) + 5
-
     }
 
     /**
-     * function to calculate the BMR of a woman
+     * Calculates the BMR of a woman
      * returns Double
      * @param age: Int
      * @param height: Float
@@ -38,7 +37,7 @@ class BMR {
     }
 
     /**
-     * calculates the calorie needs of a sedentar person
+     * Calculates the calorie needs of a sedentar person
      * @param bmr: Double
      * @return Double
      */
@@ -47,7 +46,7 @@ class BMR {
     }
 
     /**
-     * calculates the calorie needs of a person with mild activity
+     * Calculates the calorie needs of a person with mild activity
      * @param bmr: Double
      * @return Double
      */
@@ -56,7 +55,7 @@ class BMR {
     }
 
     /**
-     * calculates the calorie needs of a person with moderate activity
+     * Calculates the calorie needs of a person with moderate activity
      * @param bmr: Double
      * @return Double
      */
@@ -65,7 +64,7 @@ class BMR {
     }
 
     /**
-     * calculates the calorie needs of a person with heavy activity
+     * Calculates the calorie needs of a person with heavy activity
      * @param bmr: Double
      * @return Double
      */
@@ -74,7 +73,7 @@ class BMR {
     }
 
     /**
-     * calculates the calorie needs of a person with extreme activity
+     * Calculates the calorie needs of a person with extreme activity
      * @param bmr: Double
      * @return Double
      */
