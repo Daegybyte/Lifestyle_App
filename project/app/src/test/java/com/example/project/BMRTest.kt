@@ -12,13 +12,13 @@ internal class BMRTest {
     @Test
     fun calculateBMRMen() {
         val result = bmr.calculateBMRMen(person1.first, person1.second, person1.third)
-        assertEquals(1913.0, result, delta)
+        assertEquals(1823.75, result, delta)
     }
 
     @Test
     fun calculateBMRWomen() {
         val result = bmr.calculateBMRWomen(person1.first, person1.second, person1.third)
-        assertEquals(1652.0, result, delta)
+        assertEquals(1657.75, result, delta)
     }
 
     @Test

@@ -5,16 +5,11 @@ This is a class for calculating the Basal Metabolic rate of a person
  */
 class BMR {
 
-    private var bmr: Double = 0.0
-    private var weight: Double = 0.0
-    private var height: Int = 0
-    private var age: Int = 0
-
-    private var sedentary = 1.2
-    private var mildActivity = 1.375
-    private var moderateActivity = 1.55
-    private var heavyActivity = 1.7         // 1.725 ??
-    private var extremeActivity = 1.9
+    private val sedentary = 1.2
+    private val mildActivity = 1.375
+    private val moderateActivity = 1.55
+    private val heavyActivity = 1.7
+    private val extremeActivity = 1.9
 
     /**
      * function to calculate the BMR of a man
