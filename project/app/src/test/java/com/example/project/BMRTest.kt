@@ -1,25 +1,23 @@
 package com.example.project
 
 import org.junit.Test
-
 import org.junit.Assert.*
 
 internal class BMRTest {
 
     private val delta = 2.0
-    private val dude1 = Triple(25, 183.0, 80.0)
-    private val gal1 = Triple(25, 183.0, 80.0)
+    private val person1 = Triple(25, 183.0, 80.0)
 
     private val bmr = BMR()
     @Test
     fun calculateBMRMen() {
-        val result = bmr.calculateBMRMen(dude1.first, dude1.second, dude1.third)
+        val result = bmr.calculateBMRMen(person1.first, person1.second, person1.third)
         assertEquals(1913.0, result, delta)
     }
 
     @Test
     fun calculateBMRWomen() {
-        val result = bmr.calculateBMRWomen(gal1.first, gal1.second, gal1.third)
+        val result = bmr.calculateBMRWomen(person1.first, person1.second, person1.third)
         assertEquals(1652.0, result, delta)
     }
 
