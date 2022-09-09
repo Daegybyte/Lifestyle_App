@@ -1,7 +1,5 @@
 package com.example.project
 
-import android.util.Log
-
 /**
 This is a class for calculating the Basal Metabolic rate of a person
  */
@@ -27,9 +25,9 @@ class BMR {
      * @return Double
      */
     fun calculateBMRMen(age: Int, height: Double, weight: Double): Double {
-        bmr =  655.1 + (9.563 * weight) + (1.850 * height) - (4.67 * age)
-        Log.d("BMR", "calculateBMRMen: $bmr")
-        return bmr
+//        Log.d("BMR", "calculateBMRMen: $bmr")
+        return 66.47 + (13.75 * weight) + (5.003 * height) - (6.755 * age)
+
     }
 
     /**
@@ -41,9 +39,8 @@ class BMR {
      * @return Double
      */
     fun calculateBMRWomen(age: Int, height: Double, weight: Double): Double {
-        bmr = 66.47 + (13.75 * weight) + (5.003 * height) - (6.755 * age)
-        Log.d("BMR", "calculateBMRWomen: $bmr")
-        return bmr
+        return 655.1 + (9.563 * weight) + (1.850 * height) - (4.676 * age)
+
     }
 
     /**
@@ -52,9 +49,7 @@ class BMR {
      * @return Double
      */
     fun calculateCaloriesSedentary(bmr: Double): Double {
-        val ret = bmr * sedentary
-        Log.d("BMR", "calculateCaloriesSedentary: $ret")
-        return ret
+        return bmr * sedentary
     }
 
     /**
@@ -63,9 +58,7 @@ class BMR {
      * @return Double
      */
     fun calculateCaloriesMildActivity(bmr: Double): Double {
-        val ret = (bmr * mildActivity) - 1.375
-        Log.d("BMR", "calculateCaloriesMildActivity: $ret")
-        return ret
+        return (bmr * mildActivity) - 1.375
     }
 
     /**
@@ -74,9 +67,7 @@ class BMR {
      * @return Double
      */
     fun calculateCaloriesModerateActivity(bmr: Double): Double {
-        val ret = (bmr * moderateActivity) - 1.55
-        Log.d("BMR", "calculateCaloriesModerateActivity: $ret")
-        return ret
+        return (bmr * moderateActivity) - 1.55
     }
 
     /**
@@ -85,9 +76,7 @@ class BMR {
      * @return Double
      */
     fun calculateCaloriesHeavyActivity(bmr: Double): Double {
-        val ret = (bmr * heavyActivity)
-        Log.d("BMR", "calculateCaloriesHeavyActivity: $ret")
-        return ret
+        return (bmr * heavyActivity)
     }
 
     /**
@@ -96,8 +85,6 @@ class BMR {
      * @return Double
      */
     fun calculateCaloriesExtremeActivity(bmr: Double): Double {
-        val ret = (bmr * extremeActivity)
-        Log.d("BMR", "calculateCaloriesExtremeActivity: $ret")
-        return ret
+        return (bmr * extremeActivity)
     }
 }
