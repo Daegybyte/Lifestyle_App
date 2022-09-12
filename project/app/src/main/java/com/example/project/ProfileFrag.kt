@@ -34,8 +34,8 @@ class ProfileFrag : Fragment() {
 
         val npWeight : NumberPicker = view.findViewById(R.id.np_weight)
         npWeight.minValue = 45
-        npWeight.maxValue = 75
-        npWeight.value = 150
+        npWeight.maxValue = 150
+        npWeight.value = 75
         npWeight.wrapSelectorWheel = false
 
         val spActivityLvl: Spinner = view.findViewById(R.id.spActivityLevel)
