@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/frag_container"
         android:layout_width="match_parent"
@@ -20,5 +25,7 @@
         android:name="com.example.project.MainFrag"
         tools:layout="@layout/fragment_main"
         />
-    
+
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
