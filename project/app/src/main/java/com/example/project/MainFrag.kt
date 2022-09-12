@@ -3,6 +3,7 @@ package com.example.project
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
@@ -11,10 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -22,10 +20,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import org.w3c.dom.Text
 
 
 @SuppressLint("MissingPermission")
 class MainFrag : Fragment() {
+
+    //
+    private var mActivityLevel: String? = null
 
     // Strings for the activity levels
     private val alChange: String = "Change Activity Level"
@@ -49,6 +51,20 @@ class MainFrag : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         Log.d("MainFrag", "onCreateView: view inflated successfully")
+
+        // Get the user info from SharedPreferences
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        if (sharedPref != null) {
+            // Get the name
+            val firstName = sharedPref.getString("firstName", "")
+            val lastName = sharedPref.getString("lastName", "")
+            val tvUsername: TextView = view.findViewById(R.id.tvUsername)
+            // Set the name
+            tvUsername.text = "$firstName $lastName"
+            // TODO picture
+            // Get the activity level
+            // TODO
+        }
 
         // Add functionality to the edit profile button
         val btnEditProfile: Button = view.findViewById(R.id.btnEditProfile)

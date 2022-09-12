@@ -1,13 +1,12 @@
 package com.example.project
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.NumberPicker
-import android.widget.Spinner
+import android.widget.*
 
 
 class ProfileFrag : Fragment() {
@@ -53,6 +52,33 @@ class ProfileFrag : Fragment() {
 //                np.setOnValueChangedListener { picker, oldVal, newVal ->
 //            val text = "Changed from $oldVal to $newVal"
 //        }
+
+        // Get the SharedPreferences to read from/store in
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+
+        // Check to see if there is user info in the SharedPreferences
+        if (sharedPref != null) {
+            // Get the name
+            val firstName = sharedPref.getString("firstName", "")
+            val lastName = sharedPref.getString("lastName", "")
+            // Set the name
+            val etFirstName: EditText = view.findViewById(R.id.etFirstName)
+            val etLastName: EditText = view.findViewById(R.id.etLastName)
+            etFirstName.setText(firstName)
+            etLastName.setText(lastName)
+        }
+
+        // Adding functionality to the save button
+        val saveButton: Button = view.findViewById(R.id.btnSave)
+        saveButton.setOnClickListener{
+            with (sharedPref!!.edit()) {
+                val etFirstName: EditText = view.findViewById(R.id.etFirstName)
+                putString("firstName", etFirstName.text.toString())
+                val etLastName: EditText = view.findViewById(R.id.etLastName)
+                putString("lastName", etLastName.text.toString())
+                apply()
+            }
+        }
 
         return view
     }
