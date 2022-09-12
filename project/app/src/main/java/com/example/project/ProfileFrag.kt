@@ -2,11 +2,11 @@ package com.example.project
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.Fragment
 
 
 class ProfileFrag : Fragment() {
@@ -45,8 +45,7 @@ class ProfileFrag : Fragment() {
 
 
         // TODO -- use this in listener to get radio button value (it is returned as an Int)
-//        val rgSex : RadioGroup = view.findViewById(R.id.radio_sex)
-//        Int selectedSexID = rgSex.checkedRadioButtonId
+        val rgSex: RadioGroup = view.findViewById(R.id.radio_sex)
 
         // TODO -- use this to change value of numberpicker stored in member variable
 //                np.setOnValueChangedListener { picker, oldVal, newVal ->
@@ -66,6 +65,30 @@ class ProfileFrag : Fragment() {
             val etLastName: EditText = view.findViewById(R.id.etLastName)
             etFirstName.setText(firstName)
             etLastName.setText(lastName)
+            // Get the age
+            val age = sharedPref.getInt("age", 0)
+            //set the age
+            npAge.value = age
+
+            // Get the height
+            val height = sharedPref.getInt("height", 0)
+            //set the height
+            npHeight.value = height
+
+            // Get the weight
+            val weight = sharedPref.getInt("weight", 0)
+            //set the weight
+            npWeight.value = weight
+
+            // Get the activity level
+            val activityLevel = sharedPref.getInt("activityLevel", 2)
+            //set the activity level
+            spActivityLvl.setSelection(activityLevel)
+
+            val radioMale: RadioButton = view.findViewById(R.id.radio_male)
+            radioMale.isChecked = sharedPref.getBoolean("isMale", true)
+            val radioFemale: RadioButton = view.findViewById(R.id.radio_female)
+            radioFemale.isChecked = !sharedPref.getBoolean("isMale", false)
         }
 
         // Adding functionality to the save button
@@ -76,6 +99,14 @@ class ProfileFrag : Fragment() {
                 putString("firstName", etFirstName.text.toString())
                 val etLastName: EditText = view.findViewById(R.id.etLastName)
                 putString("lastName", etLastName.text.toString())
+                putInt("age", npAge.value)
+                putInt("height", npHeight.value)
+                putInt("weight", npWeight.value)
+                putInt("activityLevel", spActivityLvl.selectedItemPosition)
+                // get selected radio button from radioGroup
+                val radioButton: RadioButton = view.findViewById(rgSex.checkedRadioButtonId)
+                // store a boolean (for less space + ease) representing whether they are male or not
+                putBoolean("isMale", radioButton.text.toString() == "Male")
                 apply()
             }
         }
