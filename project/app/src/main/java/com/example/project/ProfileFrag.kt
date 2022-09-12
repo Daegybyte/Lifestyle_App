@@ -81,10 +81,11 @@ class ProfileFrag : Fragment() {
             npWeight.value = weight
 
             // Get the activity level
-            val activityLevel = sharedPref.getInt("activityLevel", 2)
+            val activityLevelIndex = sharedPref.getInt("activityLevel", 2)
             //set the activity level
-            spActivityLvl.setSelection(activityLevel)
+            spActivityLvl.setSelection(activityLevelIndex)
 
+            // Get the gender
             val radioMale: RadioButton = view.findViewById(R.id.radio_male)
             radioMale.isChecked = sharedPref.getBoolean("isMale", true)
             val radioFemale: RadioButton = view.findViewById(R.id.radio_female)

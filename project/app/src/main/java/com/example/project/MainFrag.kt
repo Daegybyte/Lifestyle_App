@@ -26,9 +26,6 @@ import org.w3c.dom.Text
 @SuppressLint("MissingPermission")
 class MainFrag : Fragment() {
 
-    //
-    private var mActivityLevel: String? = null
-
     // Strings for the activity levels
     private val alChange: String = "Change Activity Level"
     private var alSedentary: String = "Sedentary (1600 kcal/day)"
@@ -52,20 +49,6 @@ class MainFrag : Fragment() {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         Log.d("MainFrag", "onCreateView: view inflated successfully")
 
-        // Get the user info from SharedPreferences
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        if (sharedPref != null) {
-            // Get the name
-            val firstName = sharedPref.getString("firstName", "")
-            val lastName = sharedPref.getString("lastName", "")
-            val tvUsername: TextView = view.findViewById(R.id.tvUsername)
-            // Set the name
-            tvUsername.text = "$firstName $lastName"
-            // TODO picture
-            // Get the activity level
-            // TODO
-        }
-
         // Add functionality to the edit profile button
         val btnEditProfile: Button = view.findViewById(R.id.btnEditProfile)
 
@@ -78,7 +61,6 @@ class MainFrag : Fragment() {
             Log.d("MainFrag", "onCreateView: edit profile button clicked")
         }
 
-
         // Fill the dropdown for activity level
         val spinner: Spinner = view.findViewById(R.id.spActivityLevel)
         Log.d("MainFrag", "onCreateView: spinner found successfully")
@@ -90,6 +72,23 @@ class MainFrag : Fragment() {
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_main)
         spinner.adapter = arrayAdapter
 
+        // Get the user info from SharedPreferences
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        if (sharedPref != null) {
+            // Get the name
+            val firstName = sharedPref.getString("firstName", "")
+            val lastName = sharedPref.getString("lastName", "")
+            val tvUsername: TextView = view.findViewById(R.id.tvUsername)
+            // Set the name
+            tvUsername.text = "$firstName $lastName"
+            // TODO picture
+            // Get the activity level
+            val activityLevelIndex = sharedPref.getInt("activityLevel", 0)
+            // Set the activity level
+            val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
+            val tvActivityLevel: TextView = view.findViewById(R.id.tvActivityLevel)
+            tvActivityLevel.text = activityLevels[activityLevelIndex]
+        }
 
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
