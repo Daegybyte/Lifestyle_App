@@ -1,7 +1,17 @@
 package com.example.project
 
 /**
- * This is a class for calculating the Basal Metabolic rate of a person
+ * This is a class for calculating the Basal Metabolic rate of a person using The Harris–Benedict equations revised by Mifflin and St Jeor in 1990.
+ * @param weight the weight of the person in kilograms
+ * @param height the height of the person in centimeters
+ * @param age the age of the person in years
+ * @sample calculateBMRMen() - calculates the BMR for men
+ * @sample calculateBMRWomen() - calculates the BMR for women
+ * @sample calculateCaloriesSedentary() - calculates the calories needed for a sedentary person
+ * @sample calculateCaloriesMildActivity() - calculates the calories needed for a lightly active person
+ * @sample calculateCaloriesModerateActivity() - calculates the calories needed for a moderately active person
+ * @sample calculateCaloriesHeavyActivity() - calculates the calories needed for a very active person
+ * @sample calculateCaloriesExtremeActivity() - calculates the calories needed for an extra active person
  */
 class BMR {
 
@@ -20,7 +30,6 @@ class BMR {
      * @return Double
      */
     fun calculateBMRMen(age: Int, height: Double, weight: Double): Double {
-//        Log.d("BMR", "calculateBMRMen: $bmr")
         return (10 * weight) + (6.25 * height) - (5 * age) + 5
     }
 

@@ -6,13 +6,14 @@ import org.junit.Assert.*
 internal class BMRTest {
 
     private val delta = 2.0
-    private val person1 = Triple(25, 183.0, 80.0)
-
+    private var person1 = Triple(25, 183.0, 80.0)
     private val bmr = BMR()
+
     @Test
     fun calculateBMRMen() {
         val result = bmr.calculateBMRMen(person1.first, person1.second, person1.third)
         assertEquals(1823.0, result, delta)
+
     }
 
     @Test
