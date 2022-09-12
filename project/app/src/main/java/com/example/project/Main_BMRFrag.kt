@@ -38,9 +38,9 @@ class Main_BMRFrag : Fragment() {
 
         val activityLevels = arrayOf<String?>(alChange, alSedentary, alMild, alModerate, alHeavy, alExtreme)
         Log.d("Main_BMRFrag", "onCreateView: activityLevels array created successfully")
-        val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list, activityLevels)
+        val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list_main, activityLevels)
         Log.d("Main_BMRFrag", "onCreateView: arrayAdapter created successfully")
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_list)
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_list_main)
         spinner.adapter = arrayAdapter
 
         return view
