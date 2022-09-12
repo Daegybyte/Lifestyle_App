@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/userInfoContainer"
+        android:id="@+id/frag_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -17,37 +17,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:name="com.example.project.Main_UserInfoFrag"
-        tools:layout="@layout/fragment_main_userinfo"
+        android:name="com.example.project.MainFrag"
+        tools:layout="@layout/fragment_main"
         />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/userBMRContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/userInfoContainer"
-        android:name="com.example.project.Main_BMRFrag"
-        tools:layout="@layout/fragment_main_b_m_r"
-        />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/userButtonContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/userBMRContainer"
-        android:name="com.example.project.Main_ButtonFrag"
-        tools:layout="@layout/fragment_main_button"
-        />
-
-
+    
 </androidx.constraintlayout.widget.ConstraintLayout>
