@@ -38,7 +38,7 @@ class Profile_DataFrag : Fragment() {
         val spActivityLvl: Spinner = view.findViewById(R.id.spActivityLevel)
         val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
         val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list_profile, activityLevels)
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_list_main)
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_list_profile)
         spActivityLvl.adapter = arrayAdapter
 
 
