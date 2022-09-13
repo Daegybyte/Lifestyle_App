@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item android:drawable="@drawable/wolflogo1" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo2" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo3" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo4" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo5" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo6" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo7" android:duration="300" />
+    <item android:drawable="@drawable/wolflogo8" android:duration="300" />
+
+</animation-list>

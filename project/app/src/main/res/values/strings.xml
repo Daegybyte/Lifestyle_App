@@ -25,6 +25,7 @@
     <string name="font_awesome_mapmarker">\uf3c5</string>
     <string name="font_awesome_camera">\uf030</string>
     <string name="btnSave">SAVE</string>
+    <string name="logo">Logo</string>
 
 </resources>
 
