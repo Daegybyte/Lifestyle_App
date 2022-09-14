@@ -78,6 +78,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         // Get the user info from SharedPreferences
         val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
+        if (!sharedPref.contains("hasProfile")) {
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
         if (sharedPref != null) {
             // Get the name
             val firstName = sharedPref.getString("firstName", "")

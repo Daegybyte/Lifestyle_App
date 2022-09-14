@@ -108,6 +108,8 @@ class ProfileFrag : Fragment() {
                 val radioButton: RadioButton = view.findViewById(rgSex.checkedRadioButtonId)
                 // store a boolean (for less space + ease) representing whether they are male or not
                 putBoolean("isMale", radioButton.text.toString() == "Male")
+
+                putBoolean("hasProfile", true)
                 apply()
             }
 
