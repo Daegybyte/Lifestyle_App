@@ -66,17 +66,17 @@ class ProfileFrag : Fragment() {
             etFirstName.setText(firstName)
             etLastName.setText(lastName)
             // Get the age
-            val age = sharedPref.getInt("age", 0)
+            val age = sharedPref.getInt("age", npAge.value)
             //set the age
             npAge.value = age
 
             // Get the height
-            val height = sharedPref.getInt("height", 0)
+            val height = sharedPref.getInt("height", npHeight.value)
             //set the height
             npHeight.value = height
 
             // Get the weight
-            val weight = sharedPref.getInt("weight", 0)
+            val weight = sharedPref.getInt("weight", npWeight.value)
             //set the weight
             npWeight.value = weight
 
@@ -89,7 +89,7 @@ class ProfileFrag : Fragment() {
             val radioMale: RadioButton = view.findViewById(R.id.radio_male)
             radioMale.isChecked = sharedPref.getBoolean("isMale", true)
             val radioFemale: RadioButton = view.findViewById(R.id.radio_female)
-            radioFemale.isChecked = !sharedPref.getBoolean("isMale", false)
+            radioFemale.isChecked = !sharedPref.getBoolean("isMale", true)
         }
 
         // Adding functionality to the save button
@@ -110,7 +110,14 @@ class ProfileFrag : Fragment() {
                 putBoolean("isMale", radioButton.text.toString() == "Male")
                 apply()
             }
+
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
+            transaction.addToBackStack(null)
+            transaction.commit()
         }
+
+
 
         return view
     }

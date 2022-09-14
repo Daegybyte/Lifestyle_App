@@ -28,6 +28,11 @@ class SplashFrag : Fragment() {
 
         logoAnimation.start()
 
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
+        transaction.addToBackStack(null)
+        transaction.commit()
+
         return view
     }
 
