@@ -26,13 +26,15 @@ import com.google.android.gms.tasks.CancellationTokenSource
 @SuppressLint("MissingPermission")
 class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
 
-    // Strings for the activity levels
-    private val alChange: String = "Change Activity Level"
-    private var alSedentary: String = "Sedentary (1600 kcal/day)"
-    private var alMild: String = "Mild (1800 kcal/day)"
-    private var alModerate: String = "Moderate (2000 kcal/day)"
-    private var alHeavy: String = "Heavy (2200 kcal/day)"
-    private var alExtreme: String = "Extreme (2400 kcal/day)"
+    // String Array for the activity levels
+    private var mActivityLevels = arrayOf<String?>(
+        "Change Activity Level",
+        "Sedentary (1600 kcal/day)",
+        "Mild (1800 kcal/day)",
+        "Moderate (2000 kcal/day)",
+        "Heavy (2200 kcal/day)",
+        "Extreme (2400 kcal/day)"
+    )
 
     // These will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -65,9 +67,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         val spinner: Spinner = view.findViewById(R.id.spActivityLevel)
         Log.d("MainFrag", "onCreateView: spinner found successfully")
 
-        val activityLevels = arrayOf<String?>(alChange, alSedentary, alMild, alModerate, alHeavy, alExtreme)
-        Log.d("MainFrag", "onCreateView: activityLevels array created successfully")
-        val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list_main, activityLevels)
+        val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list_main, mActivityLevels)
         Log.d("MainFrag", "onCreateView: arrayAdapter created successfully")
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_main)
         spinner.adapter = arrayAdapter
@@ -100,13 +100,29 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             val bMap = BitmapFactory.decodeFile(profilePicPath)
             ivThumbnail.setImageBitmap(bMap)
 
-            // Get the activity level
+            // Get the BMR
+            val tvBMR : TextView = view.findViewById(R.id.tvBMR)
             val activityLevelIndex = sharedPref.getInt("activityLevel", 0)
+            val bmr = BMR()
+            val baseBMR = bmr.calculateBaseBMR(
+                sharedPref.getInt("weight", 0),
+                sharedPref.getInt("height", 0),
+                sharedPref.getInt("age", 0),
+                sharedPref.getBoolean("isMale", true)
+                )
+            val adjustedBMR = bmr.calculateAdjustedBMR(baseBMR, activityLevelIndex)
+            tvBMR.text = adjustedBMR + " kcal/day"
+
             // Set the activity level
             val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
             val tvActivityLevel: TextView = view.findViewById(R.id.tvActivityLevel)
             tvActivityLevel.text = activityLevels[activityLevelIndex]
             Log.d("MainFrag", "onCreateView: set the activity level TextView successfully")
+
+            // update the spinner
+            for (i in 1 until mActivityLevels.size){
+                mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
+            }
         }
 
         // Get the FusedLocationProviderClient for GPS
@@ -270,7 +286,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
 
             tvActLvl.text = strArr[0]
 
-            val strBmr = strArr[1].removePrefix("(") + strArr[2].dropLast(1)
+            val strBmr = strArr[1].removePrefix("(") + " " + strArr[2].dropLast(1)
             tvBmr.text = strBmr
 
             // reset spinner display to "Change Activity Level"

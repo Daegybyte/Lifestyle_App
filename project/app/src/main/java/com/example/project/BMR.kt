@@ -1,12 +1,16 @@
 package com.example.project
 
+import java.lang.Math.floor
+import kotlin.math.roundToInt
+
 /**
  * This is a class for calculating the Basal Metabolic rate of a person using The Harris–Benedict equations revised by Mifflin and St Jeor in 1990.
  * @param weight the weight of the person in kilograms
  * @param height the height of the person in centimeters
  * @param age the age of the person in years
- * @sample calculateBMRMen() - calculates the BMR for men
- * @sample calculateBMRWomen() - calculates the BMR for women
+ * @sample calculateBaseBMR()
+// * @sample calculateBMRMen() - calculates the BMR for men
+// * @sample calculateBMRWomen() - calculates the BMR for women
  * @sample calculateCaloriesSedentary() - calculates the calories needed for a sedentary person
  * @sample calculateCaloriesMildActivity() - calculates the calories needed for a lightly active person
  * @sample calculateCaloriesModerateActivity() - calculates the calories needed for a moderately active person
@@ -22,31 +26,61 @@ class BMR {
     private val extremeActivity = 1.9
 
     /**
-     * Calculates the BMR of a man
+     * Calculates the base BMR (not including activity level)
      * returns Double
      * @param age: Int
-     * @param height: Float
-     * @param weight: Double
+     * @param height: Int
+     * @param weight: Int
      * @return Double
      */
-    fun calculateBMRMen(age: Int, height: Double, weight: Double): Double {
-        return (10 * weight) + (6.25 * height) - (5 * age) + 5
+    fun calculateBaseBMR(weight: Int, height: Int, age: Int, isMale: Boolean): Double {
+        var ret = (10 * weight) + (6.25 * height) - (5 * age)
+        if (isMale){
+            ret += 5
+        }
+        else {
+            ret -= 161
+        }
+        return ret
     }
 
-    /**
-     * Calculates the BMR of a woman
-     * returns Double
-     * @param age: Int
-     * @param height: Float
-     * @param weight: Double
-     * @return Double
-     */
-    fun calculateBMRWomen(age: Int, height: Double, weight: Double): Double {
-        return (10 * weight) + (6.25 * height) - (5 * age) - 161
+    fun calculateAdjustedBMR(baseBMR: Double, actLvl: Int) : String {
+        when (actLvl){
+            0 -> return (baseBMR * sedentary).roundToInt().toString()
+            1 -> return (baseBMR * mildActivity).roundToInt().toString()
+            2 -> return (baseBMR * moderateActivity).roundToInt().toString()
+            3 -> return (baseBMR * heavyActivity).roundToInt().toString()
+            4 -> return (baseBMR * extremeActivity).roundToInt().toString()
+            else -> return "0"
+        }
     }
 
+//    /**
+//     * Calculates the BMR of a man
+//     * returns Double
+//     * @param age: Int
+//     * @param height: Int
+//     * @param weight: Int
+//     * @return Double
+//     */
+//    fun calculateBMRMen(age: Int, height: Int, weight: Int): Double {
+//        return (10 * weight) + (6.25 * height) - (5 * age) + 5
+//    }
+//
+//    /**
+//     * Calculates the BMR of a woman
+//     * returns Double
+//     * @param age: Int
+//     * @param height: Int
+//     * @param weight: Int
+//     * @return Double
+//     */
+//    fun calculateBMRWomen(age: Int, height: Int, weight: Int): Double {
+//        return (10 * weight) + (6.25 * height) - (5 * age) - 161
+//    }
+
     /**
-     * Calculates the calorie needs of a sedentar person
+     * Calculates the calorie needs of a sedentary person
      * @param bmr: Double
      * @return Double
      */
