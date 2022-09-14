@@ -137,9 +137,8 @@
             android:id="@+id/btnHikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_hikes"
             android:layout_alignParentStart="true"
-            />
+            android:text="@string/btn_hikes" />
 
         <Button
             android:id="@+id/btnWeather"
