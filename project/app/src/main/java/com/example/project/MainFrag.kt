@@ -162,6 +162,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
 
         btnWeather.setOnClickListener{
+            val llo : LinearLayout = view.findViewById(R.id.boxWeather)
+            llo.visibility = View.VISIBLE
+
             val appPerms = arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
@@ -243,6 +246,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             val tvBmr : TextView = view?.findViewById(R.id.tvBMR) as TextView
             val tvActLvl : TextView = view?.findViewById(R.id.tvActivityLevel) as TextView
 
+            // split the string and put into Textviews
             val strArr = spString.split(" ")
 
             tvActLvl.text = strArr[0]
@@ -256,7 +260,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {
-
+        // Do nothing (this method is required by AdapterView.OnItemSelectedListener)
     }
 
 
