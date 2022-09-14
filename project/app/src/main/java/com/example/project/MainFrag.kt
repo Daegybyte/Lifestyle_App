@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -93,7 +94,12 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             // Set the name
             tvUsername.text = "$firstName $lastName"
             Log.d("MainFrag", "onCreateView: set the name TextView successfully")
-            // TODO picture
+
+            val ivThumbnail : ImageView = view.findViewById(R.id.ivThumbnail)
+            val profilePicPath = sharedPref.getString("profilePic", "")
+            val bMap = BitmapFactory.decodeFile(profilePicPath)
+            ivThumbnail.setImageBitmap(bMap)
+
             // Get the activity level
             val activityLevelIndex = sharedPref.getInt("activityLevel", 0)
             // Set the activity level

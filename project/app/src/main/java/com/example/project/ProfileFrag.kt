@@ -1,15 +1,30 @@
 package com.example.project
 
+import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ProfileFrag : Fragment() {
+
+    private var mProfilePicPath : String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +105,24 @@ class ProfileFrag : Fragment() {
             radioMale.isChecked = sharedPref.getBoolean("isMale", true)
             val radioFemale: RadioButton = view.findViewById(R.id.radio_female)
             radioFemale.isChecked = !sharedPref.getBoolean("isMale", true)
+
+            // Get the profile pic
+            val profilePicView : ImageView = view.findViewById(R.id.profilePic)
+            val profilePicPath = sharedPref.getString("profilePic", mProfilePicPath)
+            val bMap = BitmapFactory.decodeFile(profilePicPath)
+            profilePicView.setImageBitmap(bMap)
+
+        }
+
+        val picButton : Button = view.findViewById(R.id.btnPic)
+        picButton.setOnClickListener{
+            val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+            try{
+                cameraLauncher.launch(camIntent)
+            }catch(ex: ActivityNotFoundException){
+                Toast.makeText(activity, "Error Opening Camera", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Adding functionality to the save button
@@ -108,6 +141,7 @@ class ProfileFrag : Fragment() {
                 val radioButton: RadioButton = view.findViewById(rgSex.checkedRadioButtonId)
                 // store a boolean (for less space + ease) representing whether they are male or not
                 putBoolean("isMale", radioButton.text.toString() == "Male")
+                putString("profilePic", mProfilePicPath)
 
                 putBoolean("hasProfile", true)
                 apply()
@@ -123,5 +157,50 @@ class ProfileFrag : Fragment() {
 
         return view
     }
+
+    private var cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+
+            val ivProfilePic : ImageView = requireView().findViewById(R.id.profilePic)
+
+            val extras = result.data!!.extras
+            val mProfilePic = extras!!["data"] as Bitmap?
+
+            //Open a file and write to it
+            if (isExternalStorageWritable) {
+                mProfilePicPath = saveImage(mProfilePic)
+                ivProfilePic.setImageBitmap(mProfilePic)
+            } else {
+                Toast.makeText(activity, "External storage not writable.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun saveImage(finalBitmap: Bitmap?): String {
+        val root = activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val myDir = File("$root/saved_images")
+        myDir.mkdirs()
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val fname = "Thumbnail_$timeStamp.jpg"
+        val file = File(myDir, fname)
+        if (file.exists()) file.delete()
+        try {
+            val out = FileOutputStream(file)
+            finalBitmap!!.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            out.flush()
+            out.close()
+            Toast.makeText(activity, "file saved!", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return file.absolutePath
+    }
+
+    private val isExternalStorageWritable: Boolean
+        get() {
+            val state = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == state
+        }
 
 }
