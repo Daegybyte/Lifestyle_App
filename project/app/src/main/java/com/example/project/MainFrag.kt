@@ -70,11 +70,14 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         Log.d("MainFrag", "onCreateView: arrayAdapter created successfully")
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_main)
         spinner.adapter = arrayAdapter
+        Log.d("MainFrag", "onCreateView: spinner populated successfully")
 
         spinner.onItemSelectedListener = this
+        Log.d("MainFrag", "onCreateView: onItemSelectedListener added successfully")
 
         // Get the user info from SharedPreferences
         val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
         if (sharedPref != null) {
             // Get the name
             val firstName = sharedPref.getString("firstName", "")
@@ -82,6 +85,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             val tvUsername: TextView = view.findViewById(R.id.tvUsername)
             // Set the name
             tvUsername.text = "$firstName $lastName"
+            Log.d("MainFrag", "onCreateView: set the name TextView successfully")
             // TODO picture
             // Get the activity level
             val activityLevelIndex = sharedPref.getInt("activityLevel", 0)
@@ -89,10 +93,12 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
             val tvActivityLevel: TextView = view.findViewById(R.id.tvActivityLevel)
             tvActivityLevel.text = activityLevels[activityLevelIndex]
+            Log.d("MainFrag", "onCreateView: set the activity level TextView successfully")
         }
 
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
+        Log.d("MainFrag", "onCreateView: got the FusedLocationProviderClient")
 
         // Add functionality to the Hikes button
         val btnHikes: Button = view.findViewById(R.id.btnHikes)
@@ -234,9 +240,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             }
         }
 
-    override fun onItemSelected(parent: AdapterView<*>, other: View, pos: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>?, other: View?, pos: Int, id: Long) {
         Log.d("SpinnerListener", "Selected Something From the Spinner")
-        val spString = parent.getItemAtPosition(pos).toString()
+        val spString = parent!!.getItemAtPosition(pos).toString()
         Log.d("SpinnerListener", spString)
 
         if (spString != "Change Activity Level"){
@@ -259,7 +265,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>) {
+    override fun onNothingSelected(parent: AdapterView<*>?) {
         // Do nothing (this method is required by AdapterView.OnItemSelectedListener)
     }
 
