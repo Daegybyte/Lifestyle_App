@@ -20,11 +20,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import org.w3c.dom.Text
 
 
 @SuppressLint("MissingPermission")
-class MainFrag : Fragment() {
+class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
 
     // Strings for the activity levels
     private val alChange: String = "Change Activity Level"
@@ -71,6 +70,8 @@ class MainFrag : Fragment() {
         Log.d("MainFrag", "onCreateView: arrayAdapter created successfully")
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_main)
         spinner.adapter = arrayAdapter
+
+        spinner.onItemSelectedListener = this
 
         // Get the user info from SharedPreferences
         val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
@@ -229,5 +230,34 @@ class MainFrag : Fragment() {
 //                ).show()
             }
         }
+
+    override fun onItemSelected(parent: AdapterView<*>, other: View, pos: Int, id: Long) {
+        Log.d("SpinnerListener", "Selected Something From the Spinner")
+        val spString = parent.getItemAtPosition(pos).toString()
+        Log.d("SpinnerListener", spString)
+
+        if (spString != "Change Activity Level"){
+            Log.d("SpinnerListener", "SUCCESS!")
+
+            // get TextViews
+            val tvBmr : TextView = view?.findViewById(R.id.tvBMR) as TextView
+            val tvActLvl : TextView = view?.findViewById(R.id.tvActivityLevel) as TextView
+
+            val strArr = spString.split(" ")
+
+            tvActLvl.text = strArr[0]
+
+            val strBmr = strArr[1].removePrefix("(") + strArr[2].dropLast(1)
+            tvBmr.text = strBmr
+
+            // reset spinner display to "Change Activity Level"
+            parent.setSelection(0)
+        }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>) {
+
+    }
+
 
 }

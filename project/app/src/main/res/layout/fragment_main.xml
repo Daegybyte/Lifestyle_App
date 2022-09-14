@@ -84,7 +84,7 @@
                 />
 
             <TextView
-                android:id="@+id/tv_BMR"
+                android:id="@+id/tvBMR"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
