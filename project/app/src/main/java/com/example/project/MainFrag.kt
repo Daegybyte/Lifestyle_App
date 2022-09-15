@@ -104,7 +104,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             val tvBMR : TextView = view.findViewById(R.id.tvBMR)
             val activityLevelIndex = sharedPref.getInt("activityLevel", 0)
             val bmr = BMR()
-            val baseBMR = bmr.calculateBaseBMR(
+            val baseBMR = bmr.calculateBMR(
                 sharedPref.getInt("weight", 0),
                 sharedPref.getInt("height", 0),
                 sharedPref.getInt("age", 0),

@@ -1,6 +1,5 @@
 package com.example.project
 
-import java.lang.Math.floor
 import kotlin.math.roundToInt
 
 /**
@@ -8,7 +7,7 @@ import kotlin.math.roundToInt
  * @param weight the weight of the person in kilograms
  * @param height the height of the person in centimeters
  * @param age the age of the person in years
- * @sample calculateBaseBMR()
+ * @sample calculateBMR()
 // * @sample calculateBMRMen() - calculates the BMR for men
 // * @sample calculateBMRWomen() - calculates the BMR for women
  * @sample calculateCaloriesSedentary() - calculates the calories needed for a sedentary person
@@ -33,7 +32,7 @@ class BMR {
      * @param weight: Int
      * @return Double
      */
-    fun calculateBaseBMR(weight: Int, height: Int, age: Int, isMale: Boolean): Double {
+    fun calculateBMR(age: Int, height: Int, weight: Int, isMale: Boolean): Double {
         var ret = (10 * weight) + (6.25 * height) - (5 * age)
         if (isMale){
             ret += 5
@@ -54,30 +53,6 @@ class BMR {
             else -> return "0"
         }
     }
-
-//    /**
-//     * Calculates the BMR of a man
-//     * returns Double
-//     * @param age: Int
-//     * @param height: Int
-//     * @param weight: Int
-//     * @return Double
-//     */
-//    fun calculateBMRMen(age: Int, height: Int, weight: Int): Double {
-//        return (10 * weight) + (6.25 * height) - (5 * age) + 5
-//    }
-//
-//    /**
-//     * Calculates the BMR of a woman
-//     * returns Double
-//     * @param age: Int
-//     * @param height: Int
-//     * @param weight: Int
-//     * @return Double
-//     */
-//    fun calculateBMRWomen(age: Int, height: Int, weight: Int): Double {
-//        return (10 * weight) + (6.25 * height) - (5 * age) - 161
-//    }
 
     /**
      * Calculates the calorie needs of a sedentary person

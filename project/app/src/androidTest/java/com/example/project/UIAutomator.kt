@@ -16,7 +16,7 @@ private const val BASIC_SAMPLE_PACKAGE = "com.example.project"
 private const val LAUNCH_TIMEOUT = 5000L
 private const val STRING_TO_BE_TYPED = "UiAutomator"
 
-//@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 30)
 class ChangeTextBehaviorTest2 {
 
@@ -85,7 +85,7 @@ class ChangeTextBehaviorTest2 {
     }
 
     @Test
-    fun test_firstName(){
+    fun test_etFirstName(){
         val usernameInput: UiObject = device.findObject(
             UiSelector().text("etFirstName").className("android.widget.EditText")
         )
@@ -99,7 +99,7 @@ class ChangeTextBehaviorTest2 {
     }
 
     @Test
-    fun test_lastName(){
+    fun test_etLastName(){
         val usernameInput: UiObject = device.findObject(
             UiSelector().text("etLastName").className("android.widget.EditText")
         )
@@ -112,7 +112,7 @@ class ChangeTextBehaviorTest2 {
         }
     }
     @Test
-    fun test_save(){
+    fun test_btnSave(){
         val btnSave: UiObject = device.findObject(
             UiSelector().text("btnSave").className("android.widget.Button")
         )
@@ -124,4 +124,6 @@ class ChangeTextBehaviorTest2 {
             )
         }
     }
+    //TODO: add more tests
+
 }

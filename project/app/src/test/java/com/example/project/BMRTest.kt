@@ -5,20 +5,19 @@ import org.junit.Assert.*
 
 internal class BMRTest {
 
-    private val delta = 2.0
-    private var person1 = Triple(25, 183.0, 80.0)
+    private val delta = 1.0
+    private var person1 = Triple(25, 183, 80)
     private val bmr = BMR()
 
     @Test
     fun calculateBMRMen() {
-        val result = bmr.calculateBMRMen(person1.first, person1.second, person1.third)
+        val result = bmr.calculateBMR(person1.first, person1.second, person1.third, true)
         assertEquals(1823.0, result, delta)
-
     }
 
     @Test
     fun calculateBMRWomen() {
-        val result = bmr.calculateBMRWomen(person1.first, person1.second, person1.third)
+        val result = bmr.calculateBMR(person1.first, person1.second, person1.third, false)
         assertEquals(1657.0, result, delta)
     }
 
@@ -39,17 +38,17 @@ internal class BMRTest {
         assertEquals(2630.0, result, delta)
         //female
         result = bmr.calculateCaloriesMildActivity(1652.0)
-        assertEquals(2272.0, result, delta)
+        assertEquals(2270.0, result, delta)
     }
 
     @Test
     fun calculateCaloriesModerateActivity() {
         //male
         var result = bmr.calculateCaloriesModerateActivity(1913.0)
-        assertEquals(2965.0, result, delta)
+        assertEquals(2963.0, result, delta)
         //female
         result = bmr.calculateCaloriesModerateActivity(1652.0)
-        assertEquals(2561.0, result, delta)
+        assertEquals(2559.0, result, delta)
     }
 
     @Test
