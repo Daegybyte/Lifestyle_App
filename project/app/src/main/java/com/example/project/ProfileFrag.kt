@@ -108,8 +108,8 @@ class ProfileFrag : Fragment() {
 
             // Get the profile pic
             val profilePicView : ImageView = view.findViewById(R.id.profilePic)
-            val profilePicPath = sharedPref.getString("profilePic", mProfilePicPath)
-            val bMap = BitmapFactory.decodeFile(profilePicPath)
+            mProfilePicPath = sharedPref.getString("profilePic", "")
+            val bMap = BitmapFactory.decodeFile(mProfilePicPath)
             profilePicView.setImageBitmap(bMap)
 
         }

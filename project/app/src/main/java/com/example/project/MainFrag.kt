@@ -35,6 +35,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         "Heavy (2200 kcal/day)",
         "Extreme (2400 kcal/day)"
     )
+    private var mThumbnailPath : String? = null
+    private var mActivityLevelPos : Int? = null
+
 
     // These will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -51,11 +54,19 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         Log.d("MainFrag", "onCreateView: view inflated successfully")
 
+        // Get the user info from SharedPreferences
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
+
         // Add functionality to the edit profile button
         val btnEditProfile: Button = view.findViewById(R.id.btnEditProfile)
 
         btnEditProfile.setOnClickListener{
-            //TODO switch the fragment
+            with (sharedPref!!.edit()){
+                putString("profilePic", mThumbnailPath)
+                apply()
+            }
+
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
             transaction.addToBackStack(null)
@@ -76,9 +87,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         spinner.onItemSelectedListener = this
         Log.d("MainFrag", "onCreateView: onItemSelectedListener added successfully")
 
-        // Get the user info from SharedPreferences
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
         if (!sharedPref.contains("hasProfile")) {
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
@@ -96,8 +104,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             Log.d("MainFrag", "onCreateView: set the name TextView successfully")
 
             val ivThumbnail : ImageView = view.findViewById(R.id.ivThumbnail)
-            val profilePicPath = sharedPref.getString("profilePic", "")
-            val bMap = BitmapFactory.decodeFile(profilePicPath)
+            mThumbnailPath = sharedPref.getString("profilePic", "")
+            val bMap = BitmapFactory.decodeFile(mThumbnailPath)
             ivThumbnail.setImageBitmap(bMap)
 
             // Get the BMR
