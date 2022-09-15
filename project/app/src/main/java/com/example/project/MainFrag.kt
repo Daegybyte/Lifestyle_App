@@ -29,11 +29,11 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
     // String Array for the activity levels
     private var mActivityLevels = arrayOf<String?>(
         "Change Activity Level",
-        "Sedentary (1600 kcal/day)",
-        "Mild (1800 kcal/day)",
-        "Moderate (2000 kcal/day)",
-        "Heavy (2200 kcal/day)",
-        "Extreme (2400 kcal/day)"
+        "Sedentary",
+        "Mild",
+        "Moderate",
+        "Heavy",
+        "Extreme"
     )
     private var mThumbnailPath : String? = null
     private var mActivityLevelPos : Int? = null
