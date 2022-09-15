@@ -297,6 +297,12 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
             val strBmr = strArr[1].removePrefix("(") + " " + strArr[2].dropLast(1)
             tvBmr.text = strBmr
 
+            val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+            with (sharedPref!!.edit()) {
+                putInt("activityLevel", pos-1)
+                apply()
+            }
+
             // reset spinner display to "Change Activity Level"
             parent.setSelection(0)
         }
