@@ -187,13 +187,16 @@
         android:layout_marginTop="32dp"
         >
 
-        <EditText
+        <TextView
             android:id="@+id/etLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/EtLocation"
-            android:inputType="textPostalAddress"
+            android:paddingVertical="5dp"
+            android:textSize="20sp"
             android:ems="10"
+            android:textAlignment="center"
+            android:text="@string/EtLocation"
+            android:background="@drawable/borderbox"
             />
 
         <Button
