@@ -21,6 +21,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.example.project.NetworkUtils.buildURLFromString
+import com.example.project.NetworkUtils.getDataFromURL
+import org.json.JSONObject
 
 
 @SuppressLint("MissingPermission")
@@ -236,6 +239,51 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
                         //If there's no activity associated with this intent, display an error message
                         Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
                     }
+
+                    val weatherDataURL = buildURLFromString(mLatitude, mLongitude)
+                    var jsonWeatherData: String? = null
+                    Thread{
+                        try{
+                            assert(weatherDataURL != null)
+                            Log.d("WEATHER", "requesting weather")
+                            jsonWeatherData = getDataFromURL(weatherDataURL!!)
+                            Log.d("WEATHER", jsonWeatherData ?: "Didn't Get Data!!")
+
+//                            val gson = Gson()
+//                            val wd: WeatherData = gson.fromJson(
+//                                jsonWeatherData?: "", WeatherData::class.java
+//                            )
+
+                            val jsonObject = JSONObject(jsonWeatherData!!)
+                            val cityName = jsonObject.getString("name")
+                            Log.d("WEATHER", cityName)
+//                            Log.d("WEATHER", wd.name.name)
+
+                            val jsonSys = jsonObject.getJSONObject("sys")
+                            val countryName = jsonSys.getString("country")
+                            Log.d("WEATHER", countryName)
+//                            Log.d("WEATHER", wd.sys.toString())
+
+                            val jsonWeatherArray = jsonObject.getJSONArray("weather")
+                            val jsonWeather = jsonWeatherArray.getJSONObject(0)
+                            val weatherMain = jsonWeather.getString("main")
+                            Log.d("WEATHER", weatherMain)
+                            val weatherDescription = jsonWeather.getString("description")
+                            Log.d("WEATHER", weatherDescription)
+                            val weatherIcon = jsonWeather.getString("icon")
+                            Log.d("WEATHER", weatherIcon)
+
+
+
+
+                            Log.d("WEATHER", "Done")
+
+
+                        }
+                        catch (e: Exception){
+                            e.printStackTrace()
+                        }
+                    }.start()
                 }
                 .addOnFailureListener {
                     Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
