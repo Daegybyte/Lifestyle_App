@@ -163,18 +163,35 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/boxWeather"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:orientation="vertical"
         android:visibility="gone"
         >
+
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/tvWeather"
+            android:layout_width="278dp"
+            android:layout_height="75dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/btn_weather" />
+
+
+        <ImageView
+            android:id="@+id/ivWeather"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_weather"
+            android:layout_weight="0"
+            android:contentDescription="@string/profile_picture"
+            android:outlineAmbientShadowColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/anon_profile_pic"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             />
 
         <Button
@@ -184,9 +201,13 @@
             android:text="@string/details"
             android:backgroundTint="@color/btn_bg"
             android:textColor="@color/btn_text"
+            android:layout_below="@+id/ivWeather"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
             />
 
-    </LinearLayout>
+
+    </RelativeLayout>
 
 
 

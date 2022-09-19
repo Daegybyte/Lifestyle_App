@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
@@ -17,6 +18,8 @@ import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.example.project.NetworkUtils.buildImageURLFromString
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -208,7 +211,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
 
         btnWeather.setOnClickListener{
-            val llo : LinearLayout = view.findViewById(R.id.boxWeather)
+            val llo : RelativeLayout = view.findViewById(R.id.boxWeather)
             llo.visibility = View.VISIBLE
 
             val appPerms = arrayOf(
@@ -222,23 +225,23 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
 
             mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
                 .addOnSuccessListener { location: Location? ->
-                    // getting the last known or current location
+//                     getting the last known or current location
                     mLatitude = location!!.latitude
                     mLongitude = location!!.longitude
-
-                    Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
-
-                    val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
-                    val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    //If there's an activity associated with this intent, launch it
-                    try {
-                        startActivity(weatherIntent)
-                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
-                    } catch (ex: ActivityNotFoundException) {
-                        Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
-                        //If there's no activity associated with this intent, display an error message
-                        Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
-                    }
+//
+//                    Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
+//
+//                    val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
+//                    val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//                    //If there's an activity associated with this intent, launch it
+//                    try {
+//                        startActivity(weatherIntent)
+//                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
+//                    } catch (ex: ActivityNotFoundException) {
+//                        Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+//                        //If there's no activity associated with this intent, display an error message
+//                        Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
+//                    }
 
                     val weatherDataURL = buildURLFromString(mLatitude, mLongitude)
                     var jsonWeatherData: String? = null
@@ -249,20 +252,23 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
                             jsonWeatherData = getDataFromURL(weatherDataURL!!)
                             Log.d("WEATHER", jsonWeatherData ?: "Didn't Get Data!!")
 
-//                            val gson = Gson()
-//                            val wd: WeatherData = gson.fromJson(
-//                                jsonWeatherData?: "", WeatherData::class.java
-//                            )
-
+                            // get data out of json object
                             val jsonObject = JSONObject(jsonWeatherData!!)
                             val cityName = jsonObject.getString("name")
                             Log.d("WEATHER", cityName)
-//                            Log.d("WEATHER", wd.name.name)
+                            val cityID = jsonObject.getInt("id")
+                            Log.d("WEATHER", cityID.toString())
 
                             val jsonSys = jsonObject.getJSONObject("sys")
                             val countryName = jsonSys.getString("country")
                             Log.d("WEATHER", countryName)
-//                            Log.d("WEATHER", wd.sys.toString())
+
+                            val jsonMain = jsonObject.getJSONObject("main")
+                            val temperature = jsonMain.getDouble("temp")
+                            val feelsLike = jsonMain.getDouble("feels_like")
+                            Log.d("WEATHER", (temperature - 273.15).toString())
+                            Log.d("WEATHER", (feelsLike - 273.15).toString())
+
 
                             val jsonWeatherArray = jsonObject.getJSONArray("weather")
                             val jsonWeather = jsonWeatherArray.getJSONObject(0)
@@ -273,12 +279,22 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
                             val weatherIcon = jsonWeather.getString("icon")
                             Log.d("WEATHER", weatherIcon)
 
+                            // add weather data to textview
+                            val tvWeather: TextView = view.findViewById(R.id.tvWeather)
+                            val outStr = "Current Weather for " + cityName + ", " + countryName + "\nTemp: " + (temperature - 273.15) + "\nFeels Like: " + (feelsLike - 273.15) + "\nWeather: " + weatherMain
+                            tvWeather.text = outStr
 
+                            // TODO - GET WEATHER IMAGE TO DISPLAY (MAY NEED TO EITHER STORE FILES LOCALLY OR FIND FONT AWESOME EQUIVALENTS
+                            // get the weather bitmap from the icon in the weather jsonObj
+                            val ivWeather: ImageView = view.findViewById(R.id.ivWeather)
+                            val imgURL = buildImageURLFromString(weatherIcon)
 
-
-                            Log.d("WEATHER", "Done")
-
-
+                            if (imgURL != null) {
+                                Glide.with(this)
+                                    .load(imgURL)
+                                    .into(ivWeather)
+                            }
+//                            Log.d("WEATHER", "Done")
                         }
                         catch (e: Exception){
                             e.printStackTrace()
