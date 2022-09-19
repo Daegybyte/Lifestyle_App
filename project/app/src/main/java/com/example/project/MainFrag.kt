@@ -50,6 +50,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
     private var mLatitude = 0.0
     private var mLongitude = 0.0
 
+    private var cityID: String? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -256,8 +258,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
                             val jsonObject = JSONObject(jsonWeatherData!!)
                             val cityName = jsonObject.getString("name")
                             Log.d("WEATHER", cityName)
-                            val cityID = jsonObject.getInt("id")
-                            Log.d("WEATHER", cityID.toString())
+                            cityID = jsonObject.getInt("id").toString()
+                            Log.d("WEATHER", cityID!!)
 
                             val jsonSys = jsonObject.getJSONObject("sys")
                             val countryName = jsonSys.getString("country")
@@ -304,6 +306,25 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
                 .addOnFailureListener {
                     Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
                 }
+        }
+
+        // Add functionality to the Details Weather button
+        val btnMoreWeather: Button = view.findViewById(R.id.btnMoreWeather)
+
+        btnMoreWeather.setOnClickListener {
+//            val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
+            val url = "https://openweathermap.org/city/$cityID"
+            val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            //If there's an activity associated with this intent, launch it
+            try {
+                startActivity(weatherIntent)
+                Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
+            } catch (ex: ActivityNotFoundException) {
+                Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+                //If there's no activity associated with this intent, display an error message
+                Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         return view

@@ -177,7 +177,7 @@
             android:layout_height="75dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:text="@string/btn_weather" />
+            android:text="@string/weather_loading" />
 
 
         <ImageView
