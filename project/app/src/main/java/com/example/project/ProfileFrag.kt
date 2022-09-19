@@ -268,6 +268,7 @@ class ProfileFrag : Fragment() {
             }
         }
 
+    // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
     private fun getAddress(lat: Double, lng: Double): String {
         val geocoder = Geocoder(context)
         val list = geocoder.getFromLocation(lat, lng, 1)
