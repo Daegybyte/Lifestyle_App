@@ -8,12 +8,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="frag_bg">#D5D5D5</color>
+    <color name="frag_bg">#E5E5E5</color>
     <color name="text">#000</color>
     <color name="label_text">#6F6F79</color>
     <color name="spinner_bg">#6F6F79</color>
     <color name="spinner_text">#FFF</color>
-    <color name="btn_bg">#303141</color>
+    <color name="btn_bg">#404181</color>
     <color name="btn_text">#FFFFFFFF</color>
 
 </resources>
