@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.example.project.NetworkUtils.buildURLFromString
 import com.example.project.NetworkUtils.getDataFromURL
 import org.json.JSONObject
+import kotlin.math.roundToInt
 
 
 @SuppressLint("MissingPermission")
@@ -283,7 +284,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener {
 
                             // add weather data to textview
                             val tvWeather: TextView = view.findViewById(R.id.tvWeather)
-                            val outStr = "Current Weather for " + cityName + ", " + countryName + "\nTemp: " + (temperature - 273.15) + "\nFeels Like: " + (feelsLike - 273.15) + "\nWeather: " + weatherMain
+                            val outStr = "Current Weather for " + cityName + ", " + countryName + "\nTemp: " + (temperature - 273.15).roundToInt() + " C\nFeels Like: " + (feelsLike - 273.15).roundToInt() + " C\nWeather: " + weatherMain
                             tvWeather.text = outStr
 
                             // TODO - GET WEATHER IMAGE TO DISPLAY (MAY NEED TO EITHER STORE FILES LOCALLY OR FIND FONT AWESOME EQUIVALENTS
