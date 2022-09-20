@@ -14,9 +14,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -292,6 +294,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
             R.id.btnWeather -> {
                 mBoxWeather!!.visibility = View.VISIBLE
+                mTvWeather!!.text = "Loading..."
 
                 val appPerms = arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -365,6 +368,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 //                            Log.d("WEATHER", "Done")
                             }
                             catch (e: Exception){
+                                mTvWeather!!.text = "Error Fetching Weather Data"
                                 e.printStackTrace()
                             }
                         }.start()

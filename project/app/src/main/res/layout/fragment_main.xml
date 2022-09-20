@@ -168,31 +168,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:visibility="gone"
+        android:layout_marginBottom="32dp"
+        android:visibility="invisible"
         >
 
         <TextView
             android:id="@+id/tvWeather"
             android:layout_width="278dp"
-            android:layout_height="75dp"
+            android:layout_height="278dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:textSize="24sp"
             android:text="@string/weather_loading" />
-
-
-        <ImageView
-            android:id="@+id/ivWeather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:contentDescription="@string/profile_picture"
-            android:outlineAmbientShadowColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/anon_profile_pic"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            />
 
         <Button
             android:id="@+id/btnMoreWeather"
@@ -201,14 +188,12 @@
             android:text="@string/details"
             android:backgroundTint="@color/btn_bg"
             android:textColor="@color/btn_text"
-            android:layout_below="@+id/ivWeather"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             />
 
-
     </RelativeLayout>
-
-
 
 </LinearLayout>
