@@ -32,6 +32,16 @@ class ChangeTextBehaviorTest2 {
         btnEditProfile.click()
     }
 
+    private fun check_btnEdit(): Boolean {
+        val btnEditProfile = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
+        return btnEditProfile.exists()
+    }
+
+    private fun scrollDown() {
+        device.swipe(0, 1000, 0, 0, 10)
+
+    }
+
     @Before
     fun startMainActivityFromHomeScreen() {
         // Initialize UiDevice instance
@@ -94,17 +104,18 @@ class ChangeTextBehaviorTest2 {
 
     @Test
     fun test_etFirstName() {
+        if(check_btnEdit()){
+            click_btnEdit()
+        }
+
         val name = "First"
-        //find the edit text by its resource id etFirstName
-        val btnEditProfile = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
-        btnEditProfile.click()
 
         val etFirstName = device.findObject(UiSelector().resourceId("$PACKAGE:id/etFirstName"))
         etFirstName.click()
         etFirstName.setText(name)
         device.pressBack()
         //scroll to the bottom of the screen
-        device.swipe(0, 1000, 0, 0, 10)
+        scrollDown()
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         btnSave.click()
     }
@@ -112,17 +123,18 @@ class ChangeTextBehaviorTest2 {
 
     @Test
     fun test_etLastName() {
+        if(check_btnEdit()){
+            click_btnEdit()
+        }
+
         val name = "Last"
-        //find the edit text by its resource id etFirstName
-        val btnEditProfile = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
-        btnEditProfile.click()
 
         val etLastName = device.findObject(UiSelector().resourceId("$PACKAGE:id/etLastName"))
         etLastName.click()
         etLastName.setText(name)
         device.pressBack()
         //scroll to the bottom of the screen
-        device.swipe(0, 1000, 0, 0, 10)
+        scrollDown()
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         btnSave.click()
     }
@@ -136,6 +148,7 @@ class ChangeTextBehaviorTest2 {
         device.swipe(0, 1000, 0, 0, 10)
 
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        scrollDown()
         btnSave.click()
     }
 
@@ -249,12 +262,21 @@ class ChangeTextBehaviorTest2 {
 
     @Test
     fun test_radio(){
-        click_btnEdit()
+
+        if(check_btnEdit()){
+            click_btnEdit()
+        }
         val radioM = device.findObject(UiSelector().resourceId("$PACKAGE:id/radio_male"))
         val radioF = device.findObject(UiSelector().resourceId("$PACKAGE:id/radio_female"))
 
-        radioF.click()
-        radioM.click()
+        for (i in 1..10) {
+            radioF.click()
+            radioM.click()
+        }
+
+        scrollDown()
+        val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        btnSave.click()
     }
 
 }
