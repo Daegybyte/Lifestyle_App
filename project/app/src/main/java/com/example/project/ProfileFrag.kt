@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -34,6 +33,27 @@ import java.util.*
 
 class ProfileFrag : Fragment() {
 
+    // All of the elements that will need to be accessed later
+    private var mEtFirstName: EditText? = null
+    private var mEtLastName: EditText? = null
+    private var mNpAge: NumberPicker? = null
+    private var mNpHeight: NumberPicker? = null
+    private var mNpWeight: NumberPicker? = null
+    private var mSpActivityLevel: Spinner? = null
+    private var mRgSex: RadioGroup? = null
+    private var mRbMale: RadioButton? = null
+    private var mRbFemale: RadioButton? = null
+    private var mTvLocation: TextView? = null
+    private var mIvProfilePic: ImageView? = null
+
+    private var mFirstName: String? = null
+    private var mLastName: String? = null
+    private var mAge: Int? = null
+    private var mHeight: Int? = null
+    private var mWeight: Int? = null
+    private var mActivityLevel: Int? = null
+    private var mIsMale: Boolean? = null
+    private var mLocation: String? = null
     private var mProfilePicPath : String? = null
 
     private var mLatitude = 0.0
@@ -48,39 +68,143 @@ class ProfileFrag : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        val npAge : NumberPicker = view.findViewById(R.id.np_age)
-        npAge.minValue = 12
-        npAge.maxValue = 99
-        npAge.value = 25
-        npAge.wrapSelectorWheel = false
+        // Getting all of the elements into the member variables
+        mEtFirstName = view.findViewById(R.id.etFirstName)
+        mEtLastName = view.findViewById(R.id.etLastName)
+        mNpAge = view.findViewById(R.id.np_age)
+        mNpHeight = view.findViewById(R.id.np_height)
+        mNpWeight = view.findViewById(R.id.np_weight)
+        mSpActivityLevel = view.findViewById(R.id.spActivityLevel)
+        mRgSex = view.findViewById(R.id.radio_sex)
+        mRbMale = view.findViewById(R.id.radio_male)
+        mRbFemale = view.findViewById(R.id.radio_female)
+        mTvLocation = view.findViewById(R.id.tvLocation)
+        mIvProfilePic = view.findViewById(R.id.ivProfilePic)
 
-        val npHeight : NumberPicker = view.findViewById(R.id.np_height)
-        npHeight.minValue = 140
-        npHeight.maxValue = 220
-        npHeight.value = 160
-        npHeight.wrapSelectorWheel = false
+        // Populate the age NumberPicker
+        mNpAge!!.minValue = 12
+        mNpAge!!.maxValue = 99
+        mNpAge!!.value = 25
+        mNpAge!!.wrapSelectorWheel = false
 
-        val npWeight : NumberPicker = view.findViewById(R.id.np_weight)
-        npWeight.minValue = 45
-        npWeight.maxValue = 150
-        npWeight.value = 75
-        npWeight.wrapSelectorWheel = false
+        // Populate the height NumberPicker
+        mNpHeight!!.minValue = 140
+        mNpHeight!!.maxValue = 220
+        mNpHeight!!.value = 160
+        mNpHeight!!.wrapSelectorWheel = false
 
-        val spActivityLvl: Spinner = view.findViewById(R.id.spActivityLevel)
+        // Populate the weight NumberPicker
+        mNpWeight!!.minValue = 45
+        mNpWeight!!.maxValue = 150
+        mNpWeight!!.value = 75
+        mNpWeight!!.wrapSelectorWheel = false
+
+        // Populate the activity level spinner
         val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
         val arrayAdapter: ArrayAdapter<Any?> = ArrayAdapter<Any?>(view.context, R.layout.spinner_list_profile, activityLevels)
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_profile)
-        spActivityLvl.adapter = arrayAdapter
+        mSpActivityLevel!!.adapter = arrayAdapter
 
-        val rgSex: RadioGroup = view.findViewById(R.id.radio_sex)
+        // Get the SharedPreferences to read from/store in
+        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
 
-        // TODO
-        // get the location TextView
-        val tvLocation: TextView = view.findViewById(R.id.tvLocation)
+        // Check to see if there is user info in the SharedPreferences
+        if (sharedPref.contains("hasProfile")) {
+            Log.d("sharedPref", "sharedPref was found")
+            // Get the name
+            mFirstName = sharedPref.getString("firstName", "")
+            mLastName = sharedPref.getString("lastName", "")
+            // Set the name
+//            val etFirstName: EditText = view.findViewById(R.id.etFirstName)
+//            val etLastName: EditText = view.findViewById(R.id.etLastName)
+            mEtFirstName!!.setText(mFirstName)
+            mEtLastName!!.setText(mLastName)
+            // Get the age
+            mAge = sharedPref.getInt("age", mNpAge!!.value)
+            //set the age
+            mNpAge!!.value = mAge as Int
 
-        // get the location button
+            // Get the height
+            mHeight = sharedPref.getInt("height", mNpHeight!!.value)
+            //set the height
+            mNpHeight!!.value = mHeight as Int
+
+            // Get the weight
+            mWeight = sharedPref.getInt("weight", mNpWeight!!.value)
+            //set the weight
+            mNpWeight!!.value = mWeight as Int
+
+            // Get the activity level
+            mActivityLevel = sharedPref.getInt("activityLevel", 2)
+            //set the activity level
+            mSpActivityLevel!!.setSelection(mActivityLevel!!)
+
+            // Get the gender
+            mIsMale = sharedPref.getBoolean("isMale", true)
+            mRbMale!!.isChecked = mIsMale as Boolean
+            mRbFemale!!.isChecked = !mIsMale!!
+
+            // Get the location
+            mLocation = sharedPref.getString("location", "Location")
+            mTvLocation!!.text = mLocation
+
+            // Get the profile pic
+            mProfilePicPath = sharedPref.getString("profilePic", "")
+            val bMap = BitmapFactory.decodeFile(mProfilePicPath)
+            mIvProfilePic!!.setImageBitmap(bMap)
+        }
+
+        // Check to see if there is user info in the savedInstanceState
+        // If there is then this should overwrite the info loaded from the SharedPreferences
+//        if (savedInstanceState != null) {
+//            if (savedInstanceState.getString("firstName") != mFirstName) {
+//                mEtFirstName!!.setText(savedInstanceState.getString("firstName"))
+//            }
+////            mEtFirstName!!.setText(savedInstanceState.getString("firstName", ""))
+//            if (savedInstanceState.getString("lastName") != mLastName) {
+//                mEtLastName!!.setText(savedInstanceState.getString("lastName"))
+//            }
+//            if (savedInstanceState.getInt("age") != mAge) {
+//                mNpAge!!.value = savedInstanceState.getInt("age")
+//            }
+//            if (savedInstanceState.getInt("height") != mHeight) {
+//                mNpHeight!!.value = savedInstanceState.getInt("height")
+//            }
+//            if (savedInstanceState.getInt("weight") != mWeight) {
+//                mNpWeight!!.value = savedInstanceState.getInt("weight")
+//            }
+//            if (savedInstanceState.getInt("activityLevel") != mActivityLevel) {
+//                mSpActivityLevel!!.setSelection(savedInstanceState.getInt("activityLevel"))
+//            }
+//            if (savedInstanceState.getBoolean("isMale") != mIsMale) {
+//                mRbMale!!.isChecked = savedInstanceState.getBoolean("isMale", true)
+//                mRbFemale!!.isChecked = !savedInstanceState.getBoolean("isMale", true)
+//            }
+//            if (savedInstanceState.getString("location") != mLocation) {
+//                mTvLocation!!.text = savedInstanceState.getString("location")
+//            }
+//            if (savedInstanceState.getString("profilePic") != mProfilePicPath) {
+//                val bMap = BitmapFactory.decodeFile(savedInstanceState.getString("profilePic"))
+//                mIvProfilePic!!.setImageBitmap(bMap)
+//            }
+//        }
+
+//        // Get all the profile info values
+//        // These will keep the values from before any changes were made
+//        mFirstName = mEtFirstName!!.text.toString()
+//        mLastName = mEtLastName!!.text.toString()
+//        mAge = mNpAge!!.value
+//        mHeight = mNpHeight!!.value
+//        mWeight = mNpWeight!!.value
+//        mActivityLevel = mSpActivityLevel!!.selectedItemPosition
+//        // get selected radio button from radioGroup
+//        val radioButton: RadioButton = view.findViewById(mRgSex!!.checkedRadioButtonId)
+//        // store a boolean (for less space + ease) representing whether they are male or not
+//        mIsMale = radioButton.text.toString() == "Male"
+//        mLocation = mTvLocation!!.text.toString()
+
+        // Adding functionality to the location button
         val btnLocation: Button = view.findViewById(R.id.btnLocation)
-        // add the click functionality
         btnLocation.setOnClickListener {
 
             // get current GPS location
@@ -90,7 +214,7 @@ class ProfileFrag : Fragment() {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
-            Log.d("MainFrag", "onViewCreated: appPerms: $appPerms")
+            Log.d("ProfileFrag", "onViewCreated: appPerms: $appPerms")
             activityResultLauncher.launch(appPerms)
 
             val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
@@ -106,7 +230,7 @@ class ProfileFrag : Fragment() {
 
                     val address = getAddress(mLatitude, mLongitude)
 
-                    tvLocation.text = address
+                    mTvLocation!!.text = address
                 }
                 .addOnFailureListener {
                     Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
@@ -114,57 +238,9 @@ class ProfileFrag : Fragment() {
 
         }
 
-        // Get the SharedPreferences to read from/store in
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-
-        // Check to see if there is user info in the SharedPreferences
-        if (sharedPref != null) {
-            // Get the name
-            val firstName = sharedPref.getString("firstName", "")
-            val lastName = sharedPref.getString("lastName", "")
-            // Set the name
-            val etFirstName: EditText = view.findViewById(R.id.etFirstName)
-            val etLastName: EditText = view.findViewById(R.id.etLastName)
-            etFirstName.setText(firstName)
-            etLastName.setText(lastName)
-            // Get the age
-            val age = sharedPref.getInt("age", npAge.value)
-            //set the age
-            npAge.value = age
-
-            // Get the height
-            val height = sharedPref.getInt("height", npHeight.value)
-            //set the height
-            npHeight.value = height
-
-            // Get the weight
-            val weight = sharedPref.getInt("weight", npWeight.value)
-            //set the weight
-            npWeight.value = weight
-
-            // Get the activity level
-            val activityLevelIndex = sharedPref.getInt("activityLevel", 2)
-            //set the activity level
-            spActivityLvl.setSelection(activityLevelIndex)
-
-            // Get the gender
-            val radioMale: RadioButton = view.findViewById(R.id.radio_male)
-            radioMale.isChecked = sharedPref.getBoolean("isMale", true)
-            val radioFemale: RadioButton = view.findViewById(R.id.radio_female)
-            radioFemale.isChecked = !sharedPref.getBoolean("isMale", true)
-
-            // Get the location
-            tvLocation.text = sharedPref.getString("location", "Location")
-
-            // Get the profile pic
-            val profilePicView : ImageView = view.findViewById(R.id.profilePic)
-            mProfilePicPath = sharedPref.getString("profilePic", "")
-            val bMap = BitmapFactory.decodeFile(mProfilePicPath)
-            profilePicView.setImageBitmap(bMap)
-
-        }
-
+        // get the picture button
         val picButton : Button = view.findViewById(R.id.btnPic)
+        // add functionality to the picture button to open camera
         picButton.setOnClickListener{
             val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
@@ -179,19 +255,15 @@ class ProfileFrag : Fragment() {
         val saveButton: Button = view.findViewById(R.id.btnSave)
         saveButton.setOnClickListener{
             with (sharedPref!!.edit()) {
-                val etFirstName: EditText = view.findViewById(R.id.etFirstName)
-                putString("firstName", etFirstName.text.toString())
-                val etLastName: EditText = view.findViewById(R.id.etLastName)
-                putString("lastName", etLastName.text.toString())
-                putInt("age", npAge.value)
-                putInt("height", npHeight.value)
-                putInt("weight", npWeight.value)
-                putInt("activityLevel", spActivityLvl.selectedItemPosition)
-                // get selected radio button from radioGroup
-                val radioButton: RadioButton = view.findViewById(rgSex.checkedRadioButtonId)
+                putString("firstName", mEtFirstName!!.text.toString())
+                putString("lastName", mEtLastName!!.text.toString())
+                putInt("age", mNpAge!!.value)
+                putInt("height", mNpHeight!!.value)
+                putInt("weight", mNpWeight!!.value)
+                putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
                 // store a boolean (for less space + ease) representing whether they are male or not
-                putBoolean("isMale", radioButton.text.toString() == "Male")
-                putString("location", tvLocation.text.toString())
+                putBoolean("isMale", mRbMale!!.isChecked)
+                putString("location", mTvLocation!!.text.toString())
                 putString("profilePic", mProfilePicPath)
 
                 putBoolean("hasProfile", true)
@@ -204,15 +276,14 @@ class ProfileFrag : Fragment() {
             transaction.commit()
         }
 
-
-
         return view
     }
 
+    // to be run when the add profile picture button is clicked
     private var cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
 
-            val ivProfilePic : ImageView = requireView().findViewById(R.id.profilePic)
+            val ivProfilePic : ImageView = requireView().findViewById(R.id.ivProfilePic)
 
             val extras = result.data!!.extras
             val mProfilePic = extras!!["data"] as Bitmap?
@@ -262,10 +333,6 @@ class ProfileFrag : Fragment() {
             for(b in result.values) {
                 allAreGranted = allAreGranted && b
             }
-
-            if(allAreGranted) {
-
-            }
         }
 
     // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
@@ -275,5 +342,21 @@ class ProfileFrag : Fragment() {
 //        return list[0].getAddressLine(0)
         return list[0].locality + ", " + list[0].adminArea + ", " + list[0].countryName
     }
+
+    // This will save all of the current state
+    // Any checking to see if the state actually changed will be done when loading the data
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//
+//        outState.putString("firstName", mEtFirstName!!.text.toString())
+//        outState.putString("lastName", mEtLastName!!.text.toString())
+//        outState.putInt("age", mNpAge!!.value)
+//        outState.putInt("height", mNpHeight!!.value)
+//        outState.putInt("weight", mNpWeight!!.value)
+//        outState.putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
+//        outState.putBoolean("isMale", mRbMale!!.isChecked)
+//        outState.putString("location", mTvLocation!!.text.toString())
+//        outState.putString("profilePic", mProfilePicPath)
+//    }
 
 }

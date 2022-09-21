@@ -21,7 +21,7 @@
     <string name="sex">Sex</string>
     <string name="radioMale">Male</string>
     <string name="radioFemale">Female</string>
-    <string name="EtLocation">Location</string>
+    <string name="EtLocation">Click to get location -></string>
     <string name="font_awesome_mapmarker">\uf3c5</string>
     <string name="font_awesome_camera">\uf030</string>
     <string name="btnSave">SAVE</string>

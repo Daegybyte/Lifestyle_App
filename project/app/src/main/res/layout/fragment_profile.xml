@@ -62,11 +62,11 @@
                 android:gravity="center_horizontal"
                 android:textColor="@color/label_text"
                 />
+
             <NumberPicker
                 android:id="@+id/np_age"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -232,22 +232,21 @@
         >
 
         <ImageView
-            android:id="@+id/profilePic"
+            android:id="@+id/ivProfilePic"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:contentDescription="@string/profile_picture"
-            android:outlineAmbientShadowColor="@color/black"
-            android:src="@drawable/anon_profile_pic"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:contentDescription="@string/profile_picture"
+            android:outlineAmbientShadowColor="@color/black"
             android:outlineProvider="bounds"
-            />
+            android:src="@drawable/anon_profile_pic" />
 
         <Button
             android:id="@+id/btnPic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profilePic"
+            android:layout_below="@+id/ivProfilePic"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/btn_bg"

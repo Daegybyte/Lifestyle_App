@@ -82,7 +82,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
 
         // Load the user data and populate onto the Fragment
-        if (mSharedPref != null) {
+        else {
             // Get the name
             val firstName = mSharedPref!!.getString("firstName", "")
             val lastName = mSharedPref!!.getString("lastName", "")
@@ -307,7 +307,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
                 mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
                     .addOnSuccessListener { location: Location? ->
-//                     getting the last known or current location
+                        // getting the last known or current location
                         mLatitude = location!!.latitude
                         mLongitude = location.longitude
 //
