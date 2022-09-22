@@ -37,6 +37,15 @@ Fri Sep 16
 
 - UI: Updated layout xml files to more closely match colours in wireframes. Until now functionality took precedence over colour palette.
 
+Sat Sep 17
+
+- BUG: The user has to click the location button twice in the ProfileFrag. Once to grant location permissions, and then again to get their actual location
+
 Tue Sep 20
 
 - UI: Changed font size of weather details and the text reads 'Loading...' during API calls
+
+Wed Sep 21
+
+- BUG: Profile can be save with incomplete profile information
+- FIX: Added check before saving

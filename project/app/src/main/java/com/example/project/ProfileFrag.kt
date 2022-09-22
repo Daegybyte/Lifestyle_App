@@ -254,26 +254,40 @@ class ProfileFrag : Fragment() {
         // Adding functionality to the save button
         val saveButton: Button = view.findViewById(R.id.btnSave)
         saveButton.setOnClickListener{
-            with (sharedPref!!.edit()) {
-                putString("firstName", mEtFirstName!!.text.toString())
-                putString("lastName", mEtLastName!!.text.toString())
-                putInt("age", mNpAge!!.value)
-                putInt("height", mNpHeight!!.value)
-                putInt("weight", mNpWeight!!.value)
-                putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
-                // store a boolean (for less space + ease) representing whether they are male or not
-                putBoolean("isMale", mRbMale!!.isChecked)
-                putString("location", mTvLocation!!.text.toString())
-                putString("profilePic", mProfilePicPath)
+            if (mTvLocation?.text.toString() != ""
+                && mEtFirstName?.text.toString() != ""
+                && mEtLastName?.text.toString() != ""
+                && mProfilePicPath != null) {
 
-                putBoolean("hasProfile", true)
-                apply()
+//                Toast.makeText(activity,
+//                    "'" + mTvLocation?.text.toString() + "'", Toast.LENGTH_LONG).show()
+
+                with(sharedPref!!.edit()) {
+                    putString("firstName", mEtFirstName!!.text.toString())
+                    putString("lastName", mEtLastName!!.text.toString())
+                    putInt("age", mNpAge!!.value)
+                    putInt("height", mNpHeight!!.value)
+                    putInt("weight", mNpWeight!!.value)
+                    putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
+                    // store a boolean (for less space + ease) representing whether they are male or not
+                    putBoolean("isMale", mRbMale!!.isChecked)
+                    putString("location", mTvLocation!!.text.toString())
+                    putString("profilePic", mProfilePicPath)
+
+                    putBoolean("hasProfile", true)
+                    apply()
+                }
+
+                val transaction = parentFragmentManager.beginTransaction()
+                transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
+                transaction.addToBackStack(null)
+                transaction.commit()
+            }
+            else {
+                Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(activity, "'" + mTvLocation?.text.toString() + "' '" + mEtFirstName?.text.toString() + "' '" + mEtLastName?.text.toString() + "' '" + (mProfilePicPath != null) + "'", Toast.LENGTH_SHORT).show()
             }
 
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
-            transaction.addToBackStack(null)
-            transaction.commit()
         }
 
         return view
