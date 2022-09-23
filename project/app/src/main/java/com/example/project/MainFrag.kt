@@ -293,8 +293,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     }
             }
             R.id.btnWeather -> {
-                mBoxWeather!!.visibility = View.VISIBLE
-                mTvWeather!!.text = "Loading..."
 
                 val appPerms = arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -304,12 +302,16 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
                 val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
                 val cancellationTokenSource = CancellationTokenSource()
-
+                
                 mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
                     .addOnSuccessListener { location: Location? ->
                         // getting the last known or current location
                         mLatitude = location!!.latitude
                         mLongitude = location.longitude
+
+                        // make weather information visible
+                        mBoxWeather!!.visibility = View.VISIBLE
+                        mTvWeather!!.text = "Loading..."
 //
 //                    Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
 //

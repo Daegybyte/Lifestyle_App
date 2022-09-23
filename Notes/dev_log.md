@@ -47,5 +47,7 @@ Tue Sep 20
 
 Wed Sep 21
 
-- BUG: Profile can be save with incomplete profile information
+- BUG: Profile can be saved with incomplete profile information
 - FIX: Added check before saving
+- BUG: Weather info box displays even while asking for location permissions
+- FIX: Moved code to make weather info visible to inside onSuccessListener
