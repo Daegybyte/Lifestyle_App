@@ -6,6 +6,7 @@ import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
@@ -31,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ProfileFrag : Fragment() {
+class ProfileFrag : Fragment(), View.OnClickListener {
 
     // All of the elements that will need to be accessed later
     private var mEtFirstName: EditText? = null
@@ -46,6 +47,7 @@ class ProfileFrag : Fragment() {
     private var mTvLocation: TextView? = null
     private var mIvProfilePic: ImageView? = null
 
+    // All of the values from/for those elements
     private var mFirstName: String? = null
     private var mLastName: String? = null
     private var mAge: Int? = null
@@ -56,8 +58,13 @@ class ProfileFrag : Fragment() {
     private var mLocation: String? = null
     private var mProfilePicPath : String? = null
 
+    // These will be used to get the phone's location
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var mLatitude = 0.0
     private var mLongitude = 0.0
+
+    // A SharedPreferences instance to be used in many places to store and load user info
+    private var mSharedPref: SharedPreferences? = null
 
     @SuppressLint("MissingPermission")
     override fun onCreateView(
@@ -106,53 +113,54 @@ class ProfileFrag : Fragment() {
         mSpActivityLevel!!.adapter = arrayAdapter
 
         // Get the SharedPreferences to read from/store in
-        val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
 
         // Check to see if there is user info in the SharedPreferences
-        if (sharedPref.contains("hasProfile")) {
-            Log.d("sharedPref", "sharedPref was found")
-            // Get the name
-            mFirstName = sharedPref.getString("firstName", "")
-            mLastName = sharedPref.getString("lastName", "")
-            // Set the name
-//            val etFirstName: EditText = view.findViewById(R.id.etFirstName)
-//            val etLastName: EditText = view.findViewById(R.id.etLastName)
+        if (mSharedPref!!.contains("hasProfile")) {
+
+            // Get/set the name
+            mFirstName = mSharedPref!!.getString("firstName", "")
+            mLastName = mSharedPref!!.getString("lastName", "")
             mEtFirstName!!.setText(mFirstName)
             mEtLastName!!.setText(mLastName)
-            // Get the age
-            mAge = sharedPref.getInt("age", mNpAge!!.value)
-            //set the age
+
+            // Get/set the age
+            mAge = mSharedPref!!.getInt("age", mNpAge!!.value)
             mNpAge!!.value = mAge as Int
 
-            // Get the height
-            mHeight = sharedPref.getInt("height", mNpHeight!!.value)
-            //set the height
+            // Get/set the height
+            mHeight = mSharedPref!!.getInt("height", mNpHeight!!.value)
             mNpHeight!!.value = mHeight as Int
 
-            // Get the weight
-            mWeight = sharedPref.getInt("weight", mNpWeight!!.value)
-            //set the weight
+            // Get/set the weight
+            mWeight = mSharedPref!!.getInt("weight", mNpWeight!!.value)
             mNpWeight!!.value = mWeight as Int
 
-            // Get the activity level
-            mActivityLevel = sharedPref.getInt("activityLevel", 2)
-            //set the activity level
+            // Get/set the activity level
+            mActivityLevel = mSharedPref!!.getInt("activityLevel", 2)
             mSpActivityLevel!!.setSelection(mActivityLevel!!)
 
-            // Get the gender
-            mIsMale = sharedPref.getBoolean("isMale", true)
+            // Get/set the sex
+            mIsMale = mSharedPref!!.getBoolean("isMale", true)
             mRbMale!!.isChecked = mIsMale as Boolean
             mRbFemale!!.isChecked = !mIsMale!!
 
-            // Get the location
-            mLocation = sharedPref.getString("location", "Location")
+            // Get/set the location
+            mLocation = mSharedPref!!.getString("location", "Location")
             mTvLocation!!.text = mLocation
 
-            // Get the profile pic
-            mProfilePicPath = sharedPref.getString("profilePic", "")
+            // Get/set the profile pic
+            mProfilePicPath = mSharedPref!!.getString("profilePic", "")
             val bMap = BitmapFactory.decodeFile(mProfilePicPath)
             mIvProfilePic!!.setImageBitmap(bMap)
         }
+
+        /**
+         * The code below was an attempt to use savedInstanceState to store and load user-entered
+         * information that would have otherwise been lost upon rotation or other disruption
+         * It worked most of the time but occasionally caused a crash so we commented it out and
+         * used ConfigChanges in the AndroidManifest.xml instead
+         */
 
         // Check to see if there is user info in the savedInstanceState
         // If there is then this should overwrite the info loaded from the SharedPreferences
@@ -189,108 +197,127 @@ class ProfileFrag : Fragment() {
 //            }
 //        }
 
-//        // Get all the profile info values
-//        // These will keep the values from before any changes were made
-//        mFirstName = mEtFirstName!!.text.toString()
-//        mLastName = mEtLastName!!.text.toString()
-//        mAge = mNpAge!!.value
-//        mHeight = mNpHeight!!.value
-//        mWeight = mNpWeight!!.value
-//        mActivityLevel = mSpActivityLevel!!.selectedItemPosition
-//        // get selected radio button from radioGroup
-//        val radioButton: RadioButton = view.findViewById(mRgSex!!.checkedRadioButtonId)
-//        // store a boolean (for less space + ease) representing whether they are male or not
-//        mIsMale = radioButton.text.toString() == "Male"
-//        mLocation = mTvLocation!!.text.toString()
+        // Get the FusedLocationProviderClient for GPS
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
 
         // Adding functionality to the location button
         val btnLocation: Button = view.findViewById(R.id.btnLocation)
-        btnLocation.setOnClickListener {
+        btnLocation.setOnClickListener(this)
 
-            // get current GPS location
-            val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(view.context)
-
-            val appPerms = arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            Log.d("ProfileFrag", "onViewCreated: appPerms: $appPerms")
-            activityResultLauncher.launch(appPerms)
-
-            val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-            val cancellationTokenSource = CancellationTokenSource()
-
-            fusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-                .addOnSuccessListener { location: Location? ->
-                    // getting the last known or current location
-                    mLatitude = location!!.latitude
-                    mLongitude = location.longitude
-
-                    Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
-
-                    val address = getAddress(mLatitude, mLongitude)
-
-                    mTvLocation!!.text = address
-                }
-                .addOnFailureListener {
-                    Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
-                }
-
-        }
-
-        // get the picture button
+        // Adding functionality to the picture button
         val picButton : Button = view.findViewById(R.id.btnPic)
-        // add functionality to the picture button to open camera
-        picButton.setOnClickListener{
-            val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-            try{
-                cameraLauncher.launch(camIntent)
-            }catch(ex: ActivityNotFoundException){
-                Toast.makeText(activity, "Error Opening Camera", Toast.LENGTH_SHORT).show()
-            }
-        }
+        picButton.setOnClickListener(this)
 
         // Adding functionality to the save button
         val saveButton: Button = view.findViewById(R.id.btnSave)
-        saveButton.setOnClickListener{
-            if (mTvLocation?.text.toString() != ""
-                && mEtFirstName?.text.toString() != ""
-                && mEtLastName?.text.toString() != ""
-                && mProfilePicPath != null) {
-
-//                Toast.makeText(activity,
-//                    "'" + mTvLocation?.text.toString() + "'", Toast.LENGTH_LONG).show()
-
-                with(sharedPref!!.edit()) {
-                    putString("firstName", mEtFirstName!!.text.toString())
-                    putString("lastName", mEtLastName!!.text.toString())
-                    putInt("age", mNpAge!!.value)
-                    putInt("height", mNpHeight!!.value)
-                    putInt("weight", mNpWeight!!.value)
-                    putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
-                    // store a boolean (for less space + ease) representing whether they are male or not
-                    putBoolean("isMale", mRbMale!!.isChecked)
-                    putString("location", mTvLocation!!.text.toString())
-                    putString("profilePic", mProfilePicPath)
-
-                    putBoolean("hasProfile", true)
-                    apply()
-                }
-
-                val transaction = parentFragmentManager.beginTransaction()
-                transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
-                transaction.addToBackStack(null)
-                transaction.commit()
-            }
-            else {
-                Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
-//                Toast.makeText(activity, "'" + mTvLocation?.text.toString() + "' '" + mEtFirstName?.text.toString() + "' '" + mEtLastName?.text.toString() + "' '" + (mProfilePicPath != null) + "'", Toast.LENGTH_SHORT).show()
-            }
-
-        }
+        saveButton.setOnClickListener(this)
 
         return view
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onClick(view: View) {
+        when(view.id) {
+            R.id.btnLocation -> {
+                //get current GPS location
+                val fusedLocationClient: FusedLocationProviderClient =
+                    LocationServices.getFusedLocationProviderClient(view.context)
+
+                val appPerms = arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+                Log.d("ProfileFrag", "onViewCreated: appPerms: $appPerms")
+                activityResultLauncher.launch(appPerms)
+
+                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+                val cancellationTokenSource = CancellationTokenSource()
+
+                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+                    .addOnSuccessListener { location: Location? ->
+                        // getting the last known or current location
+                        mLatitude = location!!.latitude
+                        mLongitude = location.longitude
+
+                        Toast.makeText(
+                            activity,
+                            "Latitude:$mLatitude\nLongitude:$mLongitude",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        val address = getAddress(mLatitude, mLongitude)
+
+                        mTvLocation!!.text = address
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(
+                            activity,
+                            "Failed on getting current location",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
+
+            R.id.btnPic -> {
+                val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+                try{
+                    cameraLauncher.launch(camIntent)
+                }catch(ex: ActivityNotFoundException){
+                    Toast.makeText(activity, "Error Opening Camera", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            R.id.btnSave -> {
+                if (mTvLocation?.text.toString() != ""
+                    && mEtFirstName?.text.toString() != ""
+                    && mEtLastName?.text.toString() != ""
+                    && mProfilePicPath != null) {
+
+
+                    with(mSharedPref!!.edit()) {
+                        putString("firstName", mEtFirstName!!.text.toString())
+                        putString("lastName", mEtLastName!!.text.toString())
+                        putInt("age", mNpAge!!.value)
+                        putInt("height", mNpHeight!!.value)
+                        putInt("weight", mNpWeight!!.value)
+                        putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
+                        // store a boolean (for less space + ease) representing whether they are male or not
+                        putBoolean("isMale", mRbMale!!.isChecked)
+                        putString("location", mTvLocation!!.text.toString())
+                        putString("profilePic", mProfilePicPath)
+
+                        putBoolean("hasProfile", true)
+                        apply()
+                    }
+
+                    val transaction = parentFragmentManager.beginTransaction()
+                    transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                }
+                else {
+                    Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
+    private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            var allAreGranted = true
+            for(b in result.values) {
+                allAreGranted = allAreGranted && b
+            }
+        }
+
+    // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
+    private fun getAddress(lat: Double, lng: Double): String {
+        val geocoder = Geocoder(context)
+        val list = geocoder.getFromLocation(lat, lng, 1)
+        return list[0].locality + ", " + list[0].adminArea + ", " + list[0].countryName
     }
 
     // to be run when the add profile picture button is clicked
@@ -338,24 +365,6 @@ class ProfileFrag : Fragment() {
             val state = Environment.getExternalStorageState()
             return Environment.MEDIA_MOUNTED == state
         }
-
-    // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
-    private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            var allAreGranted = true
-            for(b in result.values) {
-                allAreGranted = allAreGranted && b
-            }
-        }
-
-    // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
-    private fun getAddress(lat: Double, lng: Double): String {
-        val geocoder = Geocoder(context)
-        val list = geocoder.getFromLocation(lat, lng, 1)
-//        return list[0].getAddressLine(0)
-        return list[0].locality + ", " + list[0].adminArea + ", " + list[0].countryName
-    }
 
     // This will save all of the current state
     // Any checking to see if the state actually changed will be done when loading the data
