@@ -1,16 +1,17 @@
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.Before
 import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.*
-import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import org.hamcrest.CoreMatchers.notNullValue
+import org.junit.Assert.assertNotEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
@@ -18,8 +19,6 @@ import java.lang.Thread.sleep
 
 private const val PACKAGE = "com.example.project"
 private const val LAUNCH_TIMEOUT = 5000L
-private const val STRING_TO_BE_TYPED = "UiAutomator"
-
 
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 30)
@@ -28,12 +27,14 @@ class ChangeTextBehaviorTest2 {
     private lateinit var device: UiDevice
 
     private fun click_btnEdit() {
-        val btnEditProfile = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
+        val btnEditProfile =
+            device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
         btnEditProfile.click()
     }
 
     private fun check_btnEdit(): Boolean {
-        val btnEditProfile = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
+        val btnEditProfile =
+            device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
         return btnEditProfile.exists()
     }
 
@@ -104,7 +105,7 @@ class ChangeTextBehaviorTest2 {
 
     @Test
     fun test_etFirstName() {
-        if(check_btnEdit()){
+        if (check_btnEdit()) {
             click_btnEdit()
         }
 
@@ -123,7 +124,7 @@ class ChangeTextBehaviorTest2 {
 
     @Test
     fun test_etLastName() {
-        if(check_btnEdit()){
+        if (check_btnEdit()) {
             click_btnEdit()
         }
 
@@ -141,7 +142,8 @@ class ChangeTextBehaviorTest2 {
 
     @Test
     fun test_btnSave() {
-        val btnEditProfile = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
+        val btnEditProfile =
+            device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
         btnEditProfile.click()
 
         //scroll to the bottom of the screen
@@ -261,9 +263,9 @@ class ChangeTextBehaviorTest2 {
     }
 
     @Test
-    fun test_radio(){
+    fun test_radio() {
 
-        if(check_btnEdit()){
+        if (check_btnEdit()) {
             click_btnEdit()
         }
         val radioM = device.findObject(UiSelector().resourceId("$PACKAGE:id/radio_male"))
@@ -278,5 +280,102 @@ class ChangeTextBehaviorTest2 {
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         btnSave.click()
     }
+
+    @Test
+    fun test_profile_activity_level_extreme() {
+        click_btnEdit()
+        val x = "Extreme"
+        val spinner = device.findObject(UiSelector().className("android.widget.Spinner"))
+        //from the spinner, select the Extreme option
+        spinner.click()
+        device.findObject(UiSelector().textContains(x)).click()
+
+        scrollDown()
+        val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        btnSave.click()
+
+        //check that the text field is set to Extreme
+        val spActivityLevel = device.findObject(
+            UiSelector().resourceId("$PACKAGE:id/tvActivityLevel")
+                .className("android.widget.TextView")
+        )
+        assertTrue(spActivityLevel.text.contains(x))
+    }
+
+    @Test
+    fun test_profile_activity_level_moderate() {
+        click_btnEdit()
+        val x = "Moderate"
+        val spinner = device.findObject(UiSelector().className("android.widget.Spinner"))
+        //from the spinner, select the Moderate option
+        spinner.click()
+        device.findObject(UiSelector().textContains(x)).click()
+
+        scrollDown()
+        val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        btnSave.click()
+
+        //check that the text field is set to Moderate
+        val spActivityLevel = device.findObject(
+            UiSelector().resourceId("$PACKAGE:id/tvActivityLevel")
+                .className("android.widget.TextView")
+        )
+        assertTrue(spActivityLevel.text.contains(x))
+    }
+    @Test
+    fun test_profile_activity_level_sedentary() {
+        click_btnEdit()
+        val x = "Sedentary"
+        val spinner = device.findObject(UiSelector().className("android.widget.Spinner"))
+        //from the spinner, select the Mild option
+        spinner.click()
+        device.findObject(UiSelector().textContains(x)).click()
+
+        scrollDown()
+        val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        btnSave.click()
+
+        //check that the text field is set to Mild
+        val spActivityLevel = device.findObject(
+            UiSelector().resourceId("$PACKAGE:id/tvActivityLevel")
+                .className("android.widget.TextView")
+        )
+        assertTrue(spActivityLevel.text.contains(x))
+    }
+    @Test
+    fun test_profile_activity_level_mild() {
+        click_btnEdit()
+        val x = "Mild"
+        val spinner = device.findObject(UiSelector().className("android.widget.Spinner"))
+        //from the spinner, select the Light option
+        spinner.click()
+        device.findObject(UiSelector().textContains(x)).click()
+
+        scrollDown()
+        val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        btnSave.click()
+
+        //check that the text field is set to Light
+        val spActivityLevel = device.findObject(
+            UiSelector().resourceId("$PACKAGE:id/tvActivityLevel")
+                .className("android.widget.TextView")
+        )
+        assertTrue(spActivityLevel.text.contains(x))
+    }
+
+    @Test
+    //test the number picker
+    fun test_np_age() {
+        click_btnEdit()
+        //select the number picker class
+        val npAge = device.findObject(UiSelector().className("android.widget.NumberPicker"))
+        //scroll down to the number picker
+        npAge.swipeDown(10)
+        scrollDown()
+        val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
+        btnSave.click()
+        
+    }
+
 
 }
