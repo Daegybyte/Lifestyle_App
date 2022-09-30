@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -32,6 +33,12 @@ import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
 class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickListener {
+
+    /**
+     * This is new
+     */
+    // getting the SharedViewModel
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     // A SharedPreferences instance to be used in many places to store and load user info
     private var mSharedPref: SharedPreferences? = null
@@ -69,6 +76,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         Log.d("MainFrag", "onCreateView: view inflated successfully")
 
+        /**
+         * ViewModel + Repository will replace all SharedPreferences
+         */
         // Get the SharedPreferences to load user info from (if it exists and is populated)
         mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
@@ -141,6 +151,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         btnEditProfile.setOnClickListener(this)
 
 
+        /**
+         * Can getting the current GPS location be done in the ViewModel?
+         */
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
         Log.d("MainFrag", "onCreateView: got the FusedLocationProviderClient")
@@ -167,7 +180,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     }
 
 
-
+    /**
+     * Not entirely sure what this does but probably move with all the GPS stuff to ViewModel
+     */
     // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
     private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
@@ -179,7 +194,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
 
 
-
+    /**
+     * This is changing data rather than listening for changing data so not sure how this is handled
+     */
     // handles the "change activity level" spinner being changed
     override fun onItemSelected(parent: AdapterView<*>?, other: View?, pos: Int, id: Long) {
         Log.d("SpinnerListener", "Selected Something From the Spinner")
@@ -232,6 +249,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 transaction.commit()
                 Log.d("MainFrag", "onCreateView: edit profile button clicked")
             }
+            /**
+             * I think a lot of the hikes (and other GPS stuff) can be moved to ViewModel
+             */
             R.id.btnHikes -> {
                 val appPerms = arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -292,6 +312,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                         Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
                     }
             }
+            /**
+             * Move to ViewModel?
+             */
             R.id.btnWeather -> {
 
                 val appPerms = arrayOf(
@@ -379,6 +402,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                         Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
                     }
             }
+            /**
+             * Also move to ViewModel?
+             */
             R.id.btnMoreWeather -> {
 //                val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
                 val url = "https://openweathermap.org/city/$mCityID"

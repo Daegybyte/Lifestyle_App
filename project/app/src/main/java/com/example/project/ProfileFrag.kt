@@ -22,6 +22,7 @@ import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -33,6 +34,12 @@ import java.util.*
 
 
 class ProfileFrag : Fragment(), View.OnClickListener {
+
+    /**
+     * This is new
+     */
+    // getting the SharedViewModel
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     // All of the elements that will need to be accessed later
     private var mEtFirstName: EditText? = null
@@ -75,6 +82,10 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        /**
+         * There shouldn't be a need for these to be member variables anymore,
+         * instead we find by ID then immediately attach observer to listen for changes
+         */
         // Getting all of the elements into the member variables
         mEtFirstName = view.findViewById(R.id.etFirstName)
         mEtLastName = view.findViewById(R.id.etLastName)
@@ -88,6 +99,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         mTvLocation = view.findViewById(R.id.tvLocation)
         mIvProfilePic = view.findViewById(R.id.ivProfilePic)
 
+        /**
+         * Look into filling the NumberPickers in the XML like Ben suggested
+         */
         // Populate the age NumberPicker
         mNpAge!!.minValue = 12
         mNpAge!!.maxValue = 99
@@ -112,6 +126,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_profile)
         mSpActivityLevel!!.adapter = arrayAdapter
 
+        /**
+         * All SharedPreferences will be replaced by ViewModel + Repo
+         */
         // Get the SharedPreferences to read from/store in
         mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
 
@@ -197,6 +214,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 //            }
 //        }
 
+        /**
+         * I think getting location would be in ViewModel
+         */
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
 
@@ -218,6 +238,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
         when(view.id) {
+            /**
+             * Move to ViewModel?
+             */
             R.id.btnLocation -> {
                 //get current GPS location
                 val fusedLocationClient: FusedLocationProviderClient =
@@ -268,6 +291,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                 }
             }
 
+            /**
+             * Again not sure where changing data should be? ViewModel?
+             */
             R.id.btnSave -> {
                 if (mTvLocation?.text.toString() != ""
                     && mEtFirstName?.text.toString() != ""
@@ -303,6 +329,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Move to ViewModel
+     */
     // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
     private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
@@ -313,6 +342,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             }
         }
 
+    /**
+     * Move to ViewModel
+     */
     // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
     private fun getAddress(lat: Double, lng: Double): String {
         val geocoder = Geocoder(context)
@@ -320,6 +352,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         return list[0].locality + ", " + list[0].adminArea + ", " + list[0].countryName
     }
 
+    /**
+     * ViewModel? Really not sure
+     */
     // to be run when the add profile picture button is clicked
     private var cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -339,6 +374,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Move to ViewModel?
+     */
     @SuppressLint("SimpleDateFormat")
     private fun saveImage(finalBitmap: Bitmap?): String {
         val root = activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
