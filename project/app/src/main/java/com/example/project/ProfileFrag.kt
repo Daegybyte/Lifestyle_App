@@ -83,6 +83,10 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
         /**
+         * attach observers?
+         */
+
+        /**
          * There shouldn't be a need for these to be member variables anymore,
          * instead we find by ID then immediately attach observer to listen for changes
          */
@@ -295,6 +299,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
              * Again not sure where changing data should be? ViewModel?
              */
             R.id.btnSave -> {
+                /**
+                 * Call the updateUser function instead of using SharedPref
+                 */
                 if (mTvLocation?.text.toString() != ""
                     && mEtFirstName?.text.toString() != ""
                     && mEtLastName?.text.toString() != ""
@@ -375,7 +382,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     }
 
     /**
-     * Move to ViewModel?
+     * Seems like this should be in Repository
      */
     @SuppressLint("SimpleDateFormat")
     private fun saveImage(finalBitmap: Bitmap?): String {
