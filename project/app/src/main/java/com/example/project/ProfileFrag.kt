@@ -23,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -39,8 +40,11 @@ class ProfileFrag : Fragment(), View.OnClickListener {
      * This is new
      */
     // getting the SharedViewModel
-    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val mSharedViewModel: SharedViewModel by activityViewModels()
 
+    /**
+     * Keep these
+     */
     // All of the elements that will need to be accessed later
     private var mEtFirstName: EditText? = null
     private var mEtLastName: EditText? = null
@@ -54,16 +58,19 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private var mTvLocation: TextView? = null
     private var mIvProfilePic: ImageView? = null
 
+    /**
+     * Remove these
+     */
     // All of the values from/for those elements
-    private var mFirstName: String? = null
-    private var mLastName: String? = null
-    private var mAge: Int? = null
-    private var mHeight: Int? = null
-    private var mWeight: Int? = null
-    private var mActivityLevel: Int? = null
-    private var mIsMale: Boolean? = null
-    private var mLocation: String? = null
-    private var mProfilePicPath : String? = null
+//    private var mFirstName: String? = null
+//    private var mLastName: String? = null
+//    private var mAge: Int? = null
+//    private var mHeight: Int? = null
+//    private var mWeight: Int? = null
+//    private var mActivityLevel: Int? = null
+//    private var mIsMale: Boolean? = null
+//    private var mLocation: String? = null
+    private var mProfilePicPath : String? = null // this may still be needed
 
     // These will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -83,13 +90,10 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
         /**
-         * attach observers?
+         * attach observer
          */
+        mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
 
-        /**
-         * There shouldn't be a need for these to be member variables anymore,
-         * instead we find by ID then immediately attach observer to listen for changes
-         */
         // Getting all of the elements into the member variables
         mEtFirstName = view.findViewById(R.id.etFirstName)
         mEtLastName = view.findViewById(R.id.etLastName)
@@ -133,48 +137,48 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         /**
          * All SharedPreferences will be replaced by ViewModel + Repo
          */
-        // Get the SharedPreferences to read from/store in
-        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-
-        // Check to see if there is user info in the SharedPreferences
-        if (mSharedPref!!.contains("hasProfile")) {
-
-            // Get/set the name
-            mFirstName = mSharedPref!!.getString("firstName", "")
-            mLastName = mSharedPref!!.getString("lastName", "")
-            mEtFirstName!!.setText(mFirstName)
-            mEtLastName!!.setText(mLastName)
-
-            // Get/set the age
-            mAge = mSharedPref!!.getInt("age", mNpAge!!.value)
-            mNpAge!!.value = mAge as Int
-
-            // Get/set the height
-            mHeight = mSharedPref!!.getInt("height", mNpHeight!!.value)
-            mNpHeight!!.value = mHeight as Int
-
-            // Get/set the weight
-            mWeight = mSharedPref!!.getInt("weight", mNpWeight!!.value)
-            mNpWeight!!.value = mWeight as Int
-
-            // Get/set the activity level
-            mActivityLevel = mSharedPref!!.getInt("activityLevel", 2)
-            mSpActivityLevel!!.setSelection(mActivityLevel!!)
-
-            // Get/set the sex
-            mIsMale = mSharedPref!!.getBoolean("isMale", true)
-            mRbMale!!.isChecked = mIsMale as Boolean
-            mRbFemale!!.isChecked = !mIsMale!!
-
-            // Get/set the location
-            mLocation = mSharedPref!!.getString("location", "Location")
-            mTvLocation!!.text = mLocation
-
-            // Get/set the profile pic
-            mProfilePicPath = mSharedPref!!.getString("profilePic", "")
-            val bMap = BitmapFactory.decodeFile(mProfilePicPath)
-            mIvProfilePic!!.setImageBitmap(bMap)
-        }
+//        // Get the SharedPreferences to read from/store in
+//        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+//
+//        // Check to see if there is user info in the SharedPreferences
+//        if (mSharedPref!!.contains("hasProfile")) {
+//
+//            // Get/set the name
+//            mFirstName = mSharedPref!!.getString("firstName", "")
+//            mLastName = mSharedPref!!.getString("lastName", "")
+//            mEtFirstName!!.setText(mFirstName)
+//            mEtLastName!!.setText(mLastName)
+//
+//            // Get/set the age
+//            mAge = mSharedPref!!.getInt("age", mNpAge!!.value)
+//            mNpAge!!.value = mAge as Int
+//
+//            // Get/set the height
+//            mHeight = mSharedPref!!.getInt("height", mNpHeight!!.value)
+//            mNpHeight!!.value = mHeight as Int
+//
+//            // Get/set the weight
+//            mWeight = mSharedPref!!.getInt("weight", mNpWeight!!.value)
+//            mNpWeight!!.value = mWeight as Int
+//
+//            // Get/set the activity level
+//            mActivityLevel = mSharedPref!!.getInt("activityLevel", 2)
+//            mSpActivityLevel!!.setSelection(mActivityLevel!!)
+//
+//            // Get/set the sex
+//            mIsMale = mSharedPref!!.getBoolean("isMale", true)
+//            mRbMale!!.isChecked = mIsMale as Boolean
+//            mRbFemale!!.isChecked = !mIsMale!!
+//
+//            // Get/set the location
+//            mLocation = mSharedPref!!.getString("location", "Location")
+//            mTvLocation!!.text = mLocation
+//
+//            // Get/set the profile pic
+//            mProfilePicPath = mSharedPref!!.getString("profilePic", "")
+//            val bMap = BitmapFactory.decodeFile(mProfilePicPath)
+//            mIvProfilePic!!.setImageBitmap(bMap)
+//        }
 
         /**
          * The code below was an attempt to use savedInstanceState to store and load user-entered
@@ -238,6 +242,25 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
         return view
     }
+
+
+    private val userObserver: Observer<User> =
+        // Update the UI when any of the profile info changes
+        Observer { userInfo ->
+            if (userInfo != null) {
+                mEtFirstName!!.setText(userInfo.firstName)
+                mEtLastName!!.setText(userInfo.lastName)
+                mNpAge!!.value = userInfo.age
+                mNpHeight!!.value = userInfo.height
+                mNpWeight!!.value = userInfo.weight
+                mSpActivityLevel!!.setSelection(userInfo.activityLevel)
+                mRbMale!!.isChecked = userInfo.isMale
+                mRbFemale!!.isChecked = !userInfo.isMale
+                mTvLocation!!.text = userInfo.location
+                val bMap = BitmapFactory.decodeFile(userInfo.imagePath)
+                mIvProfilePic!!.setImageBitmap(bMap)
+            }
+        }
 
     @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
@@ -307,22 +330,38 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     && mEtLastName?.text.toString() != ""
                     && mProfilePicPath != null) {
 
+                    // making a user
+                    val userInfo = User (
+                        mEtFirstName!!.text.toString(),
+                        mEtLastName!!.text.toString(),
+                        mNpAge!!.value,
+                        mNpHeight!!.value,
+                        mNpWeight!!.value,
+                        mSpActivityLevel!!.selectedItemPosition,
+                        mRbMale!!.isChecked,
+                        mTvLocation!!.text.toString(),
+                        mProfilePicPath!!
+                    )
 
-                    with(mSharedPref!!.edit()) {
-                        putString("firstName", mEtFirstName!!.text.toString())
-                        putString("lastName", mEtLastName!!.text.toString())
-                        putInt("age", mNpAge!!.value)
-                        putInt("height", mNpHeight!!.value)
-                        putInt("weight", mNpWeight!!.value)
-                        putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
-                        // store a boolean (for less space + ease) representing whether they are male or not
-                        putBoolean("isMale", mRbMale!!.isChecked)
-                        putString("location", mTvLocation!!.text.toString())
-                        putString("profilePic", mProfilePicPath)
+                    // make SharedViewModel save the user info
+                    mSharedViewModel.updateUser(userInfo)
 
-                        putBoolean("hasProfile", true)
-                        apply()
-                    }
+
+//                    with(mSharedPref!!.edit()) {
+//                        putString("firstName", mEtFirstName!!.text.toString())
+//                        putString("lastName", mEtLastName!!.text.toString())
+//                        putInt("age", mNpAge!!.value)
+//                        putInt("height", mNpHeight!!.value)
+//                        putInt("weight", mNpWeight!!.value)
+//                        putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
+//                        // store a boolean (for less space + ease) representing whether they are male or not
+//                        putBoolean("isMale", mRbMale!!.isChecked)
+//                        putString("location", mTvLocation!!.text.toString())
+//                        putString("profilePic", mProfilePicPath)
+//
+//                        putBoolean("hasProfile", true)
+//                        apply()
+//                    }
 
                     val transaction = parentFragmentManager.beginTransaction()
                     transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
