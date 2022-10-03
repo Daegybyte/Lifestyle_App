@@ -40,14 +40,16 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
      * This is new
      */
     // getting the SharedViewModel
-    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
+
+//    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
+    private val mSharedViewModel: SharedViewModel by activityViewModels {
+        SharedViewModelFactory((application as SharedApplication).repository)
+    }
 
     private var mTvUsername: TextView? = null
     private var mIvThumbnail: ImageView? = null
     private var mTvBMR: TextView? = null
     private var mTvActivityLevel: TextView? = null
-
-
 
     /**
      * No longer needed
@@ -395,7 +397,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
                 val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
                 val cancellationTokenSource = CancellationTokenSource()
-                
+
                 mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
                     .addOnSuccessListener { location: Location? ->
                         // getting the last known or current location
