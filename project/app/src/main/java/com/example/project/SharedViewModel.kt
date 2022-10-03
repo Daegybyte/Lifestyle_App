@@ -4,8 +4,10 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class SharedViewModel(application: Application) : ViewModel() {
+//class SharedViewModel(repository: SharedRepository) : ViewModel() {
 
     // repository
     private val mRepository: SharedRepository
@@ -15,6 +17,21 @@ class SharedViewModel(application: Application) : ViewModel() {
     private val _userInfo: MutableLiveData<User>
     val userInfo: LiveData<User>
         get() = _userInfo
+
+    init {
+        mRepository = SharedRepository.getInstance(application)
+        _userInfo = mRepository.userInfo
+
+//        _firstName = mRepository.firstName
+//        _lastName = mRepository.lastName
+//        _age = mRepository.age
+//        _height = mRepository.height
+//        _weight = mRepository.weight
+//        _activityLevel = mRepository.activityLevel
+//        _isMale = mRepository.isMale
+//        _location = mRepository.location
+//        _profilePicPath = mRepository.profilePicPath
+    }
 
 //    private val _firstName: MutableLiveData<String>
 //    val firstName: LiveData<String>
@@ -61,18 +78,25 @@ class SharedViewModel(application: Application) : ViewModel() {
 //        mRepository.updateUser(firstName, lastName, age, height, weight, activityLevel, isMale, location, profilePicPath)
 //    }
 
-    init {
-        mRepository = SharedRepository.getInstance(application)
-        _userInfo = mRepository.userInfo
+    // This factory class allows us to define custom constructors for the view model
+//    class SharedViewModelFactory(private val repository: SharedRepository) : ViewModelProvider.Factory {
+//        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//            if (modelClass.isAssignableFrom(SharedViewModel::class.java)) {
+//                @Suppress("UNCHECKED_CAST")
+//                return SharedViewModel(repository) as T
+//            }
+//            throw IllegalArgumentException("Unknown ViewModel class")
+//        }
+//    }
+}
 
-//        _firstName = mRepository.firstName
-//        _lastName = mRepository.lastName
-//        _age = mRepository.age
-//        _height = mRepository.height
-//        _weight = mRepository.weight
-//        _activityLevel = mRepository.activityLevel
-//        _isMale = mRepository.isMale
-//        _location = mRepository.location
-//        _profilePicPath = mRepository.profilePicPath
+class SharedViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return if (modelClass.isAssignableFrom(SharedViewModel::class.java)) {
+            SharedViewModel(application) as T
+        } else {
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
     }
 }

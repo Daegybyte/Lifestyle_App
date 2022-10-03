@@ -46,7 +46,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
      * This is new
      */
     // getting the SharedViewModel
-    private val mSharedViewModel: SharedViewModel by activityViewModels()
+    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
 
     /**
      * Keep these

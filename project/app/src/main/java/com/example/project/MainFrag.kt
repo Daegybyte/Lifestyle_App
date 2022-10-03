@@ -40,7 +40,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
      * This is new
      */
     // getting the SharedViewModel
-    private val mSharedViewModel: SharedViewModel by activityViewModels()
+    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
 
     private var mTvUsername: TextView? = null
     private var mIvThumbnail: ImageView? = null
@@ -93,7 +93,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
          * this is the old way need to update:
          * would checking for userInfo.firstName == null work?
          */
-        if (!mSharedPref!!.contains("hasProfile")) {
+//        if (!mSharedPref!!.contains("hasProfile")) {
+//            val transaction = parentFragmentManager.beginTransaction()
+//            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
+//            transaction.addToBackStack(null)
+//            transaction.commit()
+//        }
+        if (mSharedViewModel.userInfo.value != null) {
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
             transaction.addToBackStack(null)

@@ -1,13 +1,15 @@
 package com.example.project
 
 import android.app.Application
-import android.location.Location
+import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 
 class SharedRepository private constructor(application: Application) {
 
     // all of the user info:
     val userInfo = MutableLiveData<User>()
+
+    private var mSharedPref: SharedPreferences? = null
 
 //    val firstName = MutableLiveData<String>()
 //    val lastName = MutableLiveData<String>()
