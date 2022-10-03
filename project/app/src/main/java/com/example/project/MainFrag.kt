@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -28,6 +29,7 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.example.project.NetworkUtils.buildURLFromString
 import com.example.project.NetworkUtils.getDataFromURL
 import org.json.JSONObject
+import org.w3c.dom.Text
 import kotlin.math.roundToInt
 
 
@@ -38,8 +40,18 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
      * This is new
      */
     // getting the SharedViewModel
-    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val mSharedViewModel: SharedViewModel by activityViewModels()
 
+    private var mTvUsername: TextView? = null
+    private var mIvThumbnail: ImageView? = null
+    private var mTvBMR: TextView? = null
+    private var mTvActivityLevel: TextView? = null
+
+
+
+    /**
+     * No longer needed
+     */
     // A SharedPreferences instance to be used in many places to store and load user info
     private var mSharedPref: SharedPreferences? = null
 
@@ -76,14 +88,11 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         Log.d("MainFrag", "onCreateView: view inflated successfully")
 
+        // immediately check to see if user info already exists or not
         /**
-         * ViewModel + Repository will replace all SharedPreferences
+         * this is the old way need to update:
+         * would checking for userInfo.firstName == null work?
          */
-        // Get the SharedPreferences to load user info from (if it exists and is populated)
-        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
-
-        // If they are a brand new user, redirect immediately to the ProfileFrag for profile creation
         if (!mSharedPref!!.contains("hasProfile")) {
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
@@ -91,45 +100,71 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             transaction.commit()
         }
 
-        // Load the user data and populate onto the Fragment
-        else {
-            // Get the name
-            val firstName = mSharedPref!!.getString("firstName", "")
-            val lastName = mSharedPref!!.getString("lastName", "")
-            val tvUsername: TextView = view.findViewById(R.id.tvUsername)
-            // Set the name
-            tvUsername.text = "$firstName $lastName"
-            Log.d("MainFrag", "onCreateView: set the name TextView successfully")
+        mTvUsername = view.findViewById(R.id.tvUsername)
+        mIvThumbnail = view.findViewById(R.id.ivThumbnail)
+        mTvBMR = view.findViewById(R.id.tvBMR)
+        mTvActivityLevel = view.findViewById(R.id.tvActivityLevel)
 
-            val ivThumbnail : ImageView = view.findViewById(R.id.ivThumbnail)
-            mThumbnailPath = mSharedPref!!.getString("profilePic", "")
-            val bMap = BitmapFactory.decodeFile(mThumbnailPath)
-            ivThumbnail.setImageBitmap(bMap)
 
-            // Get the BMR
-            val tvBMR : TextView = view.findViewById(R.id.tvBMR)
-            val activityLevelIndex = mSharedPref!!.getInt("activityLevel", 0)
-            val bmr = BMR()
-            val baseBMR = bmr.calculateBMR(
-                mSharedPref!!.getInt("weight", 0),
-                mSharedPref!!.getInt("height", 0),
-                mSharedPref!!.getInt("age", 0),
-                mSharedPref!!.getBoolean("isMale", true)
-            )
-            val adjustedBMR = bmr.calculateAdjustedBMR(baseBMR, activityLevelIndex)
-            tvBMR.text = "$adjustedBMR kcal/day"
+        /**
+         * attach observer
+         */
+        mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
 
-            // Set the activity level
-            val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
-            val tvActivityLevel: TextView = view.findViewById(R.id.tvActivityLevel)
-            tvActivityLevel.text = activityLevels[activityLevelIndex]
-            Log.d("MainFrag", "onCreateView: set the activity level TextView successfully")
-
-            // update the spinner
-            for (i in 1 until mActivityLevels.size){
-                mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
-            }
-        }
+        /**
+         * ViewModel + Repository will replace all SharedPreferences
+         */
+//        // Get the SharedPreferences to load user info from (if it exists and is populated)
+//        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+//        Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
+//
+//        // If they are a brand new user, redirect immediately to the ProfileFrag for profile creation
+//        if (!mSharedPref!!.contains("hasProfile")) {
+//            val transaction = parentFragmentManager.beginTransaction()
+//            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
+//            transaction.addToBackStack(null)
+//            transaction.commit()
+//        }
+//
+//        // Load the user data and populate onto the Fragment
+//        else {
+//            // Get the name
+//            val firstName = mSharedPref!!.getString("firstName", "")
+//            val lastName = mSharedPref!!.getString("lastName", "")
+//            val tvUsername: TextView = view.findViewById(R.id.tvUsername)
+//            // Set the name
+//            tvUsername.text = "$firstName $lastName"
+//            Log.d("MainFrag", "onCreateView: set the name TextView successfully")
+//
+//            val ivThumbnail : ImageView = view.findViewById(R.id.ivThumbnail)
+//            mThumbnailPath = mSharedPref!!.getString("profilePic", "")
+//            val bMap = BitmapFactory.decodeFile(mThumbnailPath)
+//            ivThumbnail.setImageBitmap(bMap)
+//
+//            // Get the BMR
+//            val tvBMR : TextView = view.findViewById(R.id.tvBMR)
+//            val activityLevelIndex = mSharedPref!!.getInt("activityLevel", 0)
+//            val bmr = BMR()
+//            val baseBMR = bmr.calculateBMR(
+//                mSharedPref!!.getInt("weight", 0),
+//                mSharedPref!!.getInt("height", 0),
+//                mSharedPref!!.getInt("age", 0),
+//                mSharedPref!!.getBoolean("isMale", true)
+//            )
+//            val adjustedBMR = bmr.calculateAdjustedBMR(baseBMR, activityLevelIndex)
+//            tvBMR.text = "$adjustedBMR kcal/day"
+//
+//            // Set the activity level
+//            val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
+//            val tvActivityLevel: TextView = view.findViewById(R.id.tvActivityLevel)
+//            tvActivityLevel.text = activityLevels[activityLevelIndex]
+//            Log.d("MainFrag", "onCreateView: set the activity level TextView successfully")
+//
+//            // update the spinner
+//            for (i in 1 until mActivityLevels.size){
+//                mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
+//            }
+//        }
 
 
         // Fill the dropdown for activity level
@@ -178,6 +213,35 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
         return view
     }
+
+    private val userObserver: Observer<User> =
+        // Update the UI when any of the profile info changes
+        Observer { userInfo ->
+            if (userInfo != null) {
+                mTvUsername!!.text = "${userInfo.firstName} ${userInfo.lastName}"
+
+                val bMap = BitmapFactory.decodeFile(userInfo.imagePath)
+                mIvThumbnail!!.setImageBitmap(bMap)
+
+                val bmr = BMR()
+                val baseBMR = bmr.calculateBMR(
+                    userInfo.weight,
+                    userInfo.height,
+                    userInfo.age,
+                    userInfo.isMale
+                )
+                val adjustedBMR = bmr.calculateAdjustedBMR(baseBMR, userInfo.activityLevel)
+                mTvBMR!!.text = "$adjustedBMR kcal/day"
+
+                val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
+                mTvActivityLevel!!.text = activityLevels[userInfo.activityLevel]
+
+                // update the spinner
+                for (i in 1 until mActivityLevels.size){
+                    mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
+                }
+            }
+        }
 
 
     /**

@@ -33,6 +33,12 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * TODO:
+ * move all the location stuff to somewhere in ViewModel or Repository
+ * move NumberPicker and Spinner filling to XML so that it isn't reset in onCreateView each time?
+ */
+
 
 class ProfileFrag : Fragment(), View.OnClickListener {
 
@@ -77,6 +83,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private var mLatitude = 0.0
     private var mLongitude = 0.0
 
+    /**
+     * No longer needed
+     */
     // A SharedPreferences instance to be used in many places to store and load user info
     private var mSharedPref: SharedPreferences? = null
 
@@ -88,11 +97,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
-
-        /**
-         * attach observer
-         */
-        mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
 
         // Getting all of the elements into the member variables
         mEtFirstName = view.findViewById(R.id.etFirstName)
@@ -106,6 +110,11 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         mRbFemale = view.findViewById(R.id.radio_female)
         mTvLocation = view.findViewById(R.id.tvLocation)
         mIvProfilePic = view.findViewById(R.id.ivProfilePic)
+
+        /**
+         * attach observer
+         */
+        mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
 
         /**
          * Look into filling the NumberPickers in the XML like Ben suggested
@@ -399,7 +408,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     }
 
     /**
-     * ViewModel? Really not sure
+     * I think keep this here
      */
     // to be run when the add profile picture button is clicked
     private var cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
