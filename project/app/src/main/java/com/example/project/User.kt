@@ -6,7 +6,7 @@ data class User(
     val age: Int,
     val height: Int,
     val weight: Int,
-    val activityLevel: Int,
+    var activityLevel: Int,
     val isMale: Boolean,
     val location: String,
     val imagePath: String

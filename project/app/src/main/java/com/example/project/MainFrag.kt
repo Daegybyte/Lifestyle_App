@@ -41,10 +41,14 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
      */
     // getting the SharedViewModel
 
-//    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
-    private val mSharedViewModel: SharedViewModel by activityViewModels {
-        SharedViewModelFactory((application as SharedApplication).repository)
-    }
+    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
+
+    /**
+     * Need to change to this at some point down the line (when Room is fully implemented)
+     */
+//    private val mSharedViewModel: SharedViewModel by activityViewModels {
+//        SharedViewModelFactory((application as SharedApplication).repository)
+//    }
 
     private var mTvUsername: TextView? = null
     private var mIvThumbnail: ImageView? = null
@@ -101,7 +105,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 //            transaction.addToBackStack(null)
 //            transaction.commit()
 //        }
-        if (mSharedViewModel.userInfo.value != null) {
+        if (mSharedViewModel.userInfo.value == null) {
+            Log.d("MainFrag", "no existing user was found")
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
             transaction.addToBackStack(null)
@@ -292,10 +297,19 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             tvBmr.text = strBmr
 
             // update in the SharedPreferences as well
-            with (mSharedPref!!.edit()) {
-                putInt("activityLevel", pos-1)
-                apply()
-            }
+//            with (mSharedPref!!.edit()) {
+//                putInt("activityLevel", pos-1)
+//                apply()
+//            }
+            /**
+             * NO, update in ViewModel/Repo
+             */
+            // get all the current user info
+            val user: User? = mSharedViewModel.userInfo.value
+            // update only the activity level
+            user!!.activityLevel = pos-1
+            // save the change to the activity level
+            mSharedViewModel.updateUser(user)
 
             // reset spinner display to "Change Activity Level"
             parent.setSelection(0)
