@@ -1,66 +1,60 @@
 # 6018 MSD project
 ## Created By: Diego, Jon, Kelan 
 
-### Phase 1 roles:
-* Kelan - Team lead
-* Jon - Design Lead
-* Diego - Test Lead
+### Phase 2 roles:
+* Jon - Team lead
+* Diego - Design Lead
+* Kelan - Test Lead
 
-### Phase 1 meeting notes:
-MainActivity will be the homepage with the requested modules 
+### Phase 2 meeting notes:
 
-Will do a check to see if the user profile was already created, and if not it will redirect to the input page
+Flow to move data around the app
 
-* Only two activities:
-	*  Main (homepage) and profile(input/edit)
+Tablet mode will be looking at screen width, and in the case that the app is running on a tablet, the view will gravitate towards the centre, and the margins will automagically adjust. This is because of how our app is set up, it doesn't make a lot of sense to rearrange things for tablet view
 
-User will type in ther name, and all other information will be taken as drop-down menus
+Room database entry
 
-Activity level will be a dropdown menu, and user will be able to dynamically change their calorie needs based on what they have currently selected
+# Design:
 
-Calorie inout in a drop-down item?
-
-Activity level will be shown in a dropdown menu
-
-Use metric units under the hood for height, weight, basal, etc. We can convert later.
-
-* Stretch goal is to allow for selection between metric and imperial units at profile creation
-
-Implicit intent to switch to google maps and search "hiking trails near {current location}", do the same thing for the weather
-
-Put the profile picture on the left because it is cleaner with the edit button
-
-We he have decided for variable names, we will use the naming convention `typeName`, anf the style of camel case
-
-eg:
-
-* btnHikes, btnWeather
-
-Log.d print is as following: `Log.d("Class", "functionName: message")`
-
-We discussed making a loading screen to mask the time taken to get permissions, and the time it takes to get location data.
-
-# Design mockups:
-
-Made with Figma
-
-## login activity
-
-<img src="./designFiles/Login.png" width="25%" height="25%">
 ## Register
 
-<img src="./designFiles/Login-register.png" width="25%" height="25%"> 
+<img src="./src/profile_creation.png" width="25%" height="25%">
 
 
-## Main activity
+<img src="./src/profile_creation_tablet.png" width="25%" height="25%">
 
-<img src="./designFiles/MainActivity.png" width="25%" height="25%">
-## Main dropdown open
 
-<img src="./designFiles/MainActivity-dropdown--open.png" width="25%" height="25%">
 ## Profile
 
-<img src="./designFiles/Profile.png" width="25%" height="25%">
+<img src="./src/profile_page.png" width="25%" height="25%">
+
+
+<img src="./src/profile_page_tablet.png" width="25%" height="25%">
+
+
+
+## Update Activity
+
+<img src="./src/profile_update_activity_level.png" width="25%" height="25%">
+
+<img src="./src/update_activity_level_tablet.png" width="25%" height="25%">
+
+
+
+## Weather Details
+
+<img src="./src/profile_page_weather.png" width="25%" height="25%">
+
+
+## Weather
+
+<img src="./src/weather.png" width="25%" height="25%">
+
+
+## Hikes
+
+<img src="./src/hikes.png" width="25%" height="25%">
+
 
 # Testing
 
@@ -68,14 +62,7 @@ We used five locations in four different quadrants of the planet to test our loc
 
 <img src="./src/testingLocation.png" width="50%" height="50%">
 
-## Espresso
+### UI Automator
 
-## Monkey Runner
-
-
-
-
-
-
-
+UI automator was used to run tests on the UI, testing that values exists where expected.
 
