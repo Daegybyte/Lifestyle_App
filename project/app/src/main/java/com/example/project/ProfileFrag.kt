@@ -37,7 +37,6 @@ import java.util.*
 /**
  * TODO:
  * move all the location stuff to somewhere in ViewModel or Repository
- * move NumberPicker and Spinner filling to XML so that it isn't reset in onCreateView each time?
  */
 
 
@@ -47,7 +46,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
      * This is new
      */
     // getting the SharedViewModel
-//    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
     private val mSharedViewModel: SharedViewModel by activityViewModels {
         SharedViewModelFactory((this.activity?.application as App).repository)
     }
@@ -67,30 +65,17 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private var mTvLocation: TextView? = null
     private var mIvProfilePic: ImageView? = null
 
-    /**
-     * Remove these
-     */
-    // All of the values from/for those elements
-//    private var mFirstName: String? = null
-//    private var mLastName: String? = null
-//    private var mAge: Int? = null
-//    private var mHeight: Int? = null
-//    private var mWeight: Int? = null
-//    private var mActivityLevel: Int? = null
-//    private var mIsMale: Boolean? = null
-//    private var mLocation: String? = null
+
     private var mProfilePicPath : String? = null // this may still be needed
 
-    // These will be used to get the phone's location
+    // these will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var mLatitude = 0.0
     private var mLongitude = 0.0
 
-    /**
-     * No longer needed
-     */
-    // A SharedPreferences instance to be used in many places to store and load user info
-    private var mSharedPref: SharedPreferences? = null
+    // this will be used to make the observer not reload the user info when it shouldn't
+    // because that could overwrite any unsaved changes that the user has made
+    private var observerAlreadyRan: Boolean = false
 
     @SuppressLint("MissingPermission")
     override fun onCreateView(
@@ -146,93 +131,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_profile)
         mSpActivityLevel!!.adapter = arrayAdapter
 
-        /**
-         * All SharedPreferences will be replaced by ViewModel + Repo
-         */
-//        // Get the SharedPreferences to read from/store in
-//        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-//
-//        // Check to see if there is user info in the SharedPreferences
-//        if (mSharedPref!!.contains("hasProfile")) {
-//
-//            // Get/set the name
-//            mFirstName = mSharedPref!!.getString("firstName", "")
-//            mLastName = mSharedPref!!.getString("lastName", "")
-//            mEtFirstName!!.setText(mFirstName)
-//            mEtLastName!!.setText(mLastName)
-//
-//            // Get/set the age
-//            mAge = mSharedPref!!.getInt("age", mNpAge!!.value)
-//            mNpAge!!.value = mAge as Int
-//
-//            // Get/set the height
-//            mHeight = mSharedPref!!.getInt("height", mNpHeight!!.value)
-//            mNpHeight!!.value = mHeight as Int
-//
-//            // Get/set the weight
-//            mWeight = mSharedPref!!.getInt("weight", mNpWeight!!.value)
-//            mNpWeight!!.value = mWeight as Int
-//
-//            // Get/set the activity level
-//            mActivityLevel = mSharedPref!!.getInt("activityLevel", 2)
-//            mSpActivityLevel!!.setSelection(mActivityLevel!!)
-//
-//            // Get/set the sex
-//            mIsMale = mSharedPref!!.getBoolean("isMale", true)
-//            mRbMale!!.isChecked = mIsMale as Boolean
-//            mRbFemale!!.isChecked = !mIsMale!!
-//
-//            // Get/set the location
-//            mLocation = mSharedPref!!.getString("location", "Location")
-//            mTvLocation!!.text = mLocation
-//
-//            // Get/set the profile pic
-//            mProfilePicPath = mSharedPref!!.getString("profilePic", "")
-//            val bMap = BitmapFactory.decodeFile(mProfilePicPath)
-//            mIvProfilePic!!.setImageBitmap(bMap)
-//        }
-
-        /**
-         * The code below was an attempt to use savedInstanceState to store and load user-entered
-         * information that would have otherwise been lost upon rotation or other disruption
-         * It worked most of the time but occasionally caused a crash so we commented it out and
-         * used ConfigChanges in the AndroidManifest.xml instead
-         */
-
-        // Check to see if there is user info in the savedInstanceState
-        // If there is then this should overwrite the info loaded from the SharedPreferences
-//        if (savedInstanceState != null) {
-//            if (savedInstanceState.getString("firstName") != mFirstName) {
-//                mEtFirstName!!.setText(savedInstanceState.getString("firstName"))
-//            }
-////            mEtFirstName!!.setText(savedInstanceState.getString("firstName", ""))
-//            if (savedInstanceState.getString("lastName") != mLastName) {
-//                mEtLastName!!.setText(savedInstanceState.getString("lastName"))
-//            }
-//            if (savedInstanceState.getInt("age") != mAge) {
-//                mNpAge!!.value = savedInstanceState.getInt("age")
-//            }
-//            if (savedInstanceState.getInt("height") != mHeight) {
-//                mNpHeight!!.value = savedInstanceState.getInt("height")
-//            }
-//            if (savedInstanceState.getInt("weight") != mWeight) {
-//                mNpWeight!!.value = savedInstanceState.getInt("weight")
-//            }
-//            if (savedInstanceState.getInt("activityLevel") != mActivityLevel) {
-//                mSpActivityLevel!!.setSelection(savedInstanceState.getInt("activityLevel"))
-//            }
-//            if (savedInstanceState.getBoolean("isMale") != mIsMale) {
-//                mRbMale!!.isChecked = savedInstanceState.getBoolean("isMale", true)
-//                mRbFemale!!.isChecked = !savedInstanceState.getBoolean("isMale", true)
-//            }
-//            if (savedInstanceState.getString("location") != mLocation) {
-//                mTvLocation!!.text = savedInstanceState.getString("location")
-//            }
-//            if (savedInstanceState.getString("profilePic") != mProfilePicPath) {
-//                val bMap = BitmapFactory.decodeFile(savedInstanceState.getString("profilePic"))
-//                mIvProfilePic!!.setImageBitmap(bMap)
-//            }
-//        }
 
         /**
          * I think getting location would be in ViewModel
@@ -259,7 +157,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private val userObserver: Observer<User> =
         // Update the UI when any of the profile info changes
         Observer { userInfo ->
-            if (userInfo != null) {
+            // using observerAlreadyRun to make sure that this does not run when there are
+            // unsaved changes that we don't want to overwrite
+            if (userInfo != null && !observerAlreadyRan) {
                 mEtFirstName!!.setText(userInfo.firstName)
                 mEtLastName!!.setText(userInfo.lastName)
                 mNpAge!!.value = userInfo.age
@@ -273,6 +173,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                 val bMap = BitmapFactory.decodeFile(mProfilePicPath)
                 mIvProfilePic!!.setImageBitmap(bMap)
             }
+            observerAlreadyRan = true
         }
 
     @SuppressLint("MissingPermission")
@@ -365,19 +266,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     transaction.commit()
                 }
                 else {
-                    if(mTvLocation?.text.toString() == "") {
-                        Toast.makeText(activity, "Fill in the location!", Toast.LENGTH_SHORT).show()
-                    }
-                    if(mEtFirstName?.text.toString() == "") {
-                        Toast.makeText(activity, "Fill in your first name!", Toast.LENGTH_SHORT).show()
-                    }
-                    if(mEtLastName?.text.toString() == "") {
-                        Toast.makeText(activity, "Fill in your last name!", Toast.LENGTH_SHORT).show()
-                    }
-                    if(mProfilePicPath == null) {
-                        Toast.makeText(activity, "Give us a profile picture!", Toast.LENGTH_SHORT).show()
-                    }
-//                    Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
                 }
             }
         }
