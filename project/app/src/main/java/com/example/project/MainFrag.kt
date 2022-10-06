@@ -99,17 +99,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         Log.d("MainFrag", "onCreateView: view inflated successfully")
 
         // immediately check to see if user info already exists or not
-        /**
-         * this is the old way need to update:
-         * would checking for userInfo.firstName == null work?
-         */
-//        if (!mSharedPref!!.contains("hasProfile")) {
-//            val transaction = parentFragmentManager.beginTransaction()
-//            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
-//            transaction.addToBackStack(null)
-//            transaction.commit()
-//        }
-        
         if (mSharedViewModel.userInfo.value == null) {
             Log.d("MainFrag", "no existing user was found")
             val transaction = parentFragmentManager.beginTransaction()

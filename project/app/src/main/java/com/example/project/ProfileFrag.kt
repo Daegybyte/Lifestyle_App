@@ -269,7 +269,8 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                 mRbMale!!.isChecked = userInfo.isMale
                 mRbFemale!!.isChecked = !userInfo.isMale
                 mTvLocation!!.text = userInfo.location
-                val bMap = BitmapFactory.decodeFile(userInfo.imagePath)
+                mProfilePicPath = userInfo.imagePath
+                val bMap = BitmapFactory.decodeFile(mProfilePicPath)
                 mIvProfilePic!!.setImageBitmap(bMap)
             }
         }
@@ -358,30 +359,25 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     // make SharedViewModel save the user info
                     mSharedViewModel.updateUser(userInfo)
 
-
-//                    with(mSharedPref!!.edit()) {
-//                        putString("firstName", mEtFirstName!!.text.toString())
-//                        putString("lastName", mEtLastName!!.text.toString())
-//                        putInt("age", mNpAge!!.value)
-//                        putInt("height", mNpHeight!!.value)
-//                        putInt("weight", mNpWeight!!.value)
-//                        putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
-//                        // store a boolean (for less space + ease) representing whether they are male or not
-//                        putBoolean("isMale", mRbMale!!.isChecked)
-//                        putString("location", mTvLocation!!.text.toString())
-//                        putString("profilePic", mProfilePicPath)
-//
-//                        putBoolean("hasProfile", true)
-//                        apply()
-//                    }
-
                     val transaction = parentFragmentManager.beginTransaction()
                     transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
                     transaction.addToBackStack(null)
                     transaction.commit()
                 }
                 else {
-                    Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
+                    if(mTvLocation?.text.toString() == "") {
+                        Toast.makeText(activity, "Fill in the location!", Toast.LENGTH_SHORT).show()
+                    }
+                    if(mEtFirstName?.text.toString() == "") {
+                        Toast.makeText(activity, "Fill in your first name!", Toast.LENGTH_SHORT).show()
+                    }
+                    if(mEtLastName?.text.toString() == "") {
+                        Toast.makeText(activity, "Fill in your last name!", Toast.LENGTH_SHORT).show()
+                    }
+                    if(mProfilePicPath == null) {
+                        Toast.makeText(activity, "Give us a profile picture!", Toast.LENGTH_SHORT).show()
+                    }
+//                    Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
                 }
             }
         }
