@@ -2,6 +2,7 @@ package com.example.project
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -46,8 +47,10 @@ class ProfileFrag : Fragment(), View.OnClickListener {
      * This is new
      */
     // getting the SharedViewModel
-    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
-
+//    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
+    private val mSharedViewModel: SharedViewModel by activityViewModels {
+        SharedViewModelFactory((this.activity?.application as App).repository)
+    }
     /**
      * Keep these
      */
