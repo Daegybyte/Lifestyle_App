@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
     // user livedata
     val userInfo: LiveData<User> = repository.userInfo.asLiveData()
-    val numUserRows: LiveData<Int> = repository.numUserRows.asLiveData()
     // weather livedata
     val aveTemp: LiveData<Double> = repository.aveTemp.asLiveData()
 

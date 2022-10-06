@@ -15,9 +15,6 @@ interface UserDao {
     @Query("DELETE FROM user_table")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM user_table")
-    fun getNumUserRows(): Flow<Int>
-
     @Query("SELECT * FROM user_table ORDER BY id DESC limit 1")
     fun getUser(): Flow<User>
 }

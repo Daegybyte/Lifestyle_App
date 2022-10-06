@@ -109,13 +109,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 //            transaction.addToBackStack(null)
 //            transaction.commit()
 //        }
-        var userTableEmpty = false
-        mSharedViewModel.numUserRows.observe(viewLifecycleOwner, Observer{ num ->
-            userTableEmpty = num == 0
-        })
-
-        if (userTableEmpty) {
-//        if (mSharedViewModel.userInfo.value == null) {
+        
+        if (mSharedViewModel.userInfo.value == null) {
             Log.d("MainFrag", "no existing user was found")
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
@@ -431,20 +426,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                         // make weather information visible
                         mBoxWeather!!.visibility = View.VISIBLE
                         mTvWeather!!.text = "Loading..."
-//
-//                    Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
-//
-//                    val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
-//                    val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-//                    //If there's an activity associated with this intent, launch it
-//                    try {
-//                        startActivity(weatherIntent)
-//                        Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
-//                    } catch (ex: ActivityNotFoundException) {
-//                        Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
-//                        //If there's no activity associated with this intent, display an error message
-//                        Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
-//                    }
 
                         val weatherDataURL = buildURLFromString(mLatitude, mLongitude)
                         var jsonWeatherData: String? = null

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: DBWeatherDao) {
     // user flow
     val userInfo: Flow<User> = userDao.getUser()
-    val numUserRows: Flow<Int> = userDao.getNumUserRows()
     // weather flow
     val aveTemp: Flow<Double> = dbWeatherDao.getAveTemp()
 

@@ -50,31 +50,31 @@ public abstract class RoomDB : RoomDatabase() {
         }
 
         suspend fun populateDatabase(userDao:UserDao, dbWeatherDao: DBWeatherDao){
-            val dummyUser = User(
-                "null",
-                "null",
-                -1,
-                -1,
-                -1,
-                -1,
-                false,
-                "null",
-                "null"
-            )
-            userDao.insert(dummyUser)
-
-            val dummyWeather = DBWeather(
-                -1,
-                "null",
-                91.0,
-                181.0,
-                "null",
-                "null",
-                "null",
-                -274.0,
-                "null"
-            )
-            dbWeatherDao.insert(dummyWeather)
+//            val dummyUser = User(
+//                "null",
+//                "null",
+//                -1,
+//                -1,
+//                -1,
+//                -1,
+//                false,
+//                "null",
+//                "null"
+//            )
+//            userDao.insert(dummyUser)
+//
+//            val dummyWeather = DBWeather(
+//                -1,
+//                "null",
+//                91.0,
+//                181.0,
+//                "null",
+//                "null",
+//                "null",
+//                -274.0,
+//                "null"
+//            )
+//            dbWeatherDao.insert(dummyWeather)
 
             userDao.deleteAll()
             dbWeatherDao.deleteAll()
