@@ -18,6 +18,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ShareCompat.getCallingActivity
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -41,14 +42,17 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
      */
     // getting the SharedViewModel
 
-    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
+//    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
 
     /**
      * Need to change to this at some point down the line (when Room is fully implemented)
      */
-//    private val mSharedViewModel: SharedViewModel by activityViewModels {
-//        SharedViewModelFactory((application as SharedApplication).repository)
-//    }
+
+
+
+    private  val mSharedViewModel: SharedViewModel by activityViewModels {
+        SharedViewModelFactory((this.activity?.application as App).repository)
+    }
 
     private var mTvUsername: TextView? = null
     private var mIvThumbnail: ImageView? = null
@@ -105,7 +109,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 //            transaction.addToBackStack(null)
 //            transaction.commit()
 //        }
-        if (mSharedViewModel.userInfo.value == null) {
+        var userTableEmpty = false
+        mSharedViewModel.numUserRows.observe(viewLifecycleOwner, Observer{ num ->
+            userTableEmpty = num == 0
+        })
+
+        if (userTableEmpty) {
+//        if (mSharedViewModel.userInfo.value == null) {
             Log.d("MainFrag", "no existing user was found")
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
