@@ -3,7 +3,6 @@ package com.example.project
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -15,7 +14,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,7 +30,6 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.example.project.NetworkUtils.buildURLFromString
 import com.example.project.NetworkUtils.getDataFromURL
 import org.json.JSONObject
-import org.w3c.dom.Text
 import kotlin.math.roundToInt
 
 
@@ -53,7 +50,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
 
     private  val mSharedViewModel: SharedViewModel by activityViewModels {
-        SharedViewModelFactory((this.activity?.application as App).repository)
+        SharedViewModelFactory((requireActivity().application as App).repository)
     }
 
     private var mTvUsername: TextView? = null
@@ -87,6 +84,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
     private var mBoxWeather: RelativeLayout? = null
     private var mTvWeather: TextView? = null
+    private var mTvAveTemp: TextView? = null
 
     private var mCityID: String? = null
 
@@ -116,64 +114,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
 
         /**
-         * attach observer
+         * attach observers
          */
         mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
 
-        /**
-         * ViewModel + Repository will replace all SharedPreferences
-         */
-//        // Get the SharedPreferences to load user info from (if it exists and is populated)
-//        mSharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-//        Log.d("MainFrag", "onCreateView: got sharedPreferences successfully")
-//
-//        // If they are a brand new user, redirect immediately to the ProfileFrag for profile creation
-//        if (!mSharedPref!!.contains("hasProfile")) {
-//            val transaction = parentFragmentManager.beginTransaction()
-//            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
-//            transaction.addToBackStack(null)
-//            transaction.commit()
-//        }
-//
-//        // Load the user data and populate onto the Fragment
-//        else {
-//            // Get the name
-//            val firstName = mSharedPref!!.getString("firstName", "")
-//            val lastName = mSharedPref!!.getString("lastName", "")
-//            val tvUsername: TextView = view.findViewById(R.id.tvUsername)
-//            // Set the name
-//            tvUsername.text = "$firstName $lastName"
-//            Log.d("MainFrag", "onCreateView: set the name TextView successfully")
-//
-//            val ivThumbnail : ImageView = view.findViewById(R.id.ivThumbnail)
-//            mThumbnailPath = mSharedPref!!.getString("profilePic", "")
-//            val bMap = BitmapFactory.decodeFile(mThumbnailPath)
-//            ivThumbnail.setImageBitmap(bMap)
-//
-//            // Get the BMR
-//            val tvBMR : TextView = view.findViewById(R.id.tvBMR)
-//            val activityLevelIndex = mSharedPref!!.getInt("activityLevel", 0)
-//            val bmr = BMR()
-//            val baseBMR = bmr.calculateBMR(
-//                mSharedPref!!.getInt("weight", 0),
-//                mSharedPref!!.getInt("height", 0),
-//                mSharedPref!!.getInt("age", 0),
-//                mSharedPref!!.getBoolean("isMale", true)
-//            )
-//            val adjustedBMR = bmr.calculateAdjustedBMR(baseBMR, activityLevelIndex)
-//            tvBMR.text = "$adjustedBMR kcal/day"
-//
-//            // Set the activity level
-//            val activityLevels = arrayOf<String?>("Sedentary", "Mild", "Moderate", "Heavy", "Extreme")
-//            val tvActivityLevel: TextView = view.findViewById(R.id.tvActivityLevel)
-//            tvActivityLevel.text = activityLevels[activityLevelIndex]
-//            Log.d("MainFrag", "onCreateView: set the activity level TextView successfully")
-//
-//            // update the spinner
-//            for (i in 1 until mActivityLevels.size){
-//                mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
-//            }
-//        }
+        mSharedViewModel.weatherData.observe(viewLifecycleOwner, liveWeatherObserver)
+
+        mSharedViewModel.aveTemp.observe(viewLifecycleOwner, flowObserver)
 
 
         // Fill the dropdown for activity level
@@ -211,6 +158,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         // these will both be needed to make more details appear on click
         mBoxWeather = view.findViewById(R.id.boxWeather)
         mTvWeather = view.findViewById(R.id.tvWeather)
+        mTvAveTemp = view.findViewById(R.id.tvRoomAveTemp)
+
         // Add functionality to the Weather button
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
         btnWeather.setOnClickListener(this)
@@ -257,6 +206,27 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
                 transaction.addToBackStack(null)
                 transaction.commit()
+            }
+        }
+
+    private val liveWeatherObserver: Observer<JsonWeather> =
+        Observer { weatherData ->
+            weatherData?.let{
+                var outStr = "Current Weather for "
+                outStr += it.name + ", " + it.country + "\n"
+                outStr += "Temp: " + it.temp.roundToInt() + " C\n"
+                outStr += "Feels Like: " + it.feelsLike.roundToInt() + " C\n"
+                outStr += "Weather: " + it.weatherMain
+
+                // add weather data to textview
+                mTvWeather!!.text = outStr
+            }
+        }
+
+    private val flowObserver: Observer<Double> =
+        Observer { aveTemp ->
+            aveTemp?.let {
+                mTvAveTemp!!.text = aveTemp.toString()
             }
         }
 
@@ -372,6 +342,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     }
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                         Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+
                         weatherRequestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
                     else -> {
@@ -400,8 +371,10 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
     }
 
+
     @SuppressLint("MissingPermission")
     private fun getHikes() {
+
         val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         val cancellationTokenSource = CancellationTokenSource()
 
@@ -411,7 +384,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 mLatitude = location!!.latitude
                 mLongitude = location.longitude
 
-                val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+                val searchUri =
+                    Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
                 Log.d("MainFrag", "onViewCreated: searchUri created successfully")
 
                 //Create the implicit intent
@@ -424,82 +398,42 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     Log.d("MainFrag", "onViewCreated: startActivity(mapIntent) called successfully")
                 } catch (ex: ActivityNotFoundException) {
                     Log.d("MainFrag", "onViewCreated: startActivity(mapIntent) failed")
-                    Toast.makeText(activity, "There's no app that can handle this action.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        activity,
+                        "There's no app that can handle this action.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     //handle errors here
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT)
+                    .show()
             }
     }
 
 
-    @SuppressLint("MissingPermission")
-    private fun getWeather() {
+    private fun getWeather(){
+        // make weather information visible
+        mBoxWeather!!.visibility = View.VISIBLE
+        mTvWeather!!.text = "Loading..."
+
+        // get the current location
+
         val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         val cancellationTokenSource = CancellationTokenSource()
 
         mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-            .addOnSuccessListener { location: Location? ->
-                // getting the last known or current location
-                mLatitude = location!!.latitude
-                mLongitude = location.longitude
+        .addOnSuccessListener { location: Location ->
+            // get the weather for the current location
+            mSharedViewModel.getWeather(location)
 
-                mBoxWeather!!.visibility = View.VISIBLE
-                mTvWeather!!.text = "Loading..."
-
-                val weatherDataURL = buildURLFromString(mLatitude, mLongitude)
-                var jsonWeatherData: String? = null
-                Thread{
-                    try{
-                        assert(weatherDataURL != null)
-                        Log.d("WEATHER", "requesting weather")
-                        jsonWeatherData = getDataFromURL(weatherDataURL!!)
-                        Log.d("WEATHER", jsonWeatherData ?: "Didn't Get Data!!")
-
-                        // get data out of json object
-                        val jsonObject = JSONObject(jsonWeatherData!!)
-                        val cityName = jsonObject.getString("name")
-                        Log.d("WEATHER", cityName)
-                        mCityID = jsonObject.getInt("id").toString()
-                        Log.d("WEATHER", mCityID!!)
-
-                        val jsonSys = jsonObject.getJSONObject("sys")
-                        val countryName = jsonSys.getString("country")
-                        Log.d("WEATHER", countryName)
-
-                        val jsonMain = jsonObject.getJSONObject("main")
-                        val temperature = jsonMain.getDouble("temp")
-                        val feelsLike = jsonMain.getDouble("feels_like")
-                        Log.d("WEATHER", (temperature - 273.15).toString())
-                        Log.d("WEATHER", (feelsLike - 273.15).toString())
-
-
-                        val jsonWeatherArray = jsonObject.getJSONArray("weather")
-                        val jsonWeather = jsonWeatherArray.getJSONObject(0)
-                        val weatherMain = jsonWeather.getString("main")
-                        Log.d("WEATHER", weatherMain)
-                        val weatherDescription = jsonWeather.getString("description")
-                        Log.d("WEATHER", weatherDescription)
-                        val weatherIcon = jsonWeather.getString("icon")
-                        Log.d("WEATHER", weatherIcon)
-
-                        // add weather data to textview
-                        val outStr = "Current Weather for " + cityName + ", " + countryName + "\nTemp: " + (temperature - 273.15).roundToInt() + " C\nFeels Like: " + (feelsLike - 273.15).roundToInt() + " C\nWeather: " + weatherMain
-                        mTvWeather!!.text = outStr
-
-//                            Log.d("WEATHER", "Done")
-                    }
-                    catch (e: Exception){
-                        mTvWeather!!.text = "Error Fetching Weather Data"
-                        e.printStackTrace()
-                    }
-                }.start()
-            }
-            .addOnFailureListener {
-                Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
-            }
+        }
+        .addOnFailureListener {
+            Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     private val hikesRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
     {isGranted: Boolean ->
@@ -520,4 +454,5 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
         }
     }
+    
 }

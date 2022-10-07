@@ -1,18 +1,29 @@
 package com.example.project
 
-import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
+import android.location.Location
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import kotlin.math.roundToInt
 
 class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: DBWeatherDao) {
     // user flow
     val userInfo: Flow<User> = userDao.getUser()
     // weather flow
     val aveTemp: Flow<Double> = dbWeatherDao.getAveTemp()
+    //weather data
+    val liveWeather = MutableLiveData<JsonWeather>()
 
 
 //    private var mSharedPref: SharedPreferences = application.getSharedPreferences("SharedPref", Context.MODE_PRIVATE)
@@ -37,10 +48,67 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
         userDao.insert(user)    // <<--- inserts a new row for the user on every update
     }
 
+    private var mJsonString: String? = null
+
+    fun getWeather(location: Location) {
+
+//                // getting the last known or current location
+//                val mLatitude = location!!.latitude
+//                val mLongitude = location.longitude
+
+        mScope.launch(Dispatchers.IO) {
+            getJsonWeatherString(location)
+
+//            if (mJsonString != null){
+            mJsonString?.let {
+                val wd = (Gson()).fromJson(it, JsonWeather::class.java)
+                liveWeather.postValue(wd)
+
+                val dbWeatherData = DBWeather(
+                    wd.id,
+                    wd.name,
+                    wd.lat,
+                    wd.lon,
+                    wd.weatherMain,
+                    wd.description,
+                    wd.icon,
+                    wd.temp,
+                    wd.country
+                )
+
+                insertWeather(dbWeatherData)
+            }
+        }
+    }
+
     @WorkerThread
     suspend fun insertWeather(dbWeather: DBWeather){
         dbWeatherDao.insert(dbWeather)
     }
+
+    @WorkerThread
+    suspend fun getJsonWeatherString(location: Location){
+        val mLatitude = location.latitude
+        val mLongitude = location.longitude
+
+        val weatherDataURL = NetworkUtils.buildURLFromString(mLatitude, mLongitude)
+
+        weatherDataURL?.let{
+            val jsonWeatherData = NetworkUtils.getDataFromURL(it)
+
+            jsonWeatherData?.let{
+                mJsonString = jsonWeatherData
+            }
+        }
+        // This should be the same as the above three lines of code
+//        if (weatherDataURL != null){
+//            val jsonWeatherData = NetworkUtils.getDataFromURL(weatherDataURL)
+//            if (jsonWeatherData != null){
+//                mJsonString = jsonWeatherData
+//            }
+//        }
+    }
+
 
 
 

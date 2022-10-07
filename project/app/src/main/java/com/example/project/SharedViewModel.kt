@@ -1,6 +1,6 @@
 package com.example.project
 
-import android.app.Application
+import android.location.Location
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
@@ -9,15 +9,24 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
     val userInfo: LiveData<User> = repository.userInfo.asLiveData()
     // weather livedata
     val aveTemp: LiveData<Double> = repository.aveTemp.asLiveData()
+    val liveWeather: LiveData<JsonWeather> = repository.liveWeather
 
 
     fun updateUser(user: User) = viewModelScope.launch {
         repository.updateUser(user)
     }
 
-    fun insertWeather(dbWeather: DBWeather) = viewModelScope.launch {
-        repository.insertWeather(dbWeather)
+//    fun insertWeather(dbWeather: DBWeather) = viewModelScope.launch {
+//        repository.insertWeather(dbWeather)
+//    }
+
+
+    fun getWeather(location: Location) {
+        repository.getWeather(location)
     }
+
+    val weatherData: LiveData<JsonWeather>
+        get() = liveWeather
 
 
     // repository
