@@ -87,7 +87,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     private var mTvWeather: TextView? = null
     private var mTvAveTemp: TextView? = null
 
-    private var mCityID: String? = null
+    private var mHistoricalAve: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,15 +98,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         Log.d("MainFrag", "onCreateView: view inflated successfully")
-
-        // immediately check to see if user info already exists or not
-//        if (mSharedViewModel.userInfo.value == null) {
-//            Log.d("MainFrag", "no existing user was found")
-//            val transaction = parentFragmentManager.beginTransaction()
-//            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
-//            transaction.addToBackStack(null)
-//            transaction.commit()
-//        }
 
         mTvUsername = view.findViewById(R.id.tvUsername)
         mIvThumbnail = view.findViewById(R.id.ivThumbnail)
@@ -159,12 +150,10 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         // these will both be needed to make more details appear on click
         mBoxWeather = view.findViewById(R.id.boxWeather)
         mTvWeather = view.findViewById(R.id.tvWeather)
-        mTvAveTemp = view.findViewById(R.id.tvRoomAveTemp)
 
         // Add functionality to the Weather button
         val btnWeather: Button = view.findViewById(R.id.btnWeather)
         btnWeather.setOnClickListener(this)
-
 
         // Add functionality to the Details Weather button
         val btnMoreWeather: Button = view.findViewById(R.id.btnMoreWeather)
@@ -218,6 +207,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 outStr += "Temp: " + (it.main.temp - 273.15).roundToInt() + " C\n"
                 outStr += "Feels Like: " + (it.main.feels_like - 273.15).roundToInt() + " C\n"
                 outStr += "Weather: " + it.weather[0].main
+                outStr += "\n\nHistorical Avg\n(from Room):\n"
+                outStr += "$mHistoricalAve C"
 
                 // add weather data to textview
                 mTvWeather!!.text = outStr
@@ -226,12 +217,12 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
     private val flowObserver: Observer<Double> =
         Observer { aveTemp ->
-            aveTemp?.let {
+
+            aveTemp?.let{
                 val df = DecimalFormat("#.##")
-                mTvAveTemp!!.text = df.format(aveTemp - 273.15).toString()
+                mHistoricalAve = df.format(aveTemp - 273.15).toString()
             }
         }
-
 
     /**
      * Not entirely sure what this does but probably move with all the GPS stuff to ViewModel
@@ -245,7 +236,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 allAreGranted = allAreGranted && b
             }
         }
-
 
     /**
      * This is changing data rather than listening for changing data so not sure how this is handled
