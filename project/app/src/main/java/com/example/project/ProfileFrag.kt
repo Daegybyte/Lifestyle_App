@@ -2,12 +2,9 @@ package com.example.project
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -16,7 +13,6 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -277,6 +273,12 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
                     // make SharedViewModel save the user info
                     mSharedViewModel.updateUser(userInfo)
+
+                    // this sleep is here because MainFrag was being loaded before the user info was
+                    // able to be sent to Room and then flow back to the Observer within MainFrag
+                    // the check for existing user info in MainFrag was failing previously and sending
+                    // the user back to ProfileFrag as a result
+                    Thread.sleep(100)
 
                     val transaction = parentFragmentManager.beginTransaction()
                     transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
