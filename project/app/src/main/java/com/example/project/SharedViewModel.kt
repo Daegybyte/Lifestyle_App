@@ -9,7 +9,8 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
     val userInfo: LiveData<User> = repository.userInfo.asLiveData()
     // weather livedata
     val aveTemp: LiveData<Double> = repository.aveTemp.asLiveData()
-    val liveWeather: LiveData<JsonWeather> = repository.liveWeather
+
+    private val liveWeather: LiveData<JsonWeather> = repository.liveWeather
 
 
     fun updateUser(user: User) = viewModelScope.launch {

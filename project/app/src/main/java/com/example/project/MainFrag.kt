@@ -37,20 +37,7 @@ import kotlin.math.roundToInt
 @SuppressLint("MissingPermission")
 class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-    /**
-     * This is new
-     */
-    // getting the SharedViewModel
-
-//    private val mSharedViewModel: SharedViewModel by activityViewModels {SharedViewModelFactory(requireActivity().application)}
-
-    /**
-     * Need to change to this at some point down the line (when Room is fully implemented)
-     */
-
-
-
-    private  val mSharedViewModel: SharedViewModel by activityViewModels {
+    private val mSharedViewModel: SharedViewModel by activityViewModels {
         SharedViewModelFactory((requireActivity().application as App).repository)
     }
 
@@ -58,12 +45,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     private var mIvThumbnail: ImageView? = null
     private var mTvBMR: TextView? = null
     private var mTvActivityLevel: TextView? = null
-
-    /**
-     * No longer needed
-     */
-    // A SharedPreferences instance to be used in many places to store and load user info
-    private var mSharedPref: SharedPreferences? = null
 
     // String Array for the activity levels
     private var mActivityLevels = arrayOf<String?>(
@@ -75,9 +56,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         "Extreme"
     )
 
-    // For showing a thumbnail of the user's profile picture
-    private var mThumbnailPath : String? = null
-
     // These will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var mLatitude = 0.0
@@ -85,7 +63,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
     private var mBoxWeather: RelativeLayout? = null
     private var mTvWeather: TextView? = null
-    private var mTvAveTemp: TextView? = null
 
     private var mHistoricalAve: String? = null
 
@@ -202,13 +179,24 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     private val liveWeatherObserver: Observer<JsonWeather> =
         Observer { weatherData ->
             weatherData?.let{
+
+                val df = DecimalFormat("#.##")
+                val tempTemp = df.format(it.main.temp - 273.15)
+                val temp = (it.main.temp - 273.15).roundToInt()
+
                 var outStr = "Current Weather for "
                 outStr += it.name + ", " + it.sys.country + "\n"
-                outStr += "Temp: " + (it.main.temp - 273.15).roundToInt() + " C\n"
+                outStr += "Temp: $temp C\n"
                 outStr += "Feels Like: " + (it.main.feels_like - 273.15).roundToInt() + " C\n"
                 outStr += "Weather: " + it.weather[0].main
                 outStr += "\n\nHistorical Avg\n(from Room):\n"
-                outStr += "$mHistoricalAve C"
+
+                if (mHistoricalAve != null){
+                    outStr += "$mHistoricalAve C"
+                }
+                else {
+                    outStr += "$tempTemp C"
+                }
 
                 // add weather data to textview
                 mTvWeather!!.text = outStr
@@ -221,19 +209,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             aveTemp?.let{
                 val df = DecimalFormat("#.##")
                 mHistoricalAve = df.format(aveTemp - 273.15).toString()
-            }
-        }
-
-    /**
-     * Not entirely sure what this does but probably move with all the GPS stuff to ViewModel
-     */
-    // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
-    private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            var allAreGranted = true
-            for(b in result.values) {
-                allAreGranted = allAreGranted && b
             }
         }
 

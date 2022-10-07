@@ -33,24 +33,14 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * TODO:
- * move all the location stuff to somewhere in ViewModel or Repository
- */
-
 
 class ProfileFrag : Fragment(), View.OnClickListener {
 
-    /**
-     * This is new
-     */
     // getting the SharedViewModel
     private val mSharedViewModel: SharedViewModel by activityViewModels {
         SharedViewModelFactory((requireActivity().application as App).repository)
     }
-    /**
-     * Keep these
-     */
+
     // All of the elements that will need to be accessed later
     private var mEtFirstName: EditText? = null
     private var mEtLastName: EditText? = null
@@ -173,38 +163,13 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
         when(view.id) {
-            /**
-             * Move to ViewModel?
-             */
-            R.id.btnLocation -> {
-                //get current GPS location
-//                val fusedLocationClient: FusedLocationProviderClient =
-//                    LocationServices.getFusedLocationProviderClient(view.context)
-//
-//                val appPerms = arrayOf(
-//                    Manifest.permission.ACCESS_FINE_LOCATION,
-//                    Manifest.permission.ACCESS_COARSE_LOCATION
-//                )
-//                Log.d("ProfileFrag", "onViewCreated: appPerms: $appPerms")
-//                activityResultLauncher.launch(appPerms)
 
-//                val requestPermissionLauncher =
-//                    registerForActivityResult(ActivityResultContracts.RequestPermission()
-//                    ) {isGranted: Boolean ->
-//                        if (isGranted) {
-////                            mSharedViewModel.getWeather()
-//                            getLocation()
-//                        }
-//                        else {
-//                            Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
+            R.id.btnLocation -> {
 
                 when {
                     ActivityCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
-//                        mSharedViewModel.getWeather()
                             getLocation()
                     }
                     shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
@@ -217,24 +182,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     }
                 }
 
-//                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-//                val cancellationTokenSource = CancellationTokenSource()
-//
-//                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-//                    .addOnSuccessListener { location: Location? ->
-//                        // getting the last known or current location
-//                        mLatitude = location!!.latitude
-//                        mLongitude = location.longitude
-//
-//                        Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
-//
-//                        val address = getAddress(mLatitude, mLongitude)
-//
-//                        mTvLocation!!.text = address
-//                    }
-//                    .addOnFailureListener {
-//                        Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
-//                    }
             }
 
             R.id.btnPic -> {
@@ -247,13 +194,8 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                 }
             }
 
-            /**
-             * Again not sure where changing data should be? ViewModel?
-             */
             R.id.btnSave -> {
-                /**
-                 * Call the updateUser function instead of using SharedPref
-                 */
+
                 if (mTvLocation?.text.toString() != ""
                     && mEtFirstName?.text.toString() != ""
                     && mEtLastName?.text.toString() != ""
@@ -293,22 +235,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
-    /**
-     * Move to ViewModel
-     */
-    // adapted from https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment
-    private var activityResultLauncher: ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            var allAreGranted = true
-            for(b in result.values) {
-                allAreGranted = allAreGranted && b
-            }
-        }
-
-    /**
-     * Move to ViewModel
-     */
     // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
     private fun getAddress(lat: Double, lng: Double): String {
         val geocoder = Geocoder(context)
@@ -316,9 +242,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         return list[0].locality + ", " + list[0].adminArea + ", " + list[0].countryName
     }
 
-    /**
-     * I think keep this here
-     */
     // to be run when the add profile picture button is clicked
     private var cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -367,22 +290,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             val state = Environment.getExternalStorageState()
             return Environment.MEDIA_MOUNTED == state
         }
-
-    // This will save all of the current state
-    // Any checking to see if the state actually changed will be done when loading the data
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//
-//        outState.putString("firstName", mEtFirstName!!.text.toString())
-//        outState.putString("lastName", mEtLastName!!.text.toString())
-//        outState.putInt("age", mNpAge!!.value)
-//        outState.putInt("height", mNpHeight!!.value)
-//        outState.putInt("weight", mNpWeight!!.value)
-//        outState.putInt("activityLevel", mSpActivityLevel!!.selectedItemPosition)
-//        outState.putBoolean("isMale", mRbMale!!.isChecked)
-//        outState.putString("location", mTvLocation!!.text.toString())
-//        outState.putString("profilePic", mProfilePicPath)
-//    }
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
