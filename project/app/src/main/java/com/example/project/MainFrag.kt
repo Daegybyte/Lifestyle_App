@@ -101,13 +101,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         Log.d("MainFrag", "onCreateView: view inflated successfully")
 
         // immediately check to see if user info already exists or not
-        if (mSharedViewModel.userInfo.value == null) {
-            Log.d("MainFrag", "no existing user was found")
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
-            transaction.addToBackStack(null)
-            transaction.commit()
-        }
+//        if (mSharedViewModel.userInfo.value == null) {
+//            Log.d("MainFrag", "no existing user was found")
+//            val transaction = parentFragmentManager.beginTransaction()
+//            transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
+//            transaction.addToBackStack(null)
+//            transaction.commit()
+//        }
 
         mTvUsername = view.findViewById(R.id.tvUsername)
         mIvThumbnail = view.findViewById(R.id.ivThumbnail)
@@ -249,6 +249,14 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 for (i in 1 until mActivityLevels.size){
                     mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
                 }
+            }
+            // if there is no userInfo yet then immediately go to the ProfileFrag
+            else {
+                Log.d("MainFrag", "no existing user was found")
+                val transaction = parentFragmentManager.beginTransaction()
+                transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
+                transaction.addToBackStack(null)
+                transaction.commit()
             }
         }
 
