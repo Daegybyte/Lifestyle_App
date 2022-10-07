@@ -25,9 +25,12 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
         repository.getWeather(location)
     }
 
+    fun getCityId(): Int {
+        return repository.getCityId()
+    }
+
     val weatherData: LiveData<JsonWeather>
         get() = liveWeather
-
 
     // repository
 //    private val mRepository = repository

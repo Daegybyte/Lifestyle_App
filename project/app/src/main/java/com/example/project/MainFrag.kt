@@ -272,14 +272,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             val strBmr = strArr[1].removePrefix("(") + " " + strArr[2].dropLast(1)
             tvBmr.text = strBmr
 
-            // update in the SharedPreferences as well
-//            with (mSharedPref!!.edit()) {
-//                putInt("activityLevel", pos-1)
-//                apply()
-//            }
-            /**
-             * NO, update in ViewModel/Repo
-             */
             // get all the current user info
             val user: User? = mSharedViewModel.userInfo.value
             // update only the activity level
@@ -311,9 +303,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 transaction.commit()
                 Log.d("MainFrag", "onCreateView: edit profile button clicked")
             }
-            /**
-             * I think a lot of the hikes (and other GPS stuff) can be moved to ViewModel
-             */
             R.id.btnHikes -> {
                 when {
                     ActivityCompat.checkSelfPermission(
@@ -331,9 +320,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     }
                 }
             }
-            /**
-             * Move to ViewModel?
-             */
             R.id.btnWeather -> {
 
                 when {
@@ -353,23 +339,24 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     }
                 }
             }
-            /**
-             * Also move to ViewModel?
-             */
             R.id.btnMoreWeather -> {
-//                val url = "https://forecast.weather.gov/MapClick.php?textField1=$mLatitude&textField2=$mLongitude"
-                val url = "https://openweathermap.org/city/$mCityID"
-                val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                //If there's an activity associated with this intent, launch it
-                try {
-                    startActivity(weatherIntent)
-                    Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
-                } catch (ex: ActivityNotFoundException) {
-                    Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
-                    //If there's no activity associated with this intent, display an error message
-                    Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
-                }
+                openWeatherIntent()
             }
+        }
+    }
+
+    private fun openWeatherIntent() {
+        val cityId = mSharedViewModel.getCityId()
+        val url = "https://openweathermap.org/city/$cityId"
+        val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        //If there's an activity associated with this intent, launch it
+        try {
+            startActivity(weatherIntent)
+            Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
+        } catch (ex: ActivityNotFoundException) {
+            Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+            //If there's no activity associated with this intent, display an error message
+            Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -1,10 +1,15 @@
 package com.example.project
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.location.Location
+import android.net.Uri
+import android.provider.SimPhonebookContract
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.WorkerThread
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -24,6 +29,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
     val aveTemp: Flow<Double> = dbWeatherDao.getAveTemp()
     //weather data
     val liveWeather = MutableLiveData<JsonWeather>()
+
+    var mJsonWeatherData: JsonWeather? = null
 
 
 //    private var mSharedPref: SharedPreferences = application.getSharedPreferences("SharedPref", Context.MODE_PRIVATE)
@@ -61,10 +68,12 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
 //            if (mJsonString != null){
             mJsonString?.let {
-                Log.d("JSON", mJsonString.toString())
+//                Log.d("JSON", mJsonString.toString())
                 val wd = (Gson()).fromJson(it, JsonWeather::class.java)
 
-                Log.d("JsonWeather", wd.toString())
+                mJsonWeatherData = wd
+
+//                Log.d("JsonWeather", wd.toString())
 
                 liveWeather.postValue(wd)
 
@@ -80,7 +89,7 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
                     wd.sys.country
                 )
 
-                Log.d("dbWeather", dbWeatherData.toString())
+//                Log.d("dbWeather", dbWeatherData.toString())
 
 
                 insertWeather(dbWeatherData)
@@ -118,7 +127,9 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 //        }
     }
 
-
+    fun getCityId() : Int {
+        return mJsonWeatherData!!.id
+    }
 
 
 ////     getInstance of SharedRepository Singleton
