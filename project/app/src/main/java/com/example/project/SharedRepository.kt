@@ -61,20 +61,27 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
 //            if (mJsonString != null){
             mJsonString?.let {
+                Log.d("JSON", mJsonString.toString())
                 val wd = (Gson()).fromJson(it, JsonWeather::class.java)
+
+                Log.d("JsonWeather", wd.toString())
+
                 liveWeather.postValue(wd)
 
                 val dbWeatherData = DBWeather(
                     wd.id,
                     wd.name,
-                    wd.lat,
-                    wd.lon,
-//                    wd.weatherMain,
-//                    wd.description,
-//                    wd.icon,
-                    wd.temp,
-//                    wd.country
+                    wd.coord.lat,
+                    wd.coord.lon,
+                    wd.weather[0].main,
+                    wd.weather[0].description,
+                    wd.weather[0].icon,
+                    wd.main.temp,
+                    wd.sys.country
                 )
+
+                Log.d("dbWeather", dbWeatherData.toString())
+
 
                 insertWeather(dbWeatherData)
             }
@@ -95,6 +102,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
         weatherDataURL?.let{
             val jsonWeatherData = NetworkUtils.getDataFromURL(it)
+
+//            Log.d("JSON", jsonWeatherData.toString())
 
             jsonWeatherData?.let{
                 mJsonString = jsonWeatherData

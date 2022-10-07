@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.example.project.NetworkUtils.buildURLFromString
 import com.example.project.NetworkUtils.getDataFromURL
 import org.json.JSONObject
+import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 
@@ -213,10 +214,10 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         Observer { weatherData ->
             weatherData?.let{
                 var outStr = "Current Weather for "
-                outStr += it.name + ", " + it.country + "\n"
-                outStr += "Temp: " + it.temp.roundToInt() + " C\n"
-                outStr += "Feels Like: " + it.feelsLike.roundToInt() + " C\n"
-                outStr += "Weather: " + it.weatherMain
+                outStr += it.name + ", " + it.sys.country + "\n"
+                outStr += "Temp: " + (it.main.temp - 273.15).roundToInt() + " C\n"
+                outStr += "Feels Like: " + (it.main.feels_like - 273.15).roundToInt() + " C\n"
+                outStr += "Weather: " + it.weather[0].main
 
                 // add weather data to textview
                 mTvWeather!!.text = outStr
@@ -226,7 +227,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     private val flowObserver: Observer<Double> =
         Observer { aveTemp ->
             aveTemp?.let {
-                mTvAveTemp!!.text = aveTemp.toString()
+                val df = DecimalFormat("#.##")
+                mTvAveTemp!!.text = df.format(aveTemp - 273.15).toString()
             }
         }
 
