@@ -45,6 +45,9 @@ Room database entry
 
 <img src="./src/profile_page_weather.png" width="25%" height="25%">
 
+<img src="./src/profile_page_weather_tablet.png" width="25%" height="25%">
+
+
 
 ## Weather
 
