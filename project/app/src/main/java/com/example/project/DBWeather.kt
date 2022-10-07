@@ -14,13 +14,13 @@ data class DBWeather(
     val lat: Double,
     val lon: Double,
     //Weather
-    val weatherMain: String,
-    val description: String,
-    val icon: String,
+//    val weatherMain: String,
+//    val description: String,
+//    val icon: String,
     //Main
     val temp: Double,
     //Sys
-    val country: String,
+//    val country: String,
 ){
     @PrimaryKey(autoGenerate = true) var key : Int = 0
 }

@@ -69,11 +69,11 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
                     wd.name,
                     wd.lat,
                     wd.lon,
-                    wd.weatherMain,
-                    wd.description,
-                    wd.icon,
+//                    wd.weatherMain,
+//                    wd.description,
+//                    wd.icon,
                     wd.temp,
-                    wd.country
+//                    wd.country
                 )
 
                 insertWeather(dbWeatherData)

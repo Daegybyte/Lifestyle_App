@@ -8,6 +8,6 @@ class App : Application() {
 
     val applicationScope = CoroutineScope(SupervisorJob())
     val database by lazy { RoomDB.getDatabase(this, applicationScope) }
-    val repository by lazy { SharedRepository(database.UserDao(), database.DBWeatherDao()) }
+    val repository by lazy { SharedRepository.getInstance(database.UserDao(), database.DBWeatherDao(), applicationScope) }
 
 }
