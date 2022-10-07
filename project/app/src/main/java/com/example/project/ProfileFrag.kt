@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Geocoder
@@ -22,6 +23,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -99,14 +101,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         mTvLocation = view.findViewById(R.id.tvLocation)
         mIvProfilePic = view.findViewById(R.id.ivProfilePic)
 
-        /**
-         * attach observer
-         */
+        // attach the observer
         mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
 
-        /**
-         * Look into filling the NumberPickers in the XML like Ben suggested
-         */
         // Populate the age NumberPicker
         mNpAge!!.minValue = 12
         mNpAge!!.maxValue = 99
@@ -184,42 +181,63 @@ class ProfileFrag : Fragment(), View.OnClickListener {
              */
             R.id.btnLocation -> {
                 //get current GPS location
-                val fusedLocationClient: FusedLocationProviderClient =
-                    LocationServices.getFusedLocationProviderClient(view.context)
+//                val fusedLocationClient: FusedLocationProviderClient =
+//                    LocationServices.getFusedLocationProviderClient(view.context)
+//
+//                val appPerms = arrayOf(
+//                    Manifest.permission.ACCESS_FINE_LOCATION,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION
+//                )
+//                Log.d("ProfileFrag", "onViewCreated: appPerms: $appPerms")
+//                activityResultLauncher.launch(appPerms)
 
-                val appPerms = arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-                Log.d("ProfileFrag", "onViewCreated: appPerms: $appPerms")
-                activityResultLauncher.launch(appPerms)
+//                val requestPermissionLauncher =
+//                    registerForActivityResult(ActivityResultContracts.RequestPermission()
+//                    ) {isGranted: Boolean ->
+//                        if (isGranted) {
+////                            mSharedViewModel.getWeather()
+//                            getLocation()
+//                        }
+//                        else {
+//                            Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
 
-                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-                val cancellationTokenSource = CancellationTokenSource()
-
-                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-                    .addOnSuccessListener { location: Location? ->
-                        // getting the last known or current location
-                        mLatitude = location!!.latitude
-                        mLongitude = location.longitude
-
-                        Toast.makeText(
-                            activity,
-                            "Latitude:$mLatitude\nLongitude:$mLongitude",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        val address = getAddress(mLatitude, mLongitude)
-
-                        mTvLocation!!.text = address
+                when {
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+//                        mSharedViewModel.getWeather()
+                            getLocation()
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(
-                            activity,
-                            "Failed on getting current location",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                        Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
+                    else -> {
+                        requestPermissionLauncher.launch(
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                }
+
+//                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+//                val cancellationTokenSource = CancellationTokenSource()
+//
+//                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+//                    .addOnSuccessListener { location: Location? ->
+//                        // getting the last known or current location
+//                        mLatitude = location!!.latitude
+//                        mLongitude = location.longitude
+//
+//                        Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
+//
+//                        val address = getAddress(mLatitude, mLongitude)
+//
+//                        mTvLocation!!.text = address
+//                    }
+//                    .addOnFailureListener {
+//                        Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+//                    }
             }
 
             R.id.btnPic -> {
@@ -362,5 +380,38 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 //        outState.putString("location", mTvLocation!!.text.toString())
 //        outState.putString("profilePic", mProfilePicPath)
 //    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        val cancellationTokenSource = CancellationTokenSource()
+
+        mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+            .addOnSuccessListener { location: Location? ->
+                // getting the last known or current location
+                mLatitude = location!!.latitude
+                mLongitude = location.longitude
+
+                Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
+
+                val address = getAddress(mLatitude, mLongitude)
+
+                mTvLocation!!.text = address
+            }
+            .addOnFailureListener {
+                Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+    {isGranted: Boolean ->
+        if (isGranted) {
+//            mSharedViewModel.getWeather()
+            getLocation()
+        }
+        else {
+            Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 }

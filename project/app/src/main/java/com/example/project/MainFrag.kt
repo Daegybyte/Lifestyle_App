@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
@@ -18,6 +19,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat.getCallingActivity
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -333,140 +335,42 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
              * I think a lot of the hikes (and other GPS stuff) can be moved to ViewModel
              */
             R.id.btnHikes -> {
-                val appPerms = arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-                Log.d("MainFrag", "onViewCreated: appPerms: $appPerms")
-                activityResultLauncher.launch(appPerms)
-
-                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-                val cancellationTokenSource = CancellationTokenSource()
-
-                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-                    .addOnSuccessListener { location: Location? ->
-                        // getting the last known or current location
-                        mLatitude = location!!.latitude
-                        mLongitude = location.longitude
-
-                        Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
-
-//                    // New York coordinates
-//                    mLatitude = 40.7128
-//                    mLongitude = -74.0060
-//
-//                    //Moscow coordinates
-//                    mLatitude = 55.7558
-//                    mLongitude = 37.6173
-//
-//                    //Auckland coordinates
-//                    mLatitude = -36.8485
-//                    mLongitude = 174.7633
-//
-//                    //salt lake city coordinates
-//                    mLatitude = 40.7608
-//                    mLongitude = -111.8910
-//
-//                    //rio de janeiro coordinates
-//                    mLatitude = -22.9068
-//                    mLongitude = -43.1729
-
-                        val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
-                        Log.d("MainFrag", "onViewCreated: searchUri created successfully")
-
-                        //Create the implicit intent
-                        val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
-                        Log.d("MainFrag", "onViewCreated: mapIntent created successfully")
-
-                        //If there's an activity associated with this intent, launch it
-                        try {
-                            startActivity(mapIntent)
-                            Log.d("MainFrag", "onViewCreated: startActivity(mapIntent) called successfully")
-                        } catch (ex: ActivityNotFoundException) {
-                            Log.d("MainFrag", "onViewCreated: startActivity(mapIntent) failed")
-                            Toast.makeText(activity, "There's no app that can handle this action.", Toast.LENGTH_SHORT).show()
-                            //handle errors here
-                        }
+                when {
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                        getHikes()
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                        Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+                        hikesRequestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
+                    else -> {
+                        hikesRequestPermissionLauncher.launch(
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                }
             }
             /**
              * Move to ViewModel?
              */
             R.id.btnWeather -> {
 
-                val appPerms = arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-                activityResultLauncher.launch(appPerms)
-
-                val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-                val cancellationTokenSource = CancellationTokenSource()
-
-                mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
-                    .addOnSuccessListener { location: Location? ->
-                        // getting the last known or current location
-                        mLatitude = location!!.latitude
-                        mLongitude = location.longitude
-
-                        // make weather information visible
-                        mBoxWeather!!.visibility = View.VISIBLE
-                        mTvWeather!!.text = "Loading..."
-
-                        val weatherDataURL = buildURLFromString(mLatitude, mLongitude)
-                        var jsonWeatherData: String? = null
-                        Thread{
-                            try{
-                                assert(weatherDataURL != null)
-                                Log.d("WEATHER", "requesting weather")
-                                jsonWeatherData = getDataFromURL(weatherDataURL!!)
-                                Log.d("WEATHER", jsonWeatherData ?: "Didn't Get Data!!")
-
-                                // get data out of json object
-                                val jsonObject = JSONObject(jsonWeatherData!!)
-                                val cityName = jsonObject.getString("name")
-                                Log.d("WEATHER", cityName)
-                                mCityID = jsonObject.getInt("id").toString()
-                                Log.d("WEATHER", mCityID!!)
-
-                                val jsonSys = jsonObject.getJSONObject("sys")
-                                val countryName = jsonSys.getString("country")
-                                Log.d("WEATHER", countryName)
-
-                                val jsonMain = jsonObject.getJSONObject("main")
-                                val temperature = jsonMain.getDouble("temp")
-                                val feelsLike = jsonMain.getDouble("feels_like")
-                                Log.d("WEATHER", (temperature - 273.15).toString())
-                                Log.d("WEATHER", (feelsLike - 273.15).toString())
-
-
-                                val jsonWeatherArray = jsonObject.getJSONArray("weather")
-                                val jsonWeather = jsonWeatherArray.getJSONObject(0)
-                                val weatherMain = jsonWeather.getString("main")
-                                Log.d("WEATHER", weatherMain)
-                                val weatherDescription = jsonWeather.getString("description")
-                                Log.d("WEATHER", weatherDescription)
-                                val weatherIcon = jsonWeather.getString("icon")
-                                Log.d("WEATHER", weatherIcon)
-
-                                // add weather data to textview
-                                val outStr = "Current Weather for " + cityName + ", " + countryName + "\nTemp: " + (temperature - 273.15).roundToInt() + " C\nFeels Like: " + (feelsLike - 273.15).roundToInt() + " C\nWeather: " + weatherMain
-                                mTvWeather!!.text = outStr
-
-//                            Log.d("WEATHER", "Done")
-                            }
-                            catch (e: Exception){
-                                mTvWeather!!.text = "Error Fetching Weather Data"
-                                e.printStackTrace()
-                            }
-                        }.start()
+                when {
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                        getWeather()
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+                    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                        Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+                        weatherRequestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
+                    else -> {
+                        weatherRequestPermissionLauncher.launch(
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                }
             }
             /**
              * Also move to ViewModel?
@@ -485,6 +389,127 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getHikes() {
+        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        val cancellationTokenSource = CancellationTokenSource()
+
+        mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+            .addOnSuccessListener { location: Location? ->
+                // getting the last known or current location
+                mLatitude = location!!.latitude
+                mLongitude = location.longitude
+
+                val searchUri = Uri.parse("geo:$mLatitude, $mLongitude?q=" + Uri.encode("hiking trails"))
+                Log.d("MainFrag", "onViewCreated: searchUri created successfully")
+
+                //Create the implicit intent
+                val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+                Log.d("MainFrag", "onViewCreated: mapIntent created successfully")
+
+                //If there's an activity associated with this intent, launch it
+                try {
+                    startActivity(mapIntent)
+                    Log.d("MainFrag", "onViewCreated: startActivity(mapIntent) called successfully")
+                } catch (ex: ActivityNotFoundException) {
+                    Log.d("MainFrag", "onViewCreated: startActivity(mapIntent) failed")
+                    Toast.makeText(activity, "There's no app that can handle this action.", Toast.LENGTH_SHORT).show()
+                    //handle errors here
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private fun getWeather() {
+        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        val cancellationTokenSource = CancellationTokenSource()
+
+        mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
+            .addOnSuccessListener { location: Location? ->
+                // getting the last known or current location
+                mLatitude = location!!.latitude
+                mLongitude = location.longitude
+
+                mBoxWeather!!.visibility = View.VISIBLE
+                mTvWeather!!.text = "Loading..."
+
+                val weatherDataURL = buildURLFromString(mLatitude, mLongitude)
+                var jsonWeatherData: String? = null
+                Thread{
+                    try{
+                        assert(weatherDataURL != null)
+                        Log.d("WEATHER", "requesting weather")
+                        jsonWeatherData = getDataFromURL(weatherDataURL!!)
+                        Log.d("WEATHER", jsonWeatherData ?: "Didn't Get Data!!")
+
+                        // get data out of json object
+                        val jsonObject = JSONObject(jsonWeatherData!!)
+                        val cityName = jsonObject.getString("name")
+                        Log.d("WEATHER", cityName)
+                        mCityID = jsonObject.getInt("id").toString()
+                        Log.d("WEATHER", mCityID!!)
+
+                        val jsonSys = jsonObject.getJSONObject("sys")
+                        val countryName = jsonSys.getString("country")
+                        Log.d("WEATHER", countryName)
+
+                        val jsonMain = jsonObject.getJSONObject("main")
+                        val temperature = jsonMain.getDouble("temp")
+                        val feelsLike = jsonMain.getDouble("feels_like")
+                        Log.d("WEATHER", (temperature - 273.15).toString())
+                        Log.d("WEATHER", (feelsLike - 273.15).toString())
+
+
+                        val jsonWeatherArray = jsonObject.getJSONArray("weather")
+                        val jsonWeather = jsonWeatherArray.getJSONObject(0)
+                        val weatherMain = jsonWeather.getString("main")
+                        Log.d("WEATHER", weatherMain)
+                        val weatherDescription = jsonWeather.getString("description")
+                        Log.d("WEATHER", weatherDescription)
+                        val weatherIcon = jsonWeather.getString("icon")
+                        Log.d("WEATHER", weatherIcon)
+
+                        // add weather data to textview
+                        val outStr = "Current Weather for " + cityName + ", " + countryName + "\nTemp: " + (temperature - 273.15).roundToInt() + " C\nFeels Like: " + (feelsLike - 273.15).roundToInt() + " C\nWeather: " + weatherMain
+                        mTvWeather!!.text = outStr
+
+//                            Log.d("WEATHER", "Done")
+                    }
+                    catch (e: Exception){
+                        mTvWeather!!.text = "Error Fetching Weather Data"
+                        e.printStackTrace()
+                    }
+                }.start()
+            }
+            .addOnFailureListener {
+                Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private val hikesRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+    {isGranted: Boolean ->
+        if (isGranted) {
+            getHikes()
+        }
+        else {
+            Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val weatherRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+    {isGranted: Boolean ->
+        if (isGranted) {
+            getWeather()
+        }
+        else {
+            Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
         }
     }
 }
