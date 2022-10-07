@@ -700,3 +700,75 @@ Author: Diego <lucy@lucy.uconnect.utah.edu>
 Date:   Thu Oct 6 12:02:49 2022 -0600
 
     updated readme
+
+commit 9ff085d85ac09d816d634974deec7561a8f0ea47
+Author: Kelan Albertson <kelan.albertson@utah.edu>
+Date:   Thu Oct 6 15:52:54 2022 -0600
+
+    fixed the issue of Observer overwriting unsaved changes to profile by running after returning from the camera intent
+
+commit eb6305f3e702118fae6fd72611c48ee0dde4d76d
+Author: Kelan Albertson <kelan.albertson@utah.edu>
+Date:   Thu Oct 6 18:05:05 2022 -0600
+
+    location dependent actions now do action as soon as location permission is granted rather than granting permission then clicking button again
+
+commit ea1a24a43e2ed56041d43d92d8077f58b3325aec
+Author: Kelan Albertson <kelan.albertson@utah.edu>
+Date:   Thu Oct 6 19:01:24 2022 -0600
+
+    fixed the bug that made ProfileFrag the beginning screen upon launch each time by checking if the data is null in the Observer
+
+commit 139e9243168e6a5ea71da2a11a0cc6a4612b55ce
+Author: Jon <jon.hughes.msd@gmail.com>
+Date:   Thu Oct 6 19:56:19 2022 -0600
+
+    Moved weather button functionality to repository and set up Room flow to textview in MainFrag -- something is still broken (UninitializedPropertyAccessException on mScope in the repository)
+
+commit 63167fcdd5685145534b73ff1633cb9eb03330a0
+Author: Jon <jon.hughes.msd@gmail.com>
+Date:   Thu Oct 6 19:57:06 2022 -0600
+
+    MainFrag didn't commit for some reason
+
+commit 7e2179e499de0fbce31487f158573081f90351c8
+Author: Jon <jon.hughes.msd@gmail.com>
+Date:   Thu Oct 6 22:43:01 2022 -0600
+
+    Fixed mScope bug, however it seems like there is a problem with the json weather call as it appears to be getting no data back. On the plus side, it looks like the livedata and flow are working
+
+commit 9a08232e17c24fcd7dad48ee5ea66aaeb3376f78
+Author: Jon <jon.hughes.msd@gmail.com>
+Date:   Fri Oct 7 00:42:49 2022 -0600
+
+    json conversion to JsonWeather and then to DBWeather now works. It's not the prettiest, but it works
+
+commit 775c6003e948fb0ecd8f70cd9aeb626f23313949
+Author: Kelan Albertson <kelan.albertson@utah.edu>
+Date:   Fri Oct 7 11:43:26 2022 -0600
+
+    fixed the bug that made MainFrag redirect back to ProfileFrag after profile creation by adding a short sleep call
+
+commit 1f0f003b73ea2faa334b270e771bd36e975f7c1a
+Author: Kelan Albertson <kelan.albertson@utah.edu>
+Date:   Fri Oct 7 11:49:39 2022 -0600
+
+    changed the location text view to say Loading... while the location is being found in order to avoid user confusion
+
+commit 1ded91e87238eeafd48d7d7a16f2ccae46c1516b
+Author: Jon <jon.hughes.msd@gmail.com>
+Date:   Fri Oct 7 12:12:18 2022 -0600
+
+    fixed weather details button so it now goes to the appropriate weather page from teh implicit intent
+
+commit 1e8bba1356dbffb9fab8a6f19389e7115a7be376
+Author: Jon <jon.hughes.msd@gmail.com>
+Date:   Fri Oct 7 12:33:33 2022 -0600
+
+    Avg temp Flow from Room now updates a member variable that is used to construct the weather information string -- this simplifies and prettifies the layout slightly
+
+commit 9d6e88cc253cf6fe5e76bb4406f9f4e3a26fea01
+Author: Diego <lucy@lucy.home>
+Date:   Fri Oct 7 16:21:49 2022 -0600
+
+    updated readme

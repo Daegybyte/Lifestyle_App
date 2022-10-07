@@ -14,6 +14,15 @@ Tablet mode will be looking at screen width, and in the case that the app is run
 
 Room database entry
 
+clean out code from phase 1
+
+implent rotation so that it does not destroy new data
+
+refactor onClick() to contain all listener code pieces
+
+create the MVVM
+
+
 # Design:
 
 ## Register
