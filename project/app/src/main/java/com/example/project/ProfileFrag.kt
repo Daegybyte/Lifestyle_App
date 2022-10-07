@@ -385,6 +385,8 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
+        mTvLocation!!.text = "Loading..."
+
         val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         val cancellationTokenSource = CancellationTokenSource()
 
