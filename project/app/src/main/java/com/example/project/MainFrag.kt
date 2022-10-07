@@ -454,5 +454,5 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
         }
     }
-    
+
 }
