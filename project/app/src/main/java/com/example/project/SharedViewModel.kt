@@ -12,15 +12,9 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
 
     private val liveWeather: LiveData<JsonWeather> = repository.liveWeather
 
-
     fun updateUser(user: User) = viewModelScope.launch {
         repository.updateUser(user)
     }
-
-//    fun insertWeather(dbWeather: DBWeather) = viewModelScope.launch {
-//        repository.insertWeather(dbWeather)
-//    }
-
 
     fun getWeather(location: Location) {
         repository.getWeather(location)
@@ -32,23 +26,6 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
 
     val weatherData: LiveData<JsonWeather>
         get() = liveWeather
-
-    // repository
-//    private val mRepository = repository
-
-    // all of the User info:
-    // todo: make a user class?
-//    private val _userInfo: MutableLiveData<User>
-//    val userInfo: LiveData<User>
-//        get() = _userInfo
-
-
-    //    init {
-////        mRepository = SharedRepository.getInstance(application)
-////        _userInfo = repository.userInfo
-//
-//    }
-
 }
 
 class SharedViewModelFactory(private val repository: SharedRepository) : ViewModelProvider.Factory {

@@ -32,26 +32,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
     var mJsonWeatherData: JsonWeather? = null
 
-
-//    private var mSharedPref: SharedPreferences = application.getSharedPreferences("SharedPref", Context.MODE_PRIVATE)
-
     @WorkerThread
     suspend fun updateUser(user: User) {
-        // TODO: Room stuff
-//        with(mSharedPref.edit()) {
-//            putString("firstName", user!!.firstName)
-//            putString("lastName", user.lastName)
-//            putInt("age", user.age)
-//            putInt("height", user.height)
-//            putInt("weight", user.weight)
-//            putInt("activityLevel", user.activityLevel)
-//            // store a boolean (for less space + ease) representing whether they are male or not
-//            putBoolean("isMale", user.isMale)
-//            putString("location", user.location)
-//            putString("profilePic", user.imagePath)
-//            apply()
-//        }
-//        userInfo.value = user!!
         userDao.insert(user)    // <<--- inserts a new row for the user on every update
     }
 
@@ -112,42 +94,16 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
         weatherDataURL?.let{
             val jsonWeatherData = NetworkUtils.getDataFromURL(it)
 
-//            Log.d("JSON", jsonWeatherData.toString())
-
             jsonWeatherData?.let{
                 mJsonString = jsonWeatherData
             }
         }
-        // This should be the same as the above three lines of code
-//        if (weatherDataURL != null){
-//            val jsonWeatherData = NetworkUtils.getDataFromURL(weatherDataURL)
-//            if (jsonWeatherData != null){
-//                mJsonString = jsonWeatherData
-//            }
-//        }
     }
 
     fun getCityId() : Int {
         return mJsonWeatherData!!.id
     }
 
-
-////     getInstance of SharedRepository Singleton
-//    companion object {
-//        @Volatile
-//        private var instance: SharedRepository? = null
-//        @Synchronized
-//        fun getInstance(application: Application): SharedRepository {
-//            if (instance == null) {
-//                instance = SharedRepository(application)
-//            }
-//            return instance as SharedRepository
-//        }
-//    }
-
-    /**
-     * Will need to switch over to this getInstance() version at some point
-     */
     companion object {
         private var mInstance: SharedRepository? = null
         private lateinit var mScope: CoroutineScope
