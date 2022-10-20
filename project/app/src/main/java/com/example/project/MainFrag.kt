@@ -136,6 +136,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val btnMoreWeather: Button = view.findViewById(R.id.btnMoreWeather)
         btnMoreWeather.setOnClickListener(this)
 
+        val btnSteps: Button = view.findViewById(R.id.btnSteps)
+        btnSteps.setOnClickListener(this)
+
         return view
     }
 
@@ -306,6 +309,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
             R.id.btnMoreWeather -> {
                 openWeatherIntent()
+            }
+            R.id.btnSteps -> {
+                // changes the ProfileFrag to be displayed
+                val transaction = parentFragmentManager.beginTransaction()
+                transaction.replace(R.id.frag_container, StepsFrag(), "Step Fragment")
+                transaction.addToBackStack(null)
+                transaction.commit()
             }
         }
     }
