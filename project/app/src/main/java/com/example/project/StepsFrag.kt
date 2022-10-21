@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 class StepsFrag : Fragment(), View.OnClickListener {
 
     private lateinit var mSensorManager: SensorManager
-    private lateinit var mTvData: TextView
+    private lateinit var mTvSteps: TextView
     private var mStepCounter: Sensor? = null
 
     override fun onCreateView(
@@ -32,7 +32,30 @@ class StepsFrag : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_steps, container, false)
 
-        mTvData = view.findViewById(R.id.tvSteps)
+//        // set the swipe listener
+//        view.setOnTouchListener(object: OnSwipeTouchListener(context) {
+//            override fun onSwipeUp() {
+//                super.onSwipeUp()
+//                Toast.makeText(activity, "Swipe up gesture detected", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
+//            override fun onSwipeDown() {
+//                super.onSwipeDown()
+//                Toast.makeText(activity, "Swipe down gesture detected", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
+//            override fun onSwipeRight() {
+//                super.onSwipeRight()
+//                Toast.makeText(activity, "Swiped right!", Toast.LENGTH_SHORT).show()
+//            }
+//
+//            override fun onSwipeLeft() {
+//                super.onSwipeLeft()
+//                Toast.makeText(activity, "Swiped left!", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+
+        mTvSteps = view.findViewById(R.id.tvSteps)
 
         mSensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -67,9 +90,9 @@ class StepsFrag : Fragment(), View.OnClickListener {
         }
     }
 
-    private val mListener: SensorEventListener = object : SensorEventListener {
+    private val stepListener: SensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(sensorEvent: SensorEvent) {
-            mTvData.text = "${sensorEvent.values[0].roundToInt()}"
+            mTvSteps.text = "${sensorEvent.values[0].roundToInt()}"
         }
 
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
@@ -78,13 +101,13 @@ class StepsFrag : Fragment(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         if(mStepCounter != null){
-            registerListener()
+            registerStepListener()
         }
     }
 
-    private fun registerListener() {
+    private fun registerStepListener() {
         mSensorManager.registerListener(
-            mListener,
+            stepListener,
             mStepCounter,
             SensorManager.SENSOR_DELAY_NORMAL
         )
@@ -93,7 +116,7 @@ class StepsFrag : Fragment(), View.OnClickListener {
     override fun onPause() {
         super.onPause()
         if(mStepCounter != null) {
-            mSensorManager.unregisterListener(mListener)
+            mSensorManager.unregisterListener(stepListener)
         }
     }
 
