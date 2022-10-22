@@ -10,6 +10,7 @@ android:background="@color/frag_bg"
 tools:context=".MainActivity">
 
 <ScrollView
+    android:id="@+id/entire_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintStart_toStartOf="parent"

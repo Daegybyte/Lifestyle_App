@@ -6,6 +6,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import java.lang.System.currentTimeMillis
@@ -26,6 +28,40 @@ class MainActivity : FragmentActivity() {
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+
+        // set the swipe listener
+        val view: View = findViewById(R.id.entire_view)
+        view.setOnTouchListener(object: OnSwipeTouchListener(this) {
+//            override fun onSwipeUp() {
+//                super.onSwipeUp()
+//                Toast.makeText(this@MainActivity, "Swipe up gesture detected", Toast.LENGTH_SHORT).show()
+//            }
+//            override fun onSwipeDown() {
+//                super.onSwipeDown()
+//                Toast.makeText(this@MainActivity, "Swipe down gesture detected", Toast.LENGTH_SHORT).show()
+//            }
+            override fun onSwipeRight() {
+                super.onSwipeRight()
+//                Toast.makeText(this@MainActivity, "Swiped right!", Toast.LENGTH_SHORT).show()
+                if(getCurrentFragment() is StepsFrag) {
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                }
+            }
+
+            override fun onSwipeLeft() {
+                super.onSwipeLeft()
+//                Toast.makeText(this@MainActivity, "Swiped left!", Toast.LENGTH_SHORT).show()
+                if(getCurrentFragment() is MainFrag) {
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.frag_container, StepsFrag(), "Steps Fragment")
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                }
+            }
+        })
     }
 
     private val rotateListener: SensorEventListener = object : SensorEventListener {
