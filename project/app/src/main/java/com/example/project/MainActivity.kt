@@ -73,6 +73,7 @@ class MainActivity : FragmentActivity() {
 //            val xrot = sensorEvent.values[0].toDouble()
 //            val yrot = sensorEvent.values[1].toDouble()
 //            val zrot = sensorEvent.values[2].toDouble()
+            // Get the rotation rate from the appropriate axis (depending on device orientation)
             val rot =
                 if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) sensorEvent.values[1].toDouble() else sensorEvent.values[0].toDouble()
 
