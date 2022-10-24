@@ -1,6 +1,7 @@
 package com.example.project
 
 import android.content.Context
+import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -67,14 +68,19 @@ class MainActivity : FragmentActivity() {
     private val rotateListener: SensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(sensorEvent: SensorEvent) {
 
+
             //Get the rotation rates along the x,y and z axes
 //            val xrot = sensorEvent.values[0].toDouble()
-            val yrot = sensorEvent.values[1].toDouble()
+//            val yrot = sensorEvent.values[1].toDouble()
 //            val zrot = sensorEvent.values[2].toDouble()
+            val rot =
+                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) sensorEvent.values[1].toDouble() else sensorEvent.values[0].toDouble()
 
             //Compute the squared magnitude of the rotation.  No reason for us to take the sqrt
 //            val sq_magnitude = Math.pow(xrot, 2.0) + Math.pow(yrot, 2.0) + Math.pow(zrot, 2.0)
-            val sq_magnitude = Math.pow(yrot, 2.0)
+            val sq_magnitude = Math.pow(rot, 2.0)
+//            val sq_magnitude = Math.pow(yrot, 2.0)
+
 
             //this is another way of measuring "magnitude" called the "L1 Norm"
             //val magnitude = Math.max(Math.max(Math.abs(xrot), Math.abs(yrot)), Math.abs(zrot))
