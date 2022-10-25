@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-msdlifestyleapp-dev-163200-authRole",
+      "UnauthRoleArn": "arn:aws:iam::360589933918:role/amplify-msdlifestyleapp-dev-163200-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::360589933918:role/amplify-msdlifestyleapp-dev-163200-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-msdlifestyleapp-dev-163200-deployment",
+      "UnauthRoleName": "amplify-msdlifestyleapp-dev-163200-unauthRole",
+      "StackName": "amplify-msdlifestyleapp-dev-163200",
+      "StackId": "arn:aws:cloudformation:us-west-2:360589933918:stack/amplify-msdlifestyleapp-dev-163200/adad5030-53eb-11ed-b28e-0a990244715b",
+      "AmplifyAppId": "d32gs4m3q539o5"
+    }
+  }
+}
