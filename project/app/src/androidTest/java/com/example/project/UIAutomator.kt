@@ -39,8 +39,8 @@ class ChangeTextBehaviorTest2 {
     }
 
     private fun scrollDown() {
-        device.swipe(0, 1000, 0, 0, 10)
-
+//        scroll from the bottom right corner to the top right corner
+        device.swipe(1000, 2000, 1000, 0, 10)
     }
 
     @Before
@@ -117,6 +117,8 @@ class ChangeTextBehaviorTest2 {
         device.pressBack()
         //scroll to the bottom of the screen
         scrollDown()
+        scrollDown()
+//        device.swipe(100, 2000, 100, 0, 10)
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         btnSave.click()
     }
@@ -136,6 +138,10 @@ class ChangeTextBehaviorTest2 {
         device.pressBack()
         //scroll to the bottom of the screen
         scrollDown()
+        scrollDown()
+
+//        swipe from the bottom left corner to the top right corner
+//        device.swipe(100, 2000, 100, 0, 10)
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         btnSave.click()
     }
@@ -146,8 +152,10 @@ class ChangeTextBehaviorTest2 {
             device.findObject(UiSelector().resourceId("$PACKAGE:id/btnEditProfile"))
         btnEditProfile.click()
 
-        //scroll to the bottom of the screen
-        device.swipe(0, 1000, 0, 0, 10)
+//        get device height and width
+//        val height = device.displayHeight
+
+        scrollDown()
 
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         scrollDown()
@@ -375,6 +383,12 @@ class ChangeTextBehaviorTest2 {
         val btnSave = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnSave"))
         btnSave.click()
         
+    }
+
+    @Test
+    fun test_step_counter() {
+        val stepCounter = device.findObject(UiSelector().resourceId("$PACKAGE:id/tvSteps"))
+        assertTrue(stepCounter.text.contains("0"))
     }
 
 
