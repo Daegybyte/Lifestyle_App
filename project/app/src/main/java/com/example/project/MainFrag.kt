@@ -12,8 +12,10 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -442,6 +444,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 mTvArrowRight!!.visibility = View.GONE
                 mTvArrowLeft!!.visibility = View.VISIBLE
                 mIsCounterOn = true
+                MediaPlayer.create(activity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
                 Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
