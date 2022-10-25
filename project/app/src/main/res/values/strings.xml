@@ -28,6 +28,11 @@
     <string name="logo">Logo</string>
     <string name="details">Details</string>
     <string name="weather_loading">Loading...</string>
+    <string name="step_label_off">STEP COUNTER: off (swipe ON)</string>
+    <string name="step_label_on">STEP COUNTER: ON (swipe off)</string>
+    <string name="font_awesome_arrow_right">\uf101 \uf101</string>
+    <string name="font_awesome_arrow_left">\uf100 \uf100</string>
+
 
 </resources>
 

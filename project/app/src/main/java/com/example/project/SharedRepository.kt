@@ -32,6 +32,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
     var mJsonWeatherData: JsonWeather? = null
 
+    var rNumSteps: Int? = null
+
     @WorkerThread
     suspend fun updateUser(user: User) {
         userDao.insert(user)    // <<--- inserts a new row for the user on every update

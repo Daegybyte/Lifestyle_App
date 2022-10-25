@@ -17,7 +17,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -27,7 +26,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import kotlinx.coroutines.Delay
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -201,8 +199,12 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     && mEtLastName?.text.toString() != ""
                     && mProfilePicPath != null) {
 
+                    // set steps equal to NumSteps (or 0 if null)
+                    // This prevents the step counter from being reset if new user is entered into table
+                    val steps = mSharedViewModel.getNumSteps() ?: 0
+
                     // making a user
-                    val userInfo = User (
+                    val userInfo = User(
                         mEtFirstName!!.text.toString(),
                         mEtLastName!!.text.toString(),
                         mNpAge!!.value,
@@ -211,7 +213,8 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                         mSpActivityLevel!!.selectedItemPosition,
                         mRbMale!!.isChecked,
                         mTvLocation!!.text.toString(),
-                        mProfilePicPath!!
+                        mProfilePicPath!!,
+                        steps
                     )
 
                     // make SharedViewModel save the user info

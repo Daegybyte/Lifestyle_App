@@ -141,6 +141,52 @@
         android:orientation="vertical"
         android:layout_gravity="center">
 
+        <TextView
+            android:id="@+id/tvSteps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="48sp"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+
+            >
+            <TextView
+                android:id="@+id/tvArrowLeft"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/fontawesome_solid"
+                android:text="@string/font_awesome_arrow_left"
+                android:textSize="20sp"
+                android:layout_marginRight="10dp"
+                android:visibility="gone"
+                />
+            <TextView
+                android:id="@+id/tvStepsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/step_label_off"
+                android:textSize="20sp"
+                />
+            <TextView
+                android:id="@+id/tvArrowRight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/fontawesome_solid"
+                android:text="@string/font_awesome_arrow_right"
+                android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:visibility="visible"
+                />
+        </LinearLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -201,17 +247,17 @@
                 android:layout_marginBottom="16dp"
                 />
 
-            <Button
-                android:id="@+id/btnSteps"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginStart="133dp"
-                android:layout_marginEnd="133dp"
-                android:layout_marginBottom="111dp"
-                android:text="Steps" />
+<!--            <Button-->
+<!--                android:id="@+id/btnSteps"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignParentStart="true"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_alignParentBottom="true"-->
+<!--                android:layout_marginStart="133dp"-->
+<!--                android:layout_marginEnd="133dp"-->
+<!--                android:layout_marginBottom="111dp"-->
+<!--                android:text="Steps" />-->
 
         </RelativeLayout>
     </LinearLayout>

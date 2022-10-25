@@ -3,9 +3,14 @@ package com.example.project
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -34,6 +39,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         SharedViewModelFactory((requireActivity().application as App).repository)
     }
 
+    private var mUserId: Int? = null
+
     private var mTvUsername: TextView? = null
     private var mIvThumbnail: ImageView? = null
     private var mTvBMR: TextView? = null
@@ -48,6 +55,17 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         "Heavy",
         "Extreme"
     )
+
+    // Sensor variables for step counter
+    private lateinit var mSensorManager: SensorManager
+    private var mStepCounter: Sensor? = null
+    var mSteps: Int? = null
+    private var mTvSteps: TextView? = null
+    private var mTvStepsLabel : TextView? = null
+    private var mTvArrowLeft: TextView? = null
+    private var mTvArrowRight: TextView? = null
+    var mIsCounterOn: Boolean = false
+
 
     // These will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -74,6 +92,12 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         mTvBMR = view.findViewById(R.id.tvBMR)
         mTvActivityLevel = view.findViewById(R.id.tvActivityLevel)
 
+        // get views for step counter
+        mSensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        mTvSteps = view.findViewById(R.id.tvSteps)
+        mTvStepsLabel = view.findViewById(R.id.tvStepsLabel)
+        mTvArrowLeft = view.findViewById(R.id.tvArrowLeft)
+        mTvArrowRight = view.findViewById(R.id.tvArrowRight)
 
         /**
          * attach observers
@@ -129,9 +153,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val btnMoreWeather: Button = view.findViewById(R.id.btnMoreWeather)
         btnMoreWeather.setOnClickListener(this)
 
-        val btnSteps: Button = view.findViewById(R.id.btnSteps)
-        btnSteps.setOnClickListener(this)
-
         return view
     }
 
@@ -139,6 +160,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         // Update the UI when any of the profile info changes
         Observer { userInfo ->
             if (userInfo != null) {
+                mUserId = userInfo.id
+                Log.i("USER ID", mUserId.toString())
+
                 mTvUsername!!.text = "${userInfo.firstName} ${userInfo.lastName}"
 
                 val bMap = BitmapFactory.decodeFile(userInfo.imagePath)
@@ -161,6 +185,10 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 for (i in 1 until mActivityLevels.size){
                     mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
                 }
+
+                // update steps member variable and steps TextView
+                mSteps = userInfo.steps
+                mTvSteps!!.text = mSteps.toString()
             }
             // if there is no userInfo yet then immediately go to the ProfileFrag
             else {
@@ -187,11 +215,10 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 outStr += "Weather: " + it.weather[0].main
                 outStr += "\n\nHistorical Avg\n(from Room):\n"
 
-                if (mHistoricalAve != null){
-                    outStr += "$mHistoricalAve C"
-                }
-                else {
-                    outStr += "$tempTemp C"
+                outStr += if (mHistoricalAve != null){
+                    "$mHistoricalAve C"
+                } else {
+                    "$tempTemp C"
                 }
 
                 // add weather data to textview
@@ -245,18 +272,18 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
     }
 
-
-
     override fun onNothingSelected(parent: AdapterView<*>?) {
         // Do nothing (this method is required by AdapterView.OnItemSelectedListener)
     }
-
-
 
     // handles any of the buttons being clicked
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnEditProfile -> {
+                // save the current number of steps to the repository (to prevent step counter from
+                // resetting if "Save" button is pressed and new User is entered into table
+                mSharedViewModel.setNumSteps(mSteps!!)
+
                 // changes the ProfileFrag to be displayed
                 val transaction = parentFragmentManager.beginTransaction()
                 transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
@@ -302,13 +329,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
             R.id.btnMoreWeather -> {
                 openWeatherIntent()
-            }
-            R.id.btnSteps -> {
-                // changes the ProfileFrag to be displayed
-                val transaction = parentFragmentManager.beginTransaction()
-                transaction.replace(R.id.frag_container, StepsFrag(), "Step Fragment")
-                transaction.addToBackStack(null)
-                transaction.commit()
             }
         }
     }
@@ -409,6 +429,84 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
         else {
             Toast.makeText(activity, "Please Turn On Location Permissions", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    public fun onSwipeRight() {
+        when {
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED -> {
+                mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+                mTvStepsLabel!!.text = "STEP COUNTER: ON (swipe off)"
+                mTvArrowRight!!.visibility = View.GONE
+                mTvArrowLeft!!.visibility = View.VISIBLE
+                mIsCounterOn = true
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
+                Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
+                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+            }
+            else -> {
+                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+            }
+        }
+    }
+
+    public fun onSwipeLeft(){
+        mStepCounter = null
+        mTvStepsLabel!!.text = "STEP COUNTER: off (swipe ON)"
+        mTvArrowRight!!.visibility = View.VISIBLE
+        mTvArrowLeft!!.visibility = View.GONE
+        mIsCounterOn = false
+    }
+
+    private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+    {isGranted: Boolean ->
+        if (isGranted) {
+            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        }
+        else {
+            Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val stepListener: SensorEventListener = object : SensorEventListener {
+
+
+        override fun onSensorChanged(sensorEvent: SensorEvent) {
+            // get all the current user info
+            val user: User? = mSharedViewModel.userInfo.value
+            // increment the step counter
+            user!!.steps++
+            // save the change to the activity level
+            mSharedViewModel.updateUser(user)
+
+//            mTvSteps!!.text = "${sensorEvent.values[0].roundToInt()}"
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(mStepCounter != null){
+            registerStepListener()
+        }
+    }
+
+    private fun registerStepListener() {
+        mSensorManager.registerListener(
+            stepListener,
+            mStepCounter,
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if(mStepCounter != null) {
+            mSensorManager.unregisterListener(stepListener)
         }
     }
 

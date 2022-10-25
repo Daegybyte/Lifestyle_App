@@ -44,22 +44,31 @@ class MainActivity : FragmentActivity() {
             override fun onSwipeRight() {
                 super.onSwipeRight()
 //                Toast.makeText(this@MainActivity, "Swiped right!", Toast.LENGTH_SHORT).show()
-                if(getCurrentFragment() is StepsFrag) {
-                    val transaction = supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
-                    transaction.addToBackStack(null)
-                    transaction.commit()
+                if(getCurrentFragment() is MainFrag) {
+                    val currFrag = getCurrentFragment() as MainFrag
+                    if(!currFrag.mIsCounterOn) {
+                        currFrag.onSwipeRight()
+//                    val transaction = supportFragmentManager.beginTransaction()
+//                    transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
+//                    transaction.addToBackStack(null)
+//                    transaction.commit()
+                  }
                 }
             }
 
             override fun onSwipeLeft() {
                 super.onSwipeLeft()
 //                Toast.makeText(this@MainActivity, "Swiped left!", Toast.LENGTH_SHORT).show()
+
                 if(getCurrentFragment() is MainFrag) {
-                    val transaction = supportFragmentManager.beginTransaction()
-                    transaction.replace(R.id.frag_container, StepsFrag(), "Steps Fragment")
-                    transaction.addToBackStack(null)
-                    transaction.commit()
+                    val currFrag = getCurrentFragment() as MainFrag
+                    if (currFrag.mIsCounterOn) {
+                        currFrag.onSwipeLeft()
+//                        val transaction = supportFragmentManager.beginTransaction()
+//                        transaction.replace(R.id.frag_container, StepsFrag(), "Steps Fragment")
+//                        transaction.addToBackStack(null)
+//                        transaction.commit()
+                    }
                 }
             }
         })

@@ -26,6 +26,15 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
 
     val weatherData: LiveData<JsonWeather>
         get() = liveWeather
+
+    fun setNumSteps(numSteps: Int){
+        repository.rNumSteps = numSteps
+    }
+
+    fun getNumSteps() : Int? {
+        return repository.rNumSteps
+    }
+
 }
 
 class SharedViewModelFactory(private val repository: SharedRepository) : ViewModelProvider.Factory {

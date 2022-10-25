@@ -16,7 +16,8 @@ data class User(
     var activityLevel: Int,
     val isMale: Boolean,
     val location: String,
-    val imagePath: String
+    val imagePath: String,
+    var steps: Int
 ){
     @PrimaryKey (autoGenerate = true) var id: Int = 0
 }
