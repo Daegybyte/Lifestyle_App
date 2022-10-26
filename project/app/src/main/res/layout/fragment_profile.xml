@@ -66,7 +66,9 @@
             <NumberPicker
                 android:id="@+id/np_age"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:theme="@style/NumberPickerTextColorStyle"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -89,6 +91,7 @@
                 android:id="@+id/np_height"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:theme="@style/NumberPickerTextColorStyle"
                 />
         </LinearLayout>
 
@@ -113,6 +116,7 @@
                 android:id="@+id/np_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:theme="@style/NumberPickerTextColorStyle"
                 />
         </LinearLayout>
 
@@ -180,6 +184,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/radioMale"
                     android:buttonTint="@color/spinner_bg"
+                    android:textColor="@color/text"
                     android:checked="true"
                     />
                 <RadioButton
@@ -188,6 +193,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/radioFemale"
                     android:buttonTint="@color/spinner_bg"
+                    android:textColor="@color/text"
                     />
             </RadioGroup>
 
@@ -210,6 +216,7 @@
             android:gravity="center"
             android:hint="@string/EtLocation"
             android:textColorHint="@color/text"
+            android:textColor="@color/text"
             />
 
         <Button

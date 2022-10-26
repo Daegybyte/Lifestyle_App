@@ -32,7 +32,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
     var mJsonWeatherData: JsonWeather? = null
 
-    var rNumSteps: Int? = null
+    var rNumSteps: Int = 0
+    var rCounterOn = false
 
     @WorkerThread
     suspend fun updateUser(user: User) {

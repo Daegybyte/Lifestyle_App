@@ -59,15 +59,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     )
 
     // Sensor variables for step counter
-    private lateinit var mSensorManager: SensorManager
-    private var mStepCounter: Sensor? = null
-    var mSteps: Int? = null
+//    private lateinit var mSensorManager: SensorManager
+//    private var mStepCounter: Sensor? = null
+//    var mSteps: Int? = null
     private var mTvSteps: TextView? = null
     private var mTvStepsLabel : TextView? = null
     private var mTvArrowLeft: TextView? = null
     private var mTvArrowRight: TextView? = null
-    var mIsCounterOn: Boolean = false
-
 
     // These will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -95,7 +93,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         mTvActivityLevel = view.findViewById(R.id.tvActivityLevel)
 
         // get views for step counter
-        mSensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mTvSteps = view.findViewById(R.id.tvSteps)
         mTvStepsLabel = view.findViewById(R.id.tvStepsLabel)
         mTvArrowLeft = view.findViewById(R.id.tvArrowLeft)
@@ -124,21 +121,20 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         spinner.onItemSelectedListener = this
         Log.d("MainFrag", "onCreateView: onItemSelectedListener added successfully")
 
-
         // Add functionality to the edit profile button
         val btnEditProfile: Button = view.findViewById(R.id.btnEditProfile)
         btnEditProfile.setOnClickListener(this)
 
-        
+        // Put the correct text in Step Counter TextViews based on the Bool in the repository
+        if (mSharedViewModel.getCounterOn()) counterOn() else counterOff()
+
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
         Log.d("MainFrag", "onCreateView: got the FusedLocationProviderClient")
 
-
         // Add functionality to the Hikes button
         val btnHikes: Button = view.findViewById(R.id.btnHikes)
         btnHikes.setOnClickListener(this)
-
 
         // these will both be needed to make more details appear on click
         mBoxWeather = view.findViewById(R.id.boxWeather)
@@ -185,9 +181,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
                 }
 
-                // update steps member variable and steps TextView
-                mSteps = userInfo.steps
-                mTvSteps!!.text = mSteps.toString()
+//                // update steps member variable and steps TextView
+                mTvSteps!!.text = userInfo.steps.toString()
+                Log.i("STEPS", userInfo.steps.toString())
             }
             // if there is no userInfo yet then immediately go to the ProfileFrag
             else {
@@ -280,10 +276,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnEditProfile -> {
-                // save the current number of steps to the repository (to prevent step counter from
-                // resetting if "Save" button is pressed and new User is entered into table
-                mSharedViewModel.setNumSteps(mSteps!!)
-
                 // changes the ProfileFrag to be displayed
                 val transaction = parentFragmentManager.beginTransaction()
                 transaction.replace(R.id.frag_container, ProfileFrag(), "Profile Fragment")
@@ -432,84 +424,74 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
     }
 
-    public fun onSwipeRight() {
-        when {
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED -> {
-                mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-                mTvStepsLabel!!.text = "STEP COUNTER: ON (swipe off)"
-                mTvArrowRight!!.visibility = View.GONE
-                mTvArrowLeft!!.visibility = View.VISIBLE
-                mIsCounterOn = true
-                MediaPlayer.create(activity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
-                Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
-                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
-            }
-            else -> {
-                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
-            }
-        }
+    fun counterOn() {
+        mTvStepsLabel!!.text = "STEP COUNTER: ON (swipe off)"
+        mTvArrowRight!!.visibility = View.GONE
+        mTvArrowLeft!!.visibility = View.VISIBLE
     }
 
-    public fun onSwipeLeft(){
-        mStepCounter = null
+    fun counterOff(){
         mTvStepsLabel!!.text = "STEP COUNTER: off (swipe ON)"
         mTvArrowRight!!.visibility = View.VISIBLE
         mTvArrowLeft!!.visibility = View.GONE
-        mIsCounterOn = false
     }
 
-    private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
-    {isGranted: Boolean ->
-        if (isGranted) {
-            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-        }
-        else {
-            Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
-        }
+    fun updateStepCounter(steps: Int){
+        mTvSteps!!.text = steps.toString()
     }
 
-    private val stepListener: SensorEventListener = object : SensorEventListener {
+//    private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+//    {isGranted: Boolean ->
+//        if (isGranted) {
+//            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+//        }
+//        else {
+//            Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
+//    private val stepListener: SensorEventListener = object : SensorEventListener {
+//
+//
+//        override fun onSensorChanged(sensorEvent: SensorEvent) {
+//
+//
+//
+//            // get all the current user info
+//            val user: User? = mSharedViewModel.userInfo.value
+//            user!!.id++
+//            // increment the step counter
+//            user.steps = sensorEvent.values[0].roundToInt()
+////            user.steps = mSteps!! + 1
+//            // save the change to the activity level
+//            mSharedViewModel.updateUser(user)
+//
+////            mTvSteps!!.text = sensorEvent.values[0].roundToInt().toString()
+//        }
+//
+//        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
+//    }
 
-        override fun onSensorChanged(sensorEvent: SensorEvent) {
-            // get all the current user info
-            val user: User? = mSharedViewModel.userInfo.value
-            user!!.id++
-            // increment the step counter
-            user.steps = sensorEvent.values[0].roundToInt()
-            // save the change to the activity level
-            mSharedViewModel.updateUser(user)
-
-//            mTvSteps!!.text = sensorEvent.values[0].roundToInt().toString()
-        }
-
-        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if(mStepCounter != null){
-            registerStepListener()
-        }
-    }
-
-    private fun registerStepListener() {
-        mSensorManager.registerListener(
-            stepListener,
-            mStepCounter,
-            SensorManager.SENSOR_DELAY_NORMAL
-        )
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if(mStepCounter != null) {
-            mSensorManager.unregisterListener(stepListener)
-        }
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        if(mStepCounter != null){
+//            registerStepListener()
+//        }
+//    }
+//
+//    private fun registerStepListener() {
+//        mSensorManager.registerListener(
+//            stepListener,
+//            mStepCounter,
+//            SensorManager.SENSOR_DELAY_NORMAL
+//        )
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        if(mStepCounter != null) {
+//            mSensorManager.unregisterListener(stepListener)
+//        }
+//    }
 
 }
