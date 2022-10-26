@@ -129,10 +129,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val btnEditProfile: Button = view.findViewById(R.id.btnEditProfile)
         btnEditProfile.setOnClickListener(this)
 
-
-        /**
-         * Can getting the current GPS location be done in the ViewModel?
-         */
+        
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
         Log.d("MainFrag", "onCreateView: got the FusedLocationProviderClient")
@@ -264,8 +261,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
             // get all the current user info
             val user: User? = mSharedViewModel.userInfo.value
+            user!!.id++
             // update only the activity level
-            user!!.activityLevel = pos-1
+            user.activityLevel = pos-1
             // save the change to the activity level
             mSharedViewModel.updateUser(user)
 
@@ -480,12 +478,13 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         override fun onSensorChanged(sensorEvent: SensorEvent) {
             // get all the current user info
             val user: User? = mSharedViewModel.userInfo.value
+            user!!.id++
             // increment the step counter
-            user!!.steps++
+            user.steps = sensorEvent.values[0].roundToInt()
             // save the change to the activity level
             mSharedViewModel.updateUser(user)
 
-//            mTvSteps!!.text = "${sensorEvent.values[0].roundToInt()}"
+//            mTvSteps!!.text = sensorEvent.values[0].roundToInt().toString()
         }
 
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
