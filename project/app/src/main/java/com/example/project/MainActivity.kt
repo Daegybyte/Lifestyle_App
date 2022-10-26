@@ -25,6 +25,9 @@ import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.auth.result.AuthSignInResult
 import com.amplifyframework.core.Amplify
 import com.amplifyframework.storage.StorageException
+import com.amplifyframework.storage.options.StorageDownloadFileOptions
+import com.amplifyframework.storage.result.StorageDownloadFileResult
+import com.amplifyframework.storage.result.StorageTransferProgress
 import com.amplifyframework.storage.result.StorageUploadFileResult
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin
 import java.io.BufferedWriter
@@ -117,7 +120,6 @@ class MainActivity : FragmentActivity() {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
 
-    }
     }
 
     private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
@@ -247,5 +249,52 @@ class MainActivity : FragmentActivity() {
 
         mSensorManager.unregisterListener(rotateListener)
     }
+    private fun uploadFile() {
+        val exampleFile = File(applicationContext.filesDir, "ExampleKey")
+        try {
+            val writer = BufferedWriter(FileWriter(exampleFile))
+            writer.append("Example file contents")
+            writer.close()
+        } catch (exception: Exception) {
+            Log.e("MyAmplifyApp", "Upload failed", exception)
+        }
+        Amplify.Storage.uploadFile(
+            "ExampleKey",
+            exampleFile,
+            { result: StorageUploadFileResult ->
+                Log.i(
+                    "MyAmplifyApp",
+                    "Successfully uploaded: " + result.key
+                )
+            },
+            { storageFailure: StorageException? ->
+                Log.e(
+                    "MyAmplifyApp",
+                    "Upload failed",
+                    storageFailure
+                )
+            }
+        )
+    }
 
+    private fun downloadFile() {
+        Amplify.Storage.downloadFile(
+            "ExampleKey",
+            File(applicationContext.filesDir.toString() + "/download.txt"),
+            StorageDownloadFileOptions.defaultInstance(),
+            { progress: StorageTransferProgress ->
+                Log.i(
+                    "MyAmplifyApp",
+                    "Fraction completed: " + progress.fractionCompleted
+                )
+            },
+            { result: StorageDownloadFileResult ->
+                Log.i(
+                    "MyAmplifyApp",
+                    "Successfully downloaded: " + result.file.name
+                )
+            },
+            { error: StorageException? -> Log.e("MyAmplifyApp", "Download Failure", error) }
+        )
+    }
 }
