@@ -201,7 +201,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
                     // set steps equal to NumSteps (or 0 if null)
                     // This prevents the step counter from being reset if new user is entered into table
-                    val steps = mSharedViewModel.getNumSteps() ?: 0
+                    val steps = mSharedViewModel.getNumSteps()
 
                     // making a user
                     val userInfo = User(

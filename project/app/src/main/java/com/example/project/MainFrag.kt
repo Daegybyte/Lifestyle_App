@@ -125,6 +125,10 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val btnEditProfile: Button = view.findViewById(R.id.btnEditProfile)
         btnEditProfile.setOnClickListener(this)
 
+        // Add functionality to the step counter reset button
+        val btnReset: Button = view.findViewById(R.id.btnResetSteps)
+        btnReset.setOnClickListener(this)
+
         // Put the correct text in Step Counter TextViews based on the Bool in the repository
         if (mSharedViewModel.getCounterOn()) counterOn() else counterOff()
 
@@ -257,9 +261,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 
             // get all the current user info
             val user: User? = mSharedViewModel.userInfo.value
-            user!!.id++
             // update only the activity level
-            user.activityLevel = pos-1
+            user!!.activityLevel = pos-1
             // save the change to the activity level
             mSharedViewModel.updateUser(user)
 
@@ -282,6 +285,18 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 transaction.addToBackStack(null)
                 transaction.commit()
                 Log.d("MainFrag", "onCreateView: edit profile button clicked")
+            }
+            R.id.btnResetSteps -> {
+                // reset steps variable in repository to 0
+                mSharedViewModel.setNumSteps(0)
+
+                // reset user steps to 0
+                val user: User? = mSharedViewModel.userInfo.value
+                user!!.steps = 0
+                mSharedViewModel.updateUser(user)
+
+                // reset the step counter TextView
+                mTvSteps!!.text = "0"
             }
             R.id.btnHikes -> {
                 when {
