@@ -159,15 +159,16 @@ class MainActivity : FragmentActivity() {
 
             // increment the step counter
             val steps = sensorEvent.values[0].roundToInt()
-            user!!.steps = curNumSteps + steps
+            val newSteps = curNumSteps + steps
+            user!!.steps = newSteps
 
             // save the change to the step numbers
             mSharedViewModel.updateUser(user)
-            mSharedViewModel.setNumSteps(steps)
+            mSharedViewModel.setNumSteps(newSteps)
 
             if(getCurrentFragment() is MainFrag) {
                 val mainFrag = getCurrentFragment() as MainFrag
-                mainFrag.updateStepCounter(steps)
+                mainFrag.updateStepCounter(newSteps)
             }
         }
 
