@@ -1,21 +1,36 @@
 package com.example.project
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import java.lang.System.currentTimeMillis
+import kotlin.math.roundToInt
+
 
 class MainActivity : FragmentActivity() {
 
+    private val mSharedViewModel: SharedViewModel by viewModels {
+        SharedViewModelFactory((this.application as App).repository)
+    }
+
     private lateinit var mSensorManager: SensorManager
+    private var mStepCounter: Sensor? = null
+
     private var mGyroscope: Sensor? = null
     private val mThreshold = 5
 
@@ -33,26 +48,31 @@ class MainActivity : FragmentActivity() {
         // set the swipe listener
         val view: View = findViewById(R.id.entire_view)
         view.setOnTouchListener(object: OnSwipeTouchListener(this) {
-//            override fun onSwipeUp() {
-//                super.onSwipeUp()
-//                Toast.makeText(this@MainActivity, "Swipe up gesture detected", Toast.LENGTH_SHORT).show()
-//            }
-//            override fun onSwipeDown() {
-//                super.onSwipeDown()
-//                Toast.makeText(this@MainActivity, "Swipe down gesture detected", Toast.LENGTH_SHORT).show()
-//            }
             override fun onSwipeRight() {
                 super.onSwipeRight()
 //                Toast.makeText(this@MainActivity, "Swiped right!", Toast.LENGTH_SHORT).show()
                 if(getCurrentFragment() is MainFrag) {
-                    val currFrag = getCurrentFragment() as MainFrag
-                    if(!currFrag.mIsCounterOn) {
-                        currFrag.onSwipeRight()
-//                    val transaction = supportFragmentManager.beginTransaction()
-//                    transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
-//                    transaction.addToBackStack(null)
-//                    transaction.commit()
-                  }
+                    val mainFrag = getCurrentFragment() as MainFrag
+                    if(!mSharedViewModel.getCounterOn()) {
+                        when {
+                            ActivityCompat.checkSelfPermission(
+                                this@MainActivity,
+                                Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED -> {
+//                                mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+                                mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+                                mSharedViewModel.setCounterOn(true)
+                                MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
+                                mainFrag.counterOn()
+                            }
+                            shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
+                                Toast.makeText(this@MainActivity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
+                                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                            }
+                            else -> {
+                                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                            }
+                        }
+                    }
                 }
             }
 
@@ -61,17 +81,54 @@ class MainActivity : FragmentActivity() {
 //                Toast.makeText(this@MainActivity, "Swiped left!", Toast.LENGTH_SHORT).show()
 
                 if(getCurrentFragment() is MainFrag) {
-                    val currFrag = getCurrentFragment() as MainFrag
-                    if (currFrag.mIsCounterOn) {
-                        currFrag.onSwipeLeft()
-//                        val transaction = supportFragmentManager.beginTransaction()
-//                        transaction.replace(R.id.frag_container, StepsFrag(), "Steps Fragment")
-//                        transaction.addToBackStack(null)
-//                        transaction.commit()
+                    val mainFrag = getCurrentFragment() as MainFrag
+                    if (mSharedViewModel.getCounterOn()) {
+                        mSensorManager.unregisterListener(stepListener)
+                        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_ALARM_ALERT_URI).start()
+                        mainFrag.counterOff()
                     }
                 }
             }
         })
+    }
+
+    private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+    {isGranted: Boolean ->
+        if (isGranted) {
+//            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+            registerStepListener()
+        }
+        else {
+            Toast.makeText(this, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val stepListener: SensorEventListener = object : SensorEventListener {
+
+        override fun onSensorChanged(sensorEvent: SensorEvent) {
+
+            val curNumSteps = mSharedViewModel.getNumSteps()
+
+            // get all the current user info
+            val user: User? = mSharedViewModel.userInfo.value
+
+            // increment the step counter
+            val steps  = sensorEvent.values[0].roundToInt()
+            user!!.steps = curNumSteps + steps
+
+            // save the change to the step numbers
+            mSharedViewModel.updateUser(user)
+            mSharedViewModel.setNumSteps(steps)
+
+            if(getCurrentFragment() is MainFrag) {
+                val mainFrag = getCurrentFragment() as MainFrag
+                mainFrag.updateStepCounter(steps)
+            }
+
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
     }
 
     private val rotateListener: SensorEventListener = object : SensorEventListener {
@@ -134,6 +191,10 @@ class MainActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (mSharedViewModel.getCounterOn()){
+            registerStepListener()
+        }
+
         mSensorManager.registerListener(
             rotateListener,
             mGyroscope,
@@ -142,8 +203,20 @@ class MainActivity : FragmentActivity() {
 
     }
 
+    fun registerStepListener(){
+        mSensorManager.registerListener(
+            stepListener,
+            mStepCounter,
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
+
     override fun onPause() {
         super.onPause()
+        if (mSharedViewModel.getCounterOn()){
+            mSensorManager.unregisterListener(stepListener)
+        }
+
         mSensorManager.unregisterListener(rotateListener)
     }
 }

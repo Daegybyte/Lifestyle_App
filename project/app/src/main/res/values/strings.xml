@@ -32,7 +32,7 @@
     <string name="step_label_on">STEP COUNTER: ON (swipe off)</string>
     <string name="font_awesome_arrow_right">\uf101 \uf101</string>
     <string name="font_awesome_arrow_left">\uf100 \uf100</string>
-
+    <string name="font_awesome_reset">\uf2f9</string>
 
 </resources>
 

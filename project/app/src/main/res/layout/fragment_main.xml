@@ -46,7 +46,7 @@
         <Button
             android:id="@+id/btnEditProfile"
             android:layout_width="48dp"
-            android:layout_height="match_parent"
+            android:layout_height="48dp"
             android:layout_weight="0"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
@@ -141,22 +141,43 @@
         android:orientation="vertical"
         android:layout_gravity="center">
 
-        <TextView
-            android:id="@+id/tvSteps"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0"
-            android:textSize="48sp"
             android:layout_marginTop="16dp"
-            android:gravity="center_horizontal"
-            />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvSteps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="48sp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1"
+                android:textColor="@color/text"
+                />
+
+            <Button
+                android:id="@+id/btnResetSteps"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="0dp"
+                android:fontFamily="@font/fontawesome_solid"
+                android:text="@string/font_awesome_reset"
+                android:textSize="20sp"
+                android:backgroundTint="@color/btn_bg"
+                android:textColor="@color/btn_text"
+                android:layout_gravity="center_vertical"
+                />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:orientation="horizontal"
             android:layout_gravity="center"
-
             >
             <TextView
                 android:id="@+id/tvArrowLeft"
@@ -167,6 +188,7 @@
                 android:textSize="20sp"
                 android:layout_marginRight="10dp"
                 android:visibility="gone"
+                android:textColor="@color/text"
                 />
             <TextView
                 android:id="@+id/tvStepsLabel"
@@ -174,6 +196,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/step_label_off"
                 android:textSize="20sp"
+                android:textColor="@color/text"
                 />
             <TextView
                 android:id="@+id/tvArrowRight"
@@ -183,6 +206,7 @@
                 android:text="@string/font_awesome_arrow_right"
                 android:textSize="20sp"
                 android:layout_marginLeft="10dp"
+                android:textColor="@color/text"
                 android:visibility="visible"
                 />
         </LinearLayout>
@@ -232,7 +256,9 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:textSize="24sp"
-                android:text="@string/weather_loading" />
+                android:text="@string/weather_loading"
+                android:textColor="@color/text"
+                />
 
             <Button
                 android:id="@+id/btnMoreWeather"
