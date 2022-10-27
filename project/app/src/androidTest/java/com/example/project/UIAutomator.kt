@@ -391,5 +391,22 @@ class ChangeTextBehaviorTest2 {
         assertTrue(stepCounter.text.contains("0"))
     }
 
+    @Test
+    fun test_swipe() {
+        val btnReset = device.findObject(UiSelector().resourceId("$PACKAGE:id/btnResetSteps"))
+        val stepCounter = device.findObject(UiSelector().resourceId("$PACKAGE:id/tvSteps"))
+
+        device.swipe(500, 500, 1000, 500, 10)
+
+        sleep(3000)
+
+
+//        swipe the other way
+        device.swipe(700, 500, 500, 500, 10)
+
+        sleep(1000)
+
+    }
+
 
 }
