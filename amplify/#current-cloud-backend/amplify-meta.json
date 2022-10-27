@@ -1,15 +1,75 @@
 {
   "providers": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-msdlifestyleapp-dev-163200-authRole",
-      "UnauthRoleArn": "arn:aws:iam::360589933918:role/amplify-msdlifestyleapp-dev-163200-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::360589933918:role/amplify-msdlifestyleapp-dev-163200-authRole",
+      "AuthRoleName": "amplify-msdlifestyleapp-dev-124434-authRole",
+      "UnauthRoleArn": "arn:aws:iam::360589933918:role/amplify-msdlifestyleapp-dev-124434-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::360589933918:role/amplify-msdlifestyleapp-dev-124434-authRole",
       "Region": "us-west-2",
-      "DeploymentBucketName": "amplify-msdlifestyleapp-dev-163200-deployment",
-      "UnauthRoleName": "amplify-msdlifestyleapp-dev-163200-unauthRole",
-      "StackName": "amplify-msdlifestyleapp-dev-163200",
-      "StackId": "arn:aws:cloudformation:us-west-2:360589933918:stack/amplify-msdlifestyleapp-dev-163200/adad5030-53eb-11ed-b28e-0a990244715b",
-      "AmplifyAppId": "d32gs4m3q539o5"
+      "DeploymentBucketName": "amplify-msdlifestyleapp-dev-124434-deployment",
+      "UnauthRoleName": "amplify-msdlifestyleapp-dev-124434-unauthRole",
+      "StackName": "amplify-msdlifestyleapp-dev-124434",
+      "StackId": "arn:aws:cloudformation:us-west-2:360589933918:stack/amplify-msdlifestyleapp-dev-124434/677a3950-5627-11ed-997c-06aac8829be7",
+      "AmplifyAppId": "d1fzfa04eyjfe2"
+    }
+  },
+  "auth": {
+    "msdlifestyleappd525f96d": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "lastPushTimeStamp": "2022-10-27T18:53:19.659Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-msdlifestyleapp-dev-124434-deployment/amplify-cfn-templates/auth/msdlifestyleappd525f96d-cloudformation-template.json",
+        "logicalId": "authmsdlifestyleappd525f96d"
+      },
+      "output": {
+        "UserPoolId": "us-west-2_CpAdhSbDg",
+        "AppClientIDWeb": "3omqh8gl0ndcjn8p9at8315k1t",
+        "AppClientID": "gihf0glvm5ag5nsm6e4q63dv3",
+        "HostedUIDomain": "mrdomainprefix-dev",
+        "IdentityPoolId": "us-west-2:8d3b6bf1-e56a-48e0-b4f1-50283c9992d1",
+        "UserPoolArn": "arn:aws:cognito-idp:us-west-2:360589933918:userpool/us-west-2_CpAdhSbDg",
+        "IdentityPoolName": "msdlifestyleappd525f96d_identitypool_d525f96d__dev",
+        "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\"],\"LogoutURLs\":[\"myapp://signout/\"]}",
+        "UserPoolName": "msdlifestyleappd525f96d_userpool_d525f96d"
+      },
+      "lastPushDirHash": "i6sK+MR7EtqzjVh1yj4sKCKUQdQ="
+    }
+  },
+  "storage": {
+    "mrresource": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "lastPushTimeStamp": "2022-10-27T18:53:19.659Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-msdlifestyleapp-dev-124434-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storagemrresource"
+      },
+      "output": {
+        "BucketName": "mrbucket124434-dev",
+        "Region": "us-west-2"
+      },
+      "lastPushDirHash": "J2EL9fsZUNlZDN7VworGtOQUIzU="
     }
   }
 }

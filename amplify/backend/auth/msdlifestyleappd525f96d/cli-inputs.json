@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "msdlifestyleapp7a1cf57e_identitypool_7a1cf57e",
+    "identityPoolName": "msdlifestyleappd525f96d_identitypool_d525f96d",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "msdlif7a1cf57e",
-    "userPoolName": "msdlifestyleapp7a1cf57e_userpool_7a1cf57e",
+    "resourceNameTruncated": "msdlifd525f96d",
+    "userPoolName": "msdlifestyleappd525f96d_userpool_d525f96d",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -31,15 +31,35 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "msdlif7a1cf57e_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "msdlifd525f96d_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "7a1cf57e",
-    "resourceName": "msdlifestyleapp7a1cf57e",
+    "sharedId": "d525f96d",
+    "resourceName": "msdlifestyleappd525f96d",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "default",
+    "useDefault": "defaultSocial",
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
-    "useEnabledMfas": true
+    "useEnabledMfas": true,
+    "authRoleArn": {
+      "Fn::GetAtt": [
+        "AuthRole",
+        "Arn"
+      ]
+    },
+    "unauthRoleArn": {
+      "Fn::GetAtt": [
+        "UnauthRole",
+        "Arn"
+      ]
+    },
+    "breakCircularDependency": true,
+    "dependsOn": [],
+    "hostedUI": true,
+    "hostedUIDomainName": "mrdomainprefix",
+    "authProvidersUserPool": [],
+    "hostedUIProviderMeta": "[]",
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\"],\"LogoutURLs\":[\"myapp://signout/\"]}",
+    "authProviders": []
   }
-}
+} 

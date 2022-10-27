@@ -1,6 +1,6 @@
 {
   "auth": {
-    "msdlifestyleapp7a1cf57e": {
+    "msdlifestyleappd525f96d": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
