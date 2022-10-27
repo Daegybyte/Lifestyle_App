@@ -1,0 +1,12 @@
+{
+  "resourceName": "mrresource",
+  "policyUUID": "329d87c8",
+  "bucketName": "mrbucket",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

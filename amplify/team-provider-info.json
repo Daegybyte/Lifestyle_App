@@ -10,6 +10,11 @@
       "StackName": "amplify-msdlifestyleapp-dev-163200",
       "StackId": "arn:aws:cloudformation:us-west-2:360589933918:stack/amplify-msdlifestyleapp-dev-163200/adad5030-53eb-11ed-b28e-0a990244715b",
       "AmplifyAppId": "d32gs4m3q539o5"
+    },
+    "categories": {
+      "auth": {
+        "msdlifestyleapp7a1cf57e": {}
+      }
     }
   }
 }
