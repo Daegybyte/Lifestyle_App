@@ -50,7 +50,7 @@ class MainActivity : FragmentActivity() {
     private val mThreshold = 5
 
     private var lastRotate = currentTimeMillis()
-    private var cooldown = 1000; //wait 1S between shakes
+    private var cooldown = 1000 //wait 1S between shakes
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -271,7 +271,7 @@ class MainActivity : FragmentActivity() {
 
         mSensorManager.unregisterListener(rotateListener)
     }
-    
+
     private fun uploadFile() {
         val exampleFile = File(applicationContext.filesDir, "ExampleKey")
         try {
