@@ -102,15 +102,15 @@ class MainActivity : FragmentActivity() {
         })
 
         try {
-            Amplify.addPlugin(AWSCognitoAuthPlugin())
+//            Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSS3StoragePlugin())
             Amplify.configure(applicationContext)
             Log.i("MyAmplifyApp", "Initialized Amplify")
-            Amplify.Auth.signInWithWebUI(
-                this,
-                { result: AuthSignInResult -> Log.i("AuthQuickStart", result.toString()) },
-                { error: AuthException -> Log.e("AuthQuickStart", error.toString()) }
-            )
+//            Amplify.Auth.signInWithWebUI(
+//                this,
+//                { result: AuthSignInResult -> Log.i("AuthQuickStart", result.toString()) },
+//                { error: AuthException -> Log.e("AuthQuickStart", error.toString()) }
+//            )
         } catch (error: AmplifyException) {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
@@ -270,54 +270,7 @@ class MainActivity : FragmentActivity() {
         }
 
         mSensorManager.unregisterListener(rotateListener)
-    }
 
-    private fun uploadFile() {
-        val exampleFile = File(applicationContext.filesDir, "ExampleKey")
-        try {
-            val writer = BufferedWriter(FileWriter(exampleFile))
-            writer.append("Example file contents")
-            writer.close()
-        } catch (exception: Exception) {
-            Log.e("MyAmplifyApp", "Upload failed", exception)
-        }
-        Amplify.Storage.uploadFile(
-            "ExampleKey",
-            exampleFile,
-            { result: StorageUploadFileResult ->
-                Log.i(
-                    "MyAmplifyApp",
-                    "Successfully uploaded: " + result.key
-                )
-            },
-            { storageFailure: StorageException? ->
-                Log.e(
-                    "MyAmplifyApp",
-                    "Upload failed",
-                    storageFailure
-                )
-            }
-        )
-    }
-
-    private fun downloadFile() {
-        Amplify.Storage.downloadFile(
-            "ExampleKey",
-            File(applicationContext.filesDir.toString() + "/download.txt"),
-            StorageDownloadFileOptions.defaultInstance(),
-            { progress: StorageTransferProgress ->
-                Log.i(
-                    "MyAmplifyApp",
-                    "Fraction completed: " + progress.fractionCompleted
-                )
-            },
-            { result: StorageDownloadFileResult ->
-                Log.i(
-                    "MyAmplifyApp",
-                    "Successfully downloaded: " + result.file.name
-                )
-            },
-            { error: StorageException? -> Log.e("MyAmplifyApp", "Download Failure", error) }
-        )
+        AWSHelper.backupRoom(application)
     }
 }
