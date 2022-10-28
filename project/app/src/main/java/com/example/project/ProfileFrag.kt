@@ -194,6 +194,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
             R.id.btnSave -> {
 
+                //
+//                if (mTvLocation?.text == "") mTvLocation!!.text = "temp loc"
+
                 if (mTvLocation?.text.toString() != ""
                     && mEtFirstName?.text.toString() != ""
                     && mEtLastName?.text.toString() != ""

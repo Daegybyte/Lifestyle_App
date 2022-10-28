@@ -9,6 +9,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -76,10 +77,14 @@ class MainActivity : FragmentActivity() {
                             }
                             shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION) -> {
                                 Toast.makeText(this@MainActivity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
-                                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                                }
                             }
                             else -> {
-                                stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    stepRequestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                                }
                             }
                         }
                     }
