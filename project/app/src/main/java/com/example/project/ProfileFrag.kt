@@ -132,6 +132,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         val saveButton: Button = view.findViewById(R.id.btnSave)
         saveButton.setOnClickListener(this)
 
+        // make sure the ScrollView that holds everything is scrolled up to the top
+        (activity as MainActivity).scrollToTop()
+
         return view
     }
 

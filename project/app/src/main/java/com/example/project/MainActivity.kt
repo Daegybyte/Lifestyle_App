@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -276,6 +277,11 @@ class MainActivity : FragmentActivity() {
 
         mSensorManager.unregisterListener(rotateListener)
 
-        AWSHelper.backupRoom(application)
+//        AWSHelper.backupRoom(application)
+    }
+
+    fun scrollToTop() {
+        val scrollView: ScrollView = findViewById(R.id.entire_view)
+        scrollView.scrollTo(0,0)
     }
 }

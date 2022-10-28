@@ -152,6 +152,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         val btnMoreWeather: Button = view.findViewById(R.id.btnMoreWeather)
         btnMoreWeather.setOnClickListener(this)
 
+        // make sure the ScrollView that holds everything is scrolled up to the top
+        (activity as MainActivity).scrollToTop()
+
         return view
     }
 
