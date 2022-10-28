@@ -107,7 +107,7 @@ class MainActivity : FragmentActivity() {
         })
 
         try {
-//            Amplify.addPlugin(AWSCognitoAuthPlugin())
+            Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSS3StoragePlugin())
             Amplify.configure(applicationContext)
             Log.i("MyAmplifyApp", "Initialized Amplify")
