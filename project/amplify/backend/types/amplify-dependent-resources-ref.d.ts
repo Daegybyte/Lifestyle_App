@@ -3,6 +3,8 @@ export type AmplifyDependentResourcesAttributes = {
         "msdapp281f1d47a": {
             "IdentityPoolId": "string",
             "IdentityPoolName": "string",
+            "HostedUIDomain": "string",
+            "OAuthMetadata": "string",
             "UserPoolId": "string",
             "UserPoolArn": "string",
             "UserPoolName": "string",

@@ -112,11 +112,11 @@ class MainActivity : FragmentActivity() {
             Amplify.addPlugin(AWSS3StoragePlugin())
             Amplify.configure(applicationContext)
             Log.i("MyAmplifyApp", "Initialized Amplify")
-//            Amplify.Auth.signInWithWebUI(
-//                this,
-//                { result: AuthSignInResult -> Log.i("AuthQuickStart", result.toString()) },
-//                { error: AuthException -> Log.e("AuthQuickStart", error.toString()) }
-//            )
+            Amplify.Auth.signInWithWebUI(
+                this,
+                { result: AuthSignInResult -> Log.i("AuthQuickStart", result.toString()) },
+                { error: AuthException -> Log.e("AuthQuickStart", error.toString()) }
+            )
         } catch (error: AmplifyException) {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
