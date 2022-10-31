@@ -210,7 +210,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 val tempTemp = df.format(it.main.temp - 273.15)
                 val temp = (it.main.temp - 273.15).roundToInt()
 
-                var outStr = "Current Weather for "
+                var outStr = "Current Weather for\n"
                 outStr += it.name + ", " + it.sys.country + "\n"
                 outStr += "Temp: $temp C\n"
                 outStr += "Feels Like: " + (it.main.feels_like - 273.15).roundToInt() + " C\n"
@@ -457,59 +457,5 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
     fun updateStepCounter(steps: Int){
         mTvSteps!!.text = steps.toString()
     }
-
-//    private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
-//    {isGranted: Boolean ->
-//        if (isGranted) {
-//            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-//        }
-//        else {
-//            Toast.makeText(activity, "Please Turn On Activity Recognition", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-
-//    private val stepListener: SensorEventListener = object : SensorEventListener {
-//
-//
-//        override fun onSensorChanged(sensorEvent: SensorEvent) {
-//
-//
-//
-//            // get all the current user info
-//            val user: User? = mSharedViewModel.userInfo.value
-//            user!!.id++
-//            // increment the step counter
-//            user.steps = sensorEvent.values[0].roundToInt()
-////            user.steps = mSteps!! + 1
-//            // save the change to the activity level
-//            mSharedViewModel.updateUser(user)
-//
-////            mTvSteps!!.text = sensorEvent.values[0].roundToInt().toString()
-//        }
-//
-//        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
-//    }
-
-//    override fun onResume() {
-//        super.onResume()
-//        if(mStepCounter != null){
-//            registerStepListener()
-//        }
-//    }
-//
-//    private fun registerStepListener() {
-//        mSensorManager.registerListener(
-//            stepListener,
-//            mStepCounter,
-//            SensorManager.SENSOR_DELAY_NORMAL
-//        )
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        if(mStepCounter != null) {
-//            mSensorManager.unregisterListener(stepListener)
-//        }
-//    }
 
 }
