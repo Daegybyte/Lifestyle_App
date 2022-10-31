@@ -15,5 +15,6 @@
     <color name="spinner_text">#FFF</color>
     <color name="btn_bg">#404181</color>
     <color name="btn_text">#FFFFFFFF</color>
+    <color name="divider">#6F6F79</color>
 
 </resources>
