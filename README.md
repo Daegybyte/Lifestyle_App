@@ -27,52 +27,52 @@ create the MVVM
 
 ## Register
 
-<img src="./src/profile_creation.png" width="25%" height="25%">
+<img src="./screenshots/profile_creation.png" width="25%" height="25%">
 
 
-<img src="./src/profile_creation_tablet.png" width="25%" height="25%">
+<img src="./screenshots/profile_creation_tablet.png" width="25%" height="25%">
 
 
 ## Profile
 
-<img src="./src/profile_page.png" width="25%" height="25%">
+<img src="./screenshots/step_on.png" width="25%" height="25%">
+<img src="./screenshots/step_off.png" width="25%" height="25%">
 
-
-<img src="./src/profile_page_tablet.png" width="25%" height="25%">
+<img src="./screenshots/profile_page_tablet.png" width="25%" height="25%">
 
 
 
 ## Update Activity
 
-<img src="./src/profile_update_activity_level.png" width="25%" height="25%">
+<img src="./screenshots/profile_update_activity_level.png" width="25%" height="25%">
 
-<img src="./src/update_activity_level_tablet.png" width="25%" height="25%">
+<img src="./screenshots/update_activity_level_tablet.png" width="25%" height="25%">
 
 
 
 ## Weather Details
 
-<img src="./src/profile_page_weather.png" width="25%" height="25%">
+<img src="./screenshots/profile_page_weather.png" width="25%" height="25%">
 
-<img src="./src/profile_page_weather_tablet.png" width="25%" height="25%">
+<img src="./screenshots/profile_page_weather_tablet.png" width="25%" height="25%">
 
 
 
 ## Weather
 
-<img src="./src/weather.png" width="25%" height="25%">
+<img src="./screenshots/weather.png" width="25%" height="25%">
 
 
 ## Hikes
 
-<img src="./src/hikes.png" width="25%" height="25%">
+<img src="./screenshots/hikes.png" width="25%" height="25%">
 
 
 # Testing
 
 We used five locations in four different quadrants of the planet to test our location detection. MEB and NYC were in the same quadrant. MEB was a good test location to veryify with because of our familiarity with the area, and NYC was chosen because we would know we weren't getting faulty location data from the locality of our machines.
 
-<img src="./src/testingLocation.png" width="50%" height="50%">
+<img src="./screenshots/testingLocation.png" width="50%" height="50%">
 
 ### UI Automator
 
