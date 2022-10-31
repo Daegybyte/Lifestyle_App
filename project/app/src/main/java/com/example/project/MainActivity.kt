@@ -26,15 +26,7 @@ import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.auth.result.AuthSignInResult
 import com.amplifyframework.core.Amplify
-import com.amplifyframework.storage.StorageException
-import com.amplifyframework.storage.options.StorageDownloadFileOptions
-import com.amplifyframework.storage.result.StorageDownloadFileResult
-import com.amplifyframework.storage.result.StorageTransferProgress
-import com.amplifyframework.storage.result.StorageUploadFileResult
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
 import java.lang.System.currentTimeMillis
 import kotlin.math.roundToInt
 
@@ -114,12 +106,31 @@ class MainActivity : FragmentActivity() {
             Log.i("MyAmplifyApp", "Initialized Amplify")
             Amplify.Auth.signInWithWebUI(
                 this,
-                { result: AuthSignInResult -> Log.i("AuthQuickStart", result.toString()) },
-                { error: AuthException -> Log.e("AuthQuickStart", error.toString()) }
+                { result: AuthSignInResult ->
+                    Log.i("AuthSignInWithWebUI", result.toString())
+//                    Log.i("AuthSignInWithWebUI", application.getDatabasePath("room_database").absolutePath)
+//                    Log.i("AuthSignInWithWebUI", "current user id: " + Amplify.Auth.currentUser.userId)
+//                    Amplify.Storage.list(
+//                        "",
+//                        { listResult ->
+//                            if (listResult.items.contains(Amplify.Auth.currentUser.userId))
+//                            for (item in listResult.items) {
+//                                Log.i("StorageList", "File: " + item.key + ", Hash: " + item.eTag)
+//                            } },
+//                        { error -> Log.e("StorageList", error.toString()) }
+//                    )
+                    val app = application as App
+                    AWSHelper.loadFromBackup(app)
+                    RoomDB.refreshDatabase(app, app.applicationScope)
+                },
+                { error: AuthException -> Log.e("AuthSignInWithWebUI", error.toString()) }
             )
         } catch (error: AmplifyException) {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
+
+        // if the user exists then a folder with their id should exist in the s3
+        // then load from backup
 
     }
 

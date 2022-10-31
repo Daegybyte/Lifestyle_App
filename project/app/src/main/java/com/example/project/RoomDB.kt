@@ -22,18 +22,31 @@ public abstract class RoomDB : RoomDatabase() {
                         ):RoomDB {
             // if the INSTANCE in null, create DB, else return existing DB
             return INSTANCE?: synchronized(this){
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    RoomDB::class.java,
-                    "room_database"
-                )
-                    .addCallback(RoomDBCallback(scope))
-                    .build()
-                INSTANCE = instance
-                //return instance
-                instance
+                createDatabase(context, scope)
             }
         }
+
+        fun refreshDatabase (context: Context,
+                             scope: CoroutineScope
+        ){
+            synchronized(this) {
+                createDatabase(context, scope)
+            }
+        }
+
+        private fun createDatabase (context: Context, scope: CoroutineScope) : RoomDB {
+            val instance = Room.databaseBuilder(
+                context.applicationContext,
+                RoomDB::class.java,
+                "room_database"
+            )
+                .addCallback(RoomDBCallback(scope))
+                .build()
+            INSTANCE = instance
+            //return instance
+            return instance
+        }
+
     }
 
     private class RoomDBCallback(

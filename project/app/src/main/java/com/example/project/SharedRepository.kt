@@ -1,32 +1,21 @@
 package com.example.project
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.location.Location
-import android.net.Uri
-import android.provider.SimPhonebookContract
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.annotation.WorkerThread
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import kotlin.math.roundToInt
 
-class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: DBWeatherDao) {
+//class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: DBWeatherDao) {
+class SharedRepository (private val app: App) {
+
     // user flow
-    val userInfo: Flow<User> = userDao.getUser()
+    val userInfo: Flow<User> = app.database.UserDao().getUser()
     // weather flow
-    val aveTemp: Flow<Double> = dbWeatherDao.getAveTemp()
+    val aveTemp: Flow<Double> = app.database.DBWeatherDao().getAveTemp()
     //weather data
     val liveWeather = MutableLiveData<JsonWeather>()
 
@@ -37,7 +26,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
     @WorkerThread
     suspend fun updateUser(user: User) {
-        userDao.insert(user)    // <<--- inserts a new row for the user on every update
+        app.database.UserDao().insert(user)
+//        userDao.insert(user)    // <<--- inserts a new row for the user on every update
     }
 
     private var mJsonString: String? = null
@@ -84,7 +74,8 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
     @WorkerThread
     suspend fun insertWeather(dbWeather: DBWeather){
-        dbWeatherDao.insert(dbWeather)
+//        dbWeatherDao.insert(dbWeather)
+        app.database.DBWeatherDao().insert(dbWeather)
     }
 
     @WorkerThread
@@ -111,13 +102,12 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
         private var mInstance: SharedRepository? = null
         private lateinit var mScope: CoroutineScope
         @Synchronized
-        fun getInstance(userDao: UserDao,
-                        dbWeatherDao: DBWeatherDao,
+        fun getInstance(application: App,
                         scope: CoroutineScope
         ): SharedRepository {
             mScope = scope
             return mInstance?: synchronized(this){
-                val instance = SharedRepository(userDao, dbWeatherDao)
+                val instance = SharedRepository(application)
                 mInstance = instance
                 instance
             }

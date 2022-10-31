@@ -3,8 +3,10 @@ package com.example.project
 import android.app.Application
 import android.util.Log
 import com.amplifyframework.core.Amplify
+import com.amplifyframework.storage.StorageAccessLevel
 import com.amplifyframework.storage.StorageException
 import com.amplifyframework.storage.options.StorageDownloadFileOptions
+import com.amplifyframework.storage.options.StorageUploadFileOptions
 import com.amplifyframework.storage.result.StorageDownloadFileResult
 import com.amplifyframework.storage.result.StorageTransferProgress
 import com.amplifyframework.storage.result.StorageUploadFileResult
@@ -13,52 +15,98 @@ import java.io.File
 object AWSHelper {
     fun backupRoom(application: Application) {
         val dbFile = File(application.getDatabasePath("room_database").absolutePath)
+//        val options = StorageUploadFileOptions.builder().accessLevel(StorageAccessLevel.PRIVATE).build()
+        val options = StorageUploadFileOptions.defaultInstance()
         Amplify.Storage.uploadFile(
-            "RoomBackup",
+            Amplify.Auth.currentUser.userId + "/RoomBackup",
+//            "RoomBackup",
             dbFile,
+            options,
             { result: StorageUploadFileResult ->
-                Log.i("MyAmplifyApp", "Successfully uploaded: " + result.key)
+                Log.i("AWSHelperUpload", "Successfully uploaded: " + result.key)
             },
             { storageFailure: StorageException? ->
-                Log.e("MyAmplifyApp", "Upload failed", storageFailure)
+                Log.e("AWSHelperUpload", "Upload failed", storageFailure)
             }
         )
         val dbWalFile = File(dbFile.path + "-wal")
         Amplify.Storage.uploadFile(
-            "RoomBackupWAL",
+            Amplify.Auth.currentUser.userId + "/RoomBackupWAL",
+//            "RoomBackupWAL",
             dbWalFile,
+            options,
             { result: StorageUploadFileResult ->
-                Log.i("MyAmplifyApp", "Successfully uploaded: " + result.key)
+                Log.i("AWSHelperUpload", "Successfully uploaded: " + result.key)
             },
             { storageFailure: StorageException? ->
-                Log.e("MyAmplifyApp", "Upload failed", storageFailure)
+                Log.e("AWSHelperUpload", "Upload failed", storageFailure)
             }
         )
         val dbShmFile = File(dbFile.path + "-shm")
         Amplify.Storage.uploadFile(
-            "RoomBackupSHM",
+            Amplify.Auth.currentUser.userId + "/RoomBackupSHM",
+//            "RoomBackupSHM",
             dbShmFile,
+            options,
             { result: StorageUploadFileResult ->
-                Log.i("MyAmplifyApp", "Successfully uploaded: " + result.key)
+                Log.i("AWSHelperUpload", "Successfully uploaded: " + result.key)
             },
             { storageFailure: StorageException? ->
-                Log.e("MyAmplifyApp", "Upload failed", storageFailure)
+                Log.e("AWSHelperUpload", "Upload failed", storageFailure)
             }
         )
     }
 
-    fun loadFromBackup(path: String) {
+    fun loadFromBackup(application: Application) {
+        val dbFile = File(application.getDatabasePath("room_database").absolutePath)
+//        val options = StorageDownloadFileOptions.builder().accessLevel(StorageAccessLevel.PRIVATE).build()
+        val options = StorageDownloadFileOptions.defaultInstance()
         Amplify.Storage.downloadFile(
-            "ExampleKey",
-            File(path),
-            StorageDownloadFileOptions.defaultInstance(),
+            Amplify.Auth.currentUser.userId + "/RoomBackup",
+//            "RoomBackup",
+            dbFile,
+            options,
             { progress: StorageTransferProgress ->
-                Log.i("MyAmplifyApp", "Fraction completed: " + progress.fractionCompleted)
+                Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
             },
             { result: StorageDownloadFileResult ->
-                Log.i("MyAmplifyApp", "Successfully downloaded: " + result.file.name)
+                Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
             },
-            { error: StorageException? -> Log.e("MyAmplifyApp", "Download Failure", error) }
+            { error: StorageException? ->
+                Log.e("AWSHelperDownload", "Download Failure", error)
+            }
+        )
+        val dbWalFile = File(dbFile.path + "-wal")
+        Amplify.Storage.downloadFile(
+            Amplify.Auth.currentUser.userId + "/RoomBackupWAL",
+//            "RoomBackupWAL",
+            dbWalFile,
+            options,
+            { progress: StorageTransferProgress ->
+                Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
+            },
+            { result: StorageDownloadFileResult ->
+                Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
+            },
+            { error: StorageException? ->
+                Log.e("AWSHelperDownload", "Download Failure", error)
+            }
+        )
+        val dbShmFile = File(dbFile.path + "-shm")
+        Amplify.Storage.downloadFile(
+            Amplify.Auth.currentUser.userId + "/RoomBackupSHM",
+//            "RoomBackupSHM",
+            dbShmFile,
+            options,
+            { progress: StorageTransferProgress ->
+                Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
+            },
+            { result: StorageDownloadFileResult ->
+                Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
+            },
+            { error: StorageException? ->
+                Log.e("AWSHelperDownload", "Download Failure", error)
+            }
         )
     }
 }
