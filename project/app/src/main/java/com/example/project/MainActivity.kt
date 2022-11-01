@@ -126,11 +126,11 @@ class MainActivity : FragmentActivity() {
     var mMediaPlayer : MediaPlayer? = null
 
     private fun startCounter() {
+        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
 //        mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         mSharedViewModel.setCounterOn(true)
         registerStepListener()
-        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
         val mainFrag = getCurrentFragment() as MainFrag
         mainFrag.counterOn()
     }
