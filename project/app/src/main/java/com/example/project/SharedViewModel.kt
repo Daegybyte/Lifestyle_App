@@ -6,11 +6,17 @@ import kotlinx.coroutines.launch
 
 class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
     // user livedata
-    val userInfo: LiveData<User> = repository.userInfo.asLiveData()
+    var userInfo: LiveData<User> = repository.userInfo.asLiveData()
     // weather livedata
-    val aveTemp: LiveData<Double> = repository.aveTemp.asLiveData()
+    var aveTemp: LiveData<Double> = repository.aveTemp.asLiveData()
 
     private val liveWeather: LiveData<JsonWeather> = repository.liveWeather
+
+    fun refresh() {
+        repository.refresh()
+        userInfo = repository.userInfo.asLiveData()
+        aveTemp = repository.aveTemp.asLiveData()
+    }
 
     fun updateUser(user: User) = viewModelScope.launch {
         repository.updateUser(user)

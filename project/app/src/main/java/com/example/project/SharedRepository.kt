@@ -13,20 +13,26 @@ import kotlinx.coroutines.launch
 class SharedRepository (private val app: App) {
 
     // user flow
-    val userInfo: Flow<User> = app.database.UserDao().getUser()
+    var userInfo: Flow<User> = app.getDatabase().UserDao().getUser()
     // weather flow
-    val aveTemp: Flow<Double> = app.database.DBWeatherDao().getAveTemp()
+    var aveTemp: Flow<Double> = app.getDatabase().DBWeatherDao().getAveTemp()
     //weather data
-    val liveWeather = MutableLiveData<JsonWeather>()
+    var liveWeather = MutableLiveData<JsonWeather>()
 
     var mJsonWeatherData: JsonWeather? = null
 
     var rNumSteps: Int = 0
     var rCounterOn = false
 
+    fun refresh() {
+        userInfo = app.getDatabase().UserDao().getUser()
+        aveTemp = app.getDatabase().DBWeatherDao().getAveTemp()
+        liveWeather = MutableLiveData<JsonWeather>()
+    }
+
     @WorkerThread
     suspend fun updateUser(user: User) {
-        app.database.UserDao().insert(user)
+        app.getDatabase().UserDao().insert(user)
 //        userDao.insert(user)    // <<--- inserts a new row for the user on every update
     }
 
@@ -75,7 +81,7 @@ class SharedRepository (private val app: App) {
     @WorkerThread
     suspend fun insertWeather(dbWeather: DBWeather){
 //        dbWeatherDao.insert(dbWeather)
-        app.database.DBWeatherDao().insert(dbWeather)
+        app.getDatabase().DBWeatherDao().insert(dbWeather)
     }
 
     @WorkerThread
@@ -102,12 +108,12 @@ class SharedRepository (private val app: App) {
         private var mInstance: SharedRepository? = null
         private lateinit var mScope: CoroutineScope
         @Synchronized
-        fun getInstance(application: App,
+        fun getInstance(app: App,
                         scope: CoroutineScope
         ): SharedRepository {
             mScope = scope
             return mInstance?: synchronized(this){
-                val instance = SharedRepository(application)
+                val instance = SharedRepository(app)
                 mInstance = instance
                 instance
             }

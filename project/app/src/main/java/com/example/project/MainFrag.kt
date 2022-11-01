@@ -512,4 +512,18 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
 //        }
 //    }
 
+    fun reattachObservers() {
+        mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
+
+        mSharedViewModel.weatherData.observe(viewLifecycleOwner, liveWeatherObserver)
+
+        mSharedViewModel.aveTemp.observe(viewLifecycleOwner, flowObserver)
+    }
+
+    // when the database was refreshed only the current fragment was refreshed so make sure any future fragment displayed is refreshed
+    override fun onResume() {
+        super.onResume()
+        reattachObservers()
+    }
+
 }

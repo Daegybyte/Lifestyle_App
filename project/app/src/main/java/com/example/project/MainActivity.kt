@@ -21,6 +21,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
@@ -121,7 +122,16 @@ class MainActivity : FragmentActivity() {
 //                    )
                     val app = application as App
                     AWSHelper.loadFromBackup(app)
+                    // refresh everything!
                     RoomDB.refreshDatabase(app, app.applicationScope)
+                    mSharedViewModel.refresh()
+//                    val currentFrag = getCurrentFragment()
+//                    if (currentFrag is MainFrag) {
+//                        currentFrag.reattachObservers()
+//                    }
+//                    else if (currentFrag is ProfileFrag) {
+//                        currentFrag.reattachObservers()
+//                    }
                 },
                 { error: AuthException -> Log.e("AuthSignInWithWebUI", error.toString()) }
             )

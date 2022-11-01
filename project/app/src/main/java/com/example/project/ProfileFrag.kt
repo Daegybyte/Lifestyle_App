@@ -337,4 +337,14 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
+    fun reattachObservers() {
+        mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
+    }
+
+    // when the database was refreshed only the current fragment was refreshed so make sure any future fragment displayed is refreshed
+    override fun onResume() {
+        super.onResume()
+        reattachObservers()
+    }
+
 }
