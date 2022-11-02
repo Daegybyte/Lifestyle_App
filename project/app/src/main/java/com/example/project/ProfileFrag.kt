@@ -53,7 +53,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private var mIvProfilePic: ImageView? = null
 
 
-    private var mProfilePicPath : String? = null // this may still be needed
+    private var mProfilePicPath : String? = null
 
     // these will be used to get the phone's location
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -242,6 +242,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
+    // converts latitude and longitude into city, state, country
     // adapted from https://stackoverflow.com/questions/59095837/convert-from-latlang-to-address-using-geocoding-not-working-android-kotlin
     private fun getAddress(lat: Double, lng: Double): String {
         val geocoder = Geocoder(context)
@@ -282,7 +283,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             finalBitmap!!.compress(Bitmap.CompressFormat.JPEG, 90, out)
             out.flush()
             out.close()
-            Toast.makeText(activity, "file saved!", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(activity, "file saved!", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -308,7 +309,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                 mLatitude = location!!.latitude
                 mLongitude = location.longitude
 
-                Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
 
                 val address = getAddress(mLatitude, mLongitude) // getting the address from the location
 
