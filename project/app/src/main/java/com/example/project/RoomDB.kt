@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Database(entities = arrayOf(User::class, DBWeather::class), version = 1, exportSchema = false)
-public abstract class RoomDB : RoomDatabase() {
+    abstract class RoomDB : RoomDatabase() {
     abstract fun UserDao(): UserDao
     abstract fun DBWeatherDao(): DBWeatherDao
 
@@ -30,12 +30,13 @@ public abstract class RoomDB : RoomDatabase() {
                     .addCallback(RoomDBCallback(scope))
                     .build()
                 INSTANCE = instance
-                //return instance
                 instance
             }
         }
     }
 
+
+    // Required to make singleton with initialization parameters
     private class RoomDBCallback(
         private val scope: CoroutineScope
     ) : RoomDatabase.Callback() {

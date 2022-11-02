@@ -1,6 +1,5 @@
 package com.example.project
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -17,7 +16,7 @@ data class User(
     val isMale: Boolean,
     val location: String,
     val imagePath: String,
-    var steps: Int
+    var steps: Int          // initialized to 0 when user is created
 ){
     @PrimaryKey (autoGenerate = true) var id: Int = 0
 }
