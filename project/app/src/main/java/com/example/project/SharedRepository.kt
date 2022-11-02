@@ -1,26 +1,13 @@
 package com.example.project
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.location.Location
-import android.net.Uri
-import android.provider.SimPhonebookContract
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.annotation.WorkerThread
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import kotlin.math.roundToInt
 
 class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: DBWeatherDao) {
     // user flow
