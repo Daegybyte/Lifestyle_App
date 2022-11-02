@@ -232,7 +232,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     // the user back to ProfileFrag as a result
                     Thread.sleep(100)
 
-                    AWSHelper.backupRoom(requireActivity().application)
+//                    AWSHelper.backupRoom(requireActivity().application)
 
                     val transaction = parentFragmentManager.beginTransaction()
                     transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")

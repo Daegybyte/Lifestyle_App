@@ -277,7 +277,11 @@ class MainActivity : FragmentActivity() {
 
         mSensorManager.unregisterListener(rotateListener)
 
-//        AWSHelper.backupRoom(application)
+        // onPause could potentially be called before the Cognito login is complete
+        // this will make sure that backupRoom is not called unless the login is complete
+        if (Amplify.Auth.currentUser != null) {
+            AWSHelper.backupRoom(application)
+        }
     }
 
     fun scrollToTop() {
