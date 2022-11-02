@@ -1,5 +1,8 @@
 package com.example.project
 
+/**
+ * This data class is for formatting the weather info that comes back from the OpenWeatherMap API
+ */
 data class JsonWeather(
     val coord: Coord,
     val weather: List<Weather>,

@@ -10,8 +10,13 @@ import com.amplifyframework.storage.result.StorageTransferProgress
 import com.amplifyframework.storage.result.StorageUploadFileResult
 import java.io.File
 
+/**
+ * This object is for managing the uploading and downloading of database files to and from AWS S3
+ */
 object AWSHelper {
+    // this method will upload all 3 database files to S3 in a folder named with the user's ID
     fun backupRoom(application: Application) {
+        // main db file
         val dbFile = File(application.getDatabasePath("room_database").absolutePath)
         Amplify.Storage.uploadFile(
             Amplify.Auth.currentUser.userId + "/RoomBackup",
@@ -23,6 +28,7 @@ object AWSHelper {
                 Log.e("AWSHelperUpload", "Upload failed", storageFailure)
             }
         )
+        // wal file
         val dbWalFile = File(dbFile.path + "-wal")
         Amplify.Storage.uploadFile(
             Amplify.Auth.currentUser.userId + "/RoomBackupWAL",
@@ -34,6 +40,7 @@ object AWSHelper {
                 Log.e("AWSHelperUpload", "Upload failed", storageFailure)
             }
         )
+        // shm file
         val dbShmFile = File(dbFile.path + "-shm")
         Amplify.Storage.uploadFile(
             Amplify.Auth.currentUser.userId + "/RoomBackupSHM",
@@ -47,8 +54,11 @@ object AWSHelper {
         )
     }
 
-
+    // this method will download all 3 database files from the current user's S3 directory
+    // if the user is new or just does not have any backup files in S3 then this will result in an
+    // exception but the app will still work appropriately
     fun loadFromBackup(application: Application) {
+        // main db file
         val dbFile = File(application.getDatabasePath("room_database").absolutePath)
         Amplify.Storage.downloadFile(
             Amplify.Auth.currentUser.userId + "/RoomBackup",
@@ -64,6 +74,7 @@ object AWSHelper {
                 Log.e("AWSHelperDownload", "Download Failure", error)
             }
         )
+        // wal file
         val dbWalFile = File(dbFile.path + "-wal")
         Amplify.Storage.downloadFile(
             Amplify.Auth.currentUser.userId + "/RoomBackupWAL",
@@ -79,6 +90,7 @@ object AWSHelper {
                 Log.e("AWSHelperDownload", "Download Failure", error)
             }
         )
+        // shm file
         val dbShmFile = File(dbFile.path + "-shm")
         Amplify.Storage.downloadFile(
             Amplify.Auth.currentUser.userId + "/RoomBackupSHM",

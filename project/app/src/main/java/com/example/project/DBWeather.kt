@@ -1,11 +1,11 @@
 package com.example.project
 
-import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import java.util.SimpleTimeZone
 
+/**
+ * This data class is for formatting the weather info for our database
+ */
 @Entity(tableName = "weather_table")
 data class DBWeather(
     val id: Int,

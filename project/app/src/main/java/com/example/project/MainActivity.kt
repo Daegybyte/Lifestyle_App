@@ -26,49 +26,48 @@ import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import com.amplifyframework.auth.result.AuthSignInResult
 import com.amplifyframework.core.Amplify
-import com.amplifyframework.storage.StorageException
-import com.amplifyframework.storage.options.StorageDownloadFileOptions
-import com.amplifyframework.storage.result.StorageDownloadFileResult
-import com.amplifyframework.storage.result.StorageTransferProgress
-import com.amplifyframework.storage.result.StorageUploadFileResult
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
 import java.lang.System.currentTimeMillis
 import kotlin.math.roundToInt
 
 
 class MainActivity : FragmentActivity() {
 
+    // get the ViewModel
     private val mSharedViewModel: SharedViewModel by viewModels {
         SharedViewModelFactory((this.application as App).repository)
     }
 
+    // variables needed for the step counter functionality
     private lateinit var mSensorManager: SensorManager
     private var mStepCounter: Sensor? = null
 
+    // variables for the rotation gesture
     private var mGyroscope: Sensor? = null
     private val mThreshold = 5
-
     private var lastRotate = currentTimeMillis()
-    private var cooldown = 1000 //wait 1S between shakes
+    private var cooldown = 1000 //wait at least 1 second between rotations
+
+    // for audio alerts with step counter
+    var mMediaPlayer : MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // get the gyroscope sensor
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
-        // set the swipe listener
+        // set the custom swipe listener
         val view: View = findViewById(R.id.entire_view)
         view.setOnTouchListener(object: OnSwipeTouchListener(this) {
             override fun onSwipeRight() {
                 super.onSwipeRight()
-//                Toast.makeText(this@MainActivity, "Swiped right!", Toast.LENGTH_SHORT).show()
+                // this will be listening on MainActivity so only start the step counter if swipe
+                // occurred while MainFrag was displayed
                 if(getCurrentFragment() is MainFrag) {
+                    // if not on, turn it on
                     if(!mSharedViewModel.getCounterOn()) {
                         when {
                             ActivityCompat.checkSelfPermission(
@@ -94,19 +93,16 @@ class MainActivity : FragmentActivity() {
 
             override fun onSwipeLeft() {
                 super.onSwipeLeft()
-//                Toast.makeText(this@MainActivity, "Swiped left!", Toast.LENGTH_SHORT).show()
-
+                // similarly, only turn off step counter if the swipe occurred with MainFrag displayed
                 if(getCurrentFragment() is MainFrag) {
                     if (mSharedViewModel.getCounterOn()) {
                         stopCounter()
-//                        mSensorManager.unregisterListener(stepListener)
-//                        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_ALARM_ALERT_URI).start()
-//                        mainFrag.counterOff()
                     }
                 }
             }
         })
 
+        // do the Amplify initialization and sign in
         try {
             Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.addPlugin(AWSS3StoragePlugin())
@@ -123,11 +119,9 @@ class MainActivity : FragmentActivity() {
 
     }
 
-    var mMediaPlayer : MediaPlayer? = null
-
+    // turning the step counter on
     private fun startCounter() {
         MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
-//        mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         mSharedViewModel.setCounterOn(true)
         registerStepListener()
@@ -135,10 +129,10 @@ class MainActivity : FragmentActivity() {
         mainFrag.counterOn()
     }
 
+    // turning the step counter off
     private fun stopCounter() {
         mSensorManager.unregisterListener(stepListener)
         mSharedViewModel.setCounterOn(false)
-//        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
         mMediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.wilhelm)
         mMediaPlayer!!.isLooping = false
         mMediaPlayer!!.start()
@@ -146,20 +140,9 @@ class MainActivity : FragmentActivity() {
         mainFrag.counterOff()
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (mMediaPlayer != null){
-            mMediaPlayer!!.release()
-            mMediaPlayer = null
-        }
-    }
-
     private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
     {isGranted: Boolean ->
         if (isGranted) {
-//            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-//            mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
-//            registerStepListener()
             startCounter()
         }
         else {
@@ -167,6 +150,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    // listener for the step counter
     private val stepListener: SensorEventListener = object : SensorEventListener {
 
         override fun onSensorChanged(sensorEvent: SensorEvent) {
@@ -176,7 +160,7 @@ class MainActivity : FragmentActivity() {
             // get all the current user info
             val user: User? = mSharedViewModel.userInfo.value
 
-            // increment the step counter
+            // increment the step count
             val steps = sensorEvent.values[0].roundToInt()
             val newSteps = curNumSteps + steps
             user!!.steps = newSteps
@@ -191,44 +175,39 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
+        override fun onAccuracyChanged(sensor: Sensor, i: Int) {
+            // this is required to be here for SensorEventListener but don't need to do anything
+        }
     }
 
 
     private val rotateListener: SensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(sensorEvent: SensorEvent) {
 
-
-            //Get the rotation rates along the x,y and z axes
-//            val xrot = sensorEvent.values[0].toDouble()
-//            val yrot = sensorEvent.values[1].toDouble()
-//            val zrot = sensorEvent.values[2].toDouble()
-            // Get the rotation rate from the appropriate axis (depending on device orientation)
+            // get the rotation rate around the vertical axis (this will depend on the orientation)
+            // when in portrait mode this will be the y axis (sensorEvent.values[1])
+            // when in landscape mode this will be the x axis (sensorEvent.values[0])
             val rot =
                 if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) sensorEvent.values[1].toDouble() else sensorEvent.values[0].toDouble()
 
-            //Compute the squared magnitude of the rotation.  No reason for us to take the sqrt
-//            val sq_magnitude = Math.pow(xrot, 2.0) + Math.pow(yrot, 2.0) + Math.pow(zrot, 2.0)
+            // compute the squared magnitude of the rotation
             val sq_magnitude = Math.pow(rot, 2.0)
-//            val sq_magnitude = Math.pow(yrot, 2.0)
 
-
-            //this is another way of measuring "magnitude" called the "L1 Norm"
-            //val magnitude = Math.max(Math.max(Math.abs(xrot), Math.abs(yrot)), Math.abs(zrot))
-
-            //Check if cooldown has passed and squared magnitude is greater than some threshold
+            // check if cooldown has passed and squared magnitude is greater than some threshold
             var now = currentTimeMillis()
             if ((now >= (lastRotate + cooldown)) && (sq_magnitude > mThreshold)) {
-//                switchFragment()
                 if (!mSharedViewModel.getCounterOn()) startCounter() else stopCounter()
                 lastRotate = now
             }
         }
 
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {
+            // this is required to be here for SensorEventListener but don't need to do anything
         }
     }
 
+    // this will return the currently displayed fragment
+    // found this here: https://stackoverflow.com/questions/9294603/how-do-i-get-the-currently-displayed-fragment
     private fun getCurrentFragment(): Fragment {
         return supportFragmentManager.fragments.last()
     }
@@ -254,11 +233,6 @@ class MainActivity : FragmentActivity() {
             SensorManager.SENSOR_DELAY_NORMAL,
             0
         )
-//        mSensorManager.registerListener(
-//            stepListener,
-//            mStepCounter,
-//            SensorManager.SENSOR_DELAY_NORMAL
-//        )
     }
 
     override fun onPause() {
@@ -276,8 +250,15 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (mMediaPlayer != null){
+            mMediaPlayer!!.release()
+            mMediaPlayer = null
+        }
+    }
 
-
+    // for making sure the ScrollView is scrolled all the way up when the fragment switches
     fun scrollToTop() {
         val scrollView: ScrollView = findViewById(R.id.entire_view)
         scrollView.scrollTo(0,0)
