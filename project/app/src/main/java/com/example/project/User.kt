@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "user_table")
 data class User(
-    // @ColumnInfo(name = "firstName")   <<--- We can explicitly set column names, but if
     // they are not explicitly set, the val name is assigned to the column name
     val firstName: String,
     val lastName: String,
@@ -19,5 +18,7 @@ data class User(
     val imagePath: String,
     var steps: Int
 ){
+
+    // auto generate primary key for each user
     @PrimaryKey (autoGenerate = true) var id: Int = 0
 }

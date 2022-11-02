@@ -65,7 +65,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private var observerAlreadyRan: Boolean = false
 
     @SuppressLint("MissingPermission")
-    override fun onCreateView(
+    override fun onCreateView( // this is where the view is created
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -113,10 +113,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         arrayAdapter.setDropDownViewResource(R.layout.spinner_list_profile)
         mSpActivityLevel!!.adapter = arrayAdapter
 
-
-        /**
-         * I think getting location would be in ViewModel
-         */
         // Get the FusedLocationProviderClient for GPS
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(view.context)
 
@@ -161,6 +157,8 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             observerAlreadyRan = true
         }
 
+
+    // Contains logic for location button and picture button and profile save button
     @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
         when(view.id) {
@@ -232,8 +230,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     // the user back to ProfileFrag as a result
                     Thread.sleep(100)
 
-//                    AWSHelper.backupRoom(requireActivity().application)
-
                     val transaction = parentFragmentManager.beginTransaction()
                     transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
                     transaction.addToBackStack(null)
@@ -272,9 +268,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
-    /**
-     * Seems like this should be in Repository
-     */
     @SuppressLint("SimpleDateFormat")
     private fun saveImage(finalBitmap: Bitmap?): String {
         val root = activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -306,8 +299,8 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private fun getLocation() {
         mTvLocation!!.text = "Loading..."
 
-        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
-        val cancellationTokenSource = CancellationTokenSource()
+        val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY //set priority to high accuracy
+        val cancellationTokenSource = CancellationTokenSource() // cancellationtokensource is used to cancel the task
 
         mFusedLocationClient.getCurrentLocation(priority, cancellationTokenSource.token)
             .addOnSuccessListener { location: Location? ->
@@ -317,19 +310,19 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
                 Toast.makeText(activity, "Latitude:$mLatitude\nLongitude:$mLongitude", Toast.LENGTH_SHORT).show()
 
-                val address = getAddress(mLatitude, mLongitude)
+                val address = getAddress(mLatitude, mLongitude) // getting the address from the location
 
-                mTvLocation!!.text = address
+                mTvLocation!!.text = address // setting the address to the textview
             }
             .addOnFailureListener {
                 Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
             }
     }
 
+    //check if the app has permission to access the location
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
     {isGranted: Boolean ->
         if (isGranted) {
-//            mSharedViewModel.getWeather()
             getLocation()
         }
         else {

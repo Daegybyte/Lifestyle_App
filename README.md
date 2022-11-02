@@ -10,6 +10,8 @@
 
 Set up cognito login at the start to allow user chance to not use app if they don't want an app where they need to sign up for a service.
 
+update the database onPause()
+
 No major changes to UI
 
 # Design:
@@ -34,7 +36,6 @@ No major changes to UI
 
 
 <img src="./screenshots/profile_page_tablet.png" width="50%" height="50%">
-
 
 
 ## Update Activity
