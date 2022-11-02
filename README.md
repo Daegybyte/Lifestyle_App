@@ -1,36 +1,30 @@
 # 6018 MSD project
 ## Created By: Diego, Jon, Kelan 
 
-### Phase 2 roles:
-* Jon - Team lead
-* Diego - Design Lead
-* Kelan - Test Lead
+### Phase 3 roles:
+* Jon - Test lead
+* Diego - Team Lead
+* Kelan - Design Lead
 
-### Phase 2 meeting notes:
+### Phase 3 meeting notes:
 
-Flow to move data around the app
+Set up cognito login at the start to allow user chance to not use app if they don't want an app where they need to sign up for a service.
 
-Tablet mode will be looking at screen width, and in the case that the app is running on a tablet, the view will gravitate towards the centre, and the margins will automagically adjust. This is because of how our app is set up, it doesn't make a lot of sense to rearrange things for tablet view
-
-Room database entry
-
-clean out code from phase 1
-
-implent rotation so that it does not destroy new data
-
-refactor onClick() to contain all listener code pieces
-
-create the MVVM
-
+No major changes to UI
 
 # Design:
 
-## Register
+## Class Diagram
+### Class diagram overview
+<img src="./designFiles/class_diagrams/p3_diagram_slide_TESTS.png" width="75%" height="75%">
 
+<img src="./designFiles/class_diagrams/full_class_diagram.png" width="100%" height="75%">
+
+## Register
+<img src="./screenshots/cognito_signup.png" width="25%" height="25%">
 <img src="./screenshots/profile_creation.png" width="25%" height="25%">
 
-
-<img src="./screenshots/profile_creation_tablet.png" width="25%" height="25%">
+<img src="./screenshots/profile_creation_tablet.png" width="50%" height="25%">
 
 
 ## Profile
@@ -38,7 +32,8 @@ create the MVVM
 <img src="./screenshots/step_on.png" width="25%" height="25%">
 <img src="./screenshots/step_off.png" width="25%" height="25%">
 
-<img src="./screenshots/profile_page_tablet.png" width="25%" height="25%">
+
+<img src="./screenshots/profile_page_tablet.png" width="50%" height="50%">
 
 
 
@@ -46,7 +41,7 @@ create the MVVM
 
 <img src="./screenshots/profile_update_activity_level.png" width="25%" height="25%">
 
-<img src="./screenshots/update_activity_level_tablet.png" width="25%" height="25%">
+<img src="./screenshots/update_activity_level_tablet.png" width="50%" height="50%">
 
 
 
@@ -54,7 +49,7 @@ create the MVVM
 
 <img src="./screenshots/profile_page_weather.png" width="25%" height="25%">
 
-<img src="./screenshots/profile_page_weather_tablet.png" width="25%" height="25%">
+<img src="./screenshots/profile_page_weather_tablet.png" width="50%" height="50%">
 
 
 
@@ -77,4 +72,8 @@ We used five locations in four different quadrants of the planet to test our loc
 ### UI Automator
 
 UI automator was used to run tests on the UI, testing that values exists where expected.
+
+### Step testing
+
+Due to limitations in the emulator, we had to use a physical android device to test the step counter.
 
