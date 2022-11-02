@@ -2,6 +2,8 @@ package com.example.project
 
 import android.Manifest
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.hardware.Sensor
@@ -18,10 +20,10 @@ import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
@@ -111,36 +113,28 @@ class MainActivity : FragmentActivity() {
                     Log.i("AuthSignInWithWebUI", result.toString())
 //                    Log.i("AuthSignInWithWebUI", application.getDatabasePath("room_database").absolutePath)
 //                    Log.i("AuthSignInWithWebUI", "current user id: " + Amplify.Auth.currentUser.userId)
-//                    Amplify.Storage.list(
-//                        "",
-//                        { listResult ->
-//                            if (listResult.items.contains(Amplify.Auth.currentUser.userId))
-//                            for (item in listResult.items) {
-//                                Log.i("StorageList", "File: " + item.key + ", Hash: " + item.eTag)
-//                            } },
-//                        { error -> Log.e("StorageList", error.toString()) }
-//                    )
-                    val app = application as App
-                    AWSHelper.loadFromBackup(app)
-                    // refresh everything!
-                    RoomDB.refreshDatabase(app, app.applicationScope)
-                    mSharedViewModel.refresh()
-//                    val currentFrag = getCurrentFragment()
-//                    if (currentFrag is MainFrag) {
-//                        currentFrag.reattachObservers()
-//                    }
-//                    else if (currentFrag is ProfileFrag) {
-//                        currentFrag.reattachObservers()
-//                    }
+
+                    runOnUiThread {
+                        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                        builder.setMessage("Do you want to restore your previous info?")
+                        builder.setCancelable(false)
+                        builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                            AWSHelper.loadFromBackup(application)
+                            // refresh everything!
+//                            triggerRebirth(applicationContext)
+                        })
+                        builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+                            dialog.cancel()
+                        })
+                        val alertDialog: AlertDialog = builder.create()
+                        alertDialog.show()
+                    }
                 },
                 { error: AuthException -> Log.e("AuthSignInWithWebUI", error.toString()) }
             )
         } catch (error: AmplifyException) {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error)
         }
-
-        // if the user exists then a folder with their id should exist in the s3
-        // then load from backup
 
     }
 
