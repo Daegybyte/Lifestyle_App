@@ -1,4 +1,5 @@
 .DS_Store
+deploymentTargetDropDown.xml
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend

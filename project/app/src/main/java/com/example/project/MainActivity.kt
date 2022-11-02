@@ -123,12 +123,14 @@ class MainActivity : FragmentActivity() {
 
     }
 
+    var mMediaPlayer : MediaPlayer? = null
+
     private fun startCounter() {
+        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
 //        mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         mStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         mSharedViewModel.setCounterOn(true)
         registerStepListener()
-        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
         val mainFrag = getCurrentFragment() as MainFrag
         mainFrag.counterOn()
     }
@@ -136,9 +138,20 @@ class MainActivity : FragmentActivity() {
     private fun stopCounter() {
         mSensorManager.unregisterListener(stepListener)
         mSharedViewModel.setCounterOn(false)
-        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
+//        MediaPlayer.create(this@MainActivity, Settings.System.DEFAULT_NOTIFICATION_URI).start()
+        mMediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.wilhelm)
+        mMediaPlayer!!.isLooping = false
+        mMediaPlayer!!.start()
         val mainFrag = getCurrentFragment() as MainFrag
         mainFrag.counterOff()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (mMediaPlayer != null){
+            mMediaPlayer!!.release()
+            mMediaPlayer = null
+        }
     }
 
     private val stepRequestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
@@ -220,27 +233,6 @@ class MainActivity : FragmentActivity() {
         return supportFragmentManager.fragments.last()
     }
 
-//    private fun switchFragment() {
-//        when (getCurrentFragment()) {
-//            is MainFrag -> {
-//                val transaction = supportFragmentManager.beginTransaction()
-//                transaction.replace(R.id.frag_container, StepsFrag(), "Steps Fragment")
-//                transaction.addToBackStack(null)
-//                transaction.commit()
-//            }
-//
-//            is StepsFrag -> {
-//                val transaction = supportFragmentManager.beginTransaction()
-//                transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
-//                transaction.addToBackStack(null)
-//                transaction.commit()
-//            }
-//
-//            is ProfileFrag -> {}
-//        }
-//
-//    }
-
     override fun onResume() {
         super.onResume()
         if (mSharedViewModel.getCounterOn()){
@@ -283,6 +275,8 @@ class MainActivity : FragmentActivity() {
             AWSHelper.backupRoom(application)
         }
     }
+
+
 
     fun scrollToTop() {
         val scrollView: ScrollView = findViewById(R.id.entire_view)
