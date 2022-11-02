@@ -46,11 +46,11 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
 class SharedViewModelFactory(private val repository: SharedRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SharedViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(SharedViewModel::class.java)) { // check if the model class is the same
             @Suppress("UNCKECKED_CAST")
-            return SharedViewModel(repository) as T
+            return SharedViewModel(repository) as T // return the view model
         } else {
-            throw IllegalArgumentException("Unknown ViewModel class")
+            throw IllegalArgumentException("Unknown ViewModel class") // throw an exception
         }
     }
 }
