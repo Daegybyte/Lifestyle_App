@@ -110,7 +110,22 @@ class MainActivity : FragmentActivity() {
             Log.i("MyAmplifyApp", "Initialized Amplify")
             Amplify.Auth.signInWithWebUI(
                 this,
-                { result: AuthSignInResult -> Log.i("AuthQuickStart", result.toString()) },
+                { result: AuthSignInResult ->
+                    Log.i("AuthQuickStart", result.toString())
+
+
+                    /**
+                     * NOTE: The following line will successfully download room database files that
+                     * the logged in user previously made through using the app but once
+                     * downloaded, the app does not automatically update everything with the info
+                     * from those files. We tried many ways to make that happen by getting new daos
+                     * from the new database, refreshing the repository's connection to the new
+                     * database, and reconnecting our LiveData and Flows. Nothing succeeded and so
+                     * we undid many of those changes but left this here for reference and as a
+                     * potential starting point if we were to revisit it.
+                     */
+//                    AWSHelper.loadFromBackup(application)
+                },
                 { error: AuthException -> Log.e("AuthQuickStart", error.toString()) }
             )
         } catch (error: AmplifyException) {

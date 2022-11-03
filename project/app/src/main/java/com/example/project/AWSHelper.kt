@@ -58,6 +58,7 @@ object AWSHelper {
     // if the user is new or just does not have any backup files in S3 then this will result in an
     // exception but the app will still work appropriately
     fun loadFromBackup(application: Application) {
+        // these are nested in the onSuccess callbacks so that the order of the download is controlled
         // main db file
         val dbFile = File(application.getDatabasePath("room_database").absolutePath)
         Amplify.Storage.downloadFile(
@@ -69,38 +70,40 @@ object AWSHelper {
             },
             { result: StorageDownloadFileResult ->
                 Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
-            },
-            { error: StorageException? ->
-                Log.e("AWSHelperDownload", "Download Failure", error)
-            }
-        )
-        // wal file
-        val dbWalFile = File(dbFile.path + "-wal")
-        Amplify.Storage.downloadFile(
-            Amplify.Auth.currentUser.userId + "/RoomBackupWAL",
-            dbWalFile,
-            StorageDownloadFileOptions.defaultInstance(),
-            { progress: StorageTransferProgress ->
-                Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
-            },
-            { result: StorageDownloadFileResult ->
-                Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
-            },
-            { error: StorageException? ->
-                Log.e("AWSHelperDownload", "Download Failure", error)
-            }
-        )
-        // shm file
-        val dbShmFile = File(dbFile.path + "-shm")
-        Amplify.Storage.downloadFile(
-            Amplify.Auth.currentUser.userId + "/RoomBackupSHM",
-            dbShmFile,
-            StorageDownloadFileOptions.defaultInstance(),
-            { progress: StorageTransferProgress ->
-                Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
-            },
-            { result: StorageDownloadFileResult ->
-                Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
+
+                // download wal file
+                val dbWalFile = File(dbFile.path + "-wal")
+                Amplify.Storage.downloadFile(
+                    Amplify.Auth.currentUser.userId + "/RoomBackupWAL",
+                    dbWalFile,
+                    StorageDownloadFileOptions.defaultInstance(),
+                    { progress: StorageTransferProgress ->
+                        Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
+                    },
+                    { result: StorageDownloadFileResult ->
+                        Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
+
+                        // download shm file
+                        val dbShmFile = File(dbFile.path + "-shm")
+                        Amplify.Storage.downloadFile(
+                            Amplify.Auth.currentUser.userId + "/RoomBackupSHM",
+                            dbShmFile,
+                            StorageDownloadFileOptions.defaultInstance(),
+                            { progress: StorageTransferProgress ->
+                                Log.i("AWSHelperDownload", "Fraction completed: " + progress.fractionCompleted)
+                            },
+                            { result: StorageDownloadFileResult ->
+                                Log.i("AWSHelperDownload", "Successfully downloaded: " + result.file.name)
+                            },
+                            { error: StorageException? ->
+                                Log.e("AWSHelperDownload", "Download Failure", error)
+                            }
+                        )
+                    },
+                    { error: StorageException? ->
+                        Log.e("AWSHelperDownload", "Download Failure", error)
+                    }
+                )
             },
             { error: StorageException? ->
                 Log.e("AWSHelperDownload", "Download Failure", error)
