@@ -14,11 +14,13 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
     val userInfo: Flow<User> = userDao.getUser()
     // weather flow
     val aveTemp: Flow<Double> = dbWeatherDao.getAveTemp()
-    //weather data
+    // weather data
     val liveWeather = MutableLiveData<JsonWeather>()
 
+    // for formatted weather data returned by weather API
     var mJsonWeatherData: JsonWeather? = null
 
+    // for step counter
     var rNumSteps: Int = 0
     var rCounterOn = false
 
@@ -29,16 +31,12 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
 
     private var mJsonString: String? = null
 
+    // gets the current weather data from the OpenWeatherAPI
     fun getWeather(location: Location) {
-
-//                // getting the last known or current location
-//                val mLatitude = location!!.latitude
-//                val mLongitude = location.longitude
 
         mScope.launch(Dispatchers.IO) {
             getJsonWeatherString(location)
 
-//            if (mJsonString != null){
             mJsonString?.let {
 //                Log.d("JSON", mJsonString.toString())
                 val wd = (Gson()).fromJson(it, JsonWeather::class.java)
@@ -74,6 +72,7 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
         dbWeatherDao.insert(dbWeather)
     }
 
+    // handles communication with OpenWeatherMap API
     @WorkerThread
     suspend fun getJsonWeatherString(location: Location){
         val mLatitude = location.latitude
@@ -94,6 +93,7 @@ class SharedRepository (private val userDao: UserDao, private val dbWeatherDao: 
         return mJsonWeatherData!!.id
     }
 
+    // for creating/getting repository as a singleton
     companion object {
         private var mInstance: SharedRepository? = null
         private lateinit var mScope: CoroutineScope

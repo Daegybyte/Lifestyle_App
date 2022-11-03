@@ -52,7 +52,6 @@ class ProfileFrag : Fragment(), View.OnClickListener {
     private var mTvLocation: TextView? = null
     private var mIvProfilePic: ImageView? = null
 
-
     private var mProfilePicPath : String? = null
 
     // these will be used to get the phone's location
@@ -136,10 +135,10 @@ class ProfileFrag : Fragment(), View.OnClickListener {
 
 
     private val userObserver: Observer<User> =
-        // Update the UI when any of the profile info changes
+        // Update the UI when any of the user info changes
         Observer { userInfo ->
-            // using observerAlreadyRun to make sure that this does not run when there are
-            // unsaved changes that we don't want to overwrite
+            // we are using observerAlreadyRun to make sure that this does not run when there
+            // are unsaved changes that we don't want to overwrite
             if (userInfo != null && !observerAlreadyRan) {
                 mEtFirstName!!.setText(userInfo.firstName)
                 mEtLastName!!.setText(userInfo.lastName)
@@ -158,13 +157,12 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
 
 
-    // Contains logic for location button and picture button and profile save button
+    // handles any of the buttons being clicked
     @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
         when(view.id) {
-
             R.id.btnLocation -> {
-
+                // check location permission and get current location in string form (city, state, and country)
                 when {
                     ActivityCompat.checkSelfPermission(
                         requireContext(),
@@ -184,6 +182,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             }
 
             R.id.btnPic -> {
+                // start intent to take photo for profile
                 val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
                 try{
@@ -194,10 +193,9 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             }
 
             R.id.btnSave -> {
+                // save all user info currently in the profile form
 
-                //
-//                if (mTvLocation?.text == "") mTvLocation!!.text = "temp loc"
-
+                // check to make sure there are values for all fields (all fields not checked have default values)
                 if (mTvLocation?.text.toString() != ""
                     && mEtFirstName?.text.toString() != ""
                     && mEtLastName?.text.toString() != ""
@@ -230,11 +228,13 @@ class ProfileFrag : Fragment(), View.OnClickListener {
                     // the user back to ProfileFrag as a result
                     Thread.sleep(100)
 
+                    // and switch to the main fragment
                     val transaction = parentFragmentManager.beginTransaction()
                     transaction.replace(R.id.frag_container, MainFrag(), "Main Fragment")
                     transaction.addToBackStack(null)
                     transaction.commit()
                 }
+                // if the profile is not fully filled in
                 else {
                     Toast.makeText(activity, "Profile Incomplete! Try again", Toast.LENGTH_SHORT).show()
                 }
@@ -269,6 +269,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
         }
     }
 
+    // save the bitmap from the camera intent to the phone's storage and get the file path
     @SuppressLint("SimpleDateFormat")
     private fun saveImage(finalBitmap: Bitmap?): String {
         val root = activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -296,6 +297,7 @@ class ProfileFrag : Fragment(), View.OnClickListener {
             return Environment.MEDIA_MOUNTED == state
         }
 
+    // get the device's current location and translate it to a string of city, state, and country
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         mTvLocation!!.text = "Loading..."

@@ -43,6 +43,7 @@ class SharedViewModel(private val repository: SharedRepository) : ViewModel() {
 
 }
 
+// for creating an instance of our ViewModel using Repository as parameter
 class SharedViewModelFactory(private val repository: SharedRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

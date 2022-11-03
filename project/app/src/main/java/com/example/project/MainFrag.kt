@@ -37,16 +37,32 @@ import kotlin.math.roundToInt
 @SuppressLint("MissingPermission")
 class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickListener {
 
+    // getting the SharedViewModel
     private val mSharedViewModel: SharedViewModel by activityViewModels {
         SharedViewModelFactory((requireActivity().application as App).repository)
     }
 
-    private var mUserId: Int? = null
-
+    // all of the elements that will need to be accessed later
     private var mTvUsername: TextView? = null
     private var mIvThumbnail: ImageView? = null
     private var mTvBMR: TextView? = null
     private var mTvActivityLevel: TextView? = null
+    private var mTvSteps: TextView? = null
+    private var mTvStepsLabel : TextView? = null
+    private var mTvArrowLeft: TextView? = null
+    private var mTvArrowRight: TextView? = null
+    private var mBoxWeather: RelativeLayout? = null
+    private var mTvWeather: TextView? = null
+
+    // These will be used to get the phone's location
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private var mLatitude = 0.0
+    private var mLongitude = 0.0
+
+    // average of the temperatures from all weather requests by the user
+    private var mHistoricalAve: String? = null
+
+    private var mUserId: Int? = null
 
     // String Array for the activity levels
     private var mActivityLevels = arrayOf<String?>(
@@ -58,35 +74,17 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         "Extreme"
     )
 
-    // Sensor variables for step counter
-//    private lateinit var mSensorManager: SensorManager
-//    private var mStepCounter: Sensor? = null
-//    var mSteps: Int? = null
-    private var mTvSteps: TextView? = null
-    private var mTvStepsLabel : TextView? = null
-    private var mTvArrowLeft: TextView? = null
-    private var mTvArrowRight: TextView? = null
-
-    // These will be used to get the phone's location
-    private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private var mLatitude = 0.0
-    private var mLongitude = 0.0
-
-    private var mBoxWeather: RelativeLayout? = null
-    private var mTvWeather: TextView? = null
-
-    private var mHistoricalAve: String? = null
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("MainFrag", "onCreateView")
+//        Log.d("MainFrag", "onCreateView")
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main, container, false)
-        Log.d("MainFrag", "onCreateView: view inflated successfully")
+//        Log.d("MainFrag", "onCreateView: view inflated successfully")
 
+        // get elements
         mTvUsername = view.findViewById(R.id.tvUsername)
         mIvThumbnail = view.findViewById(R.id.ivThumbnail)
         mTvBMR = view.findViewById(R.id.tvBMR)
@@ -98,13 +96,9 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         mTvArrowLeft = view.findViewById(R.id.tvArrowLeft)
         mTvArrowRight = view.findViewById(R.id.tvArrowRight)
 
-        /**
-         * attach observers
-         */
+        // attach observers
         mSharedViewModel.userInfo.observe(viewLifecycleOwner, userObserver)
-
         mSharedViewModel.weatherData.observe(viewLifecycleOwner, liveWeatherObserver)
-
         mSharedViewModel.aveTemp.observe(viewLifecycleOwner, flowObserver)
 
 
@@ -158,8 +152,8 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         return view
     }
 
+    // Update the UI when any of the user info changes
     private val userObserver: Observer<User> =
-        // Update the UI when any of the profile info changes
         Observer { userInfo ->
             if (userInfo != null) {
                 mUserId = userInfo.id
@@ -188,10 +182,11 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                     mActivityLevels[i] = activityLevels[i-1] + " (" + bmr.calculateAdjustedBMR(baseBMR, i-1) + " kcal/day)"
                 }
 
-//                // update steps member variable and steps TextView
+                // update steps member variable and steps TextView
                 mTvSteps!!.text = userInfo.steps.toString()
                 Log.i("STEPS", userInfo.steps.toString())
             }
+
             // if there is no userInfo yet then immediately go to the ProfileFrag
             else {
                 Log.d("MainFrag", "no existing user was found")
@@ -202,6 +197,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
         }
 
+    // update the displayed weather info if it changes
     private val liveWeatherObserver: Observer<JsonWeather> =
         Observer { weatherData ->
             weatherData?.let{
@@ -228,6 +224,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
         }
 
+    // updates the average temperature of all weather requests when it changes
     private val flowObserver: Observer<Double> =
         Observer { aveTemp ->
 
@@ -237,9 +234,6 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
         }
 
-    /**
-     * This is changing data rather than listening for changing data so not sure how this is handled
-     */
     // handles the "change activity level" spinner being changed
     override fun onItemSelected(parent: AdapterView<*>?, other: View?, pos: Int, id: Long) {
         Log.d("SpinnerListener", "Selected Something From the Spinner")
@@ -302,6 +296,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 mTvSteps!!.text = "0"
             }
             R.id.btnHikes -> {
+                // check location permissions and get hikes when allowed
                 when {
                     ActivityCompat.checkSelfPermission(
                         requireContext(),
@@ -319,7 +314,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 }
             }
             R.id.btnWeather -> {
-
+                // check location permissions and get the weather info when allowed
                 when {
                     ActivityCompat.checkSelfPermission(
                         requireContext(),
@@ -338,30 +333,16 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
                 }
             }
             R.id.btnMoreWeather -> {
+                // open the detailed weather forecast
                 openWeatherIntent()
             }
         }
     }
 
-    private fun openWeatherIntent() {
-        val cityId = mSharedViewModel.getCityId()
-        val url = "https://openweathermap.org/city/$cityId"
-        val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        //If there's an activity associated with this intent, launch it
-        try {
-            startActivity(weatherIntent)
-            Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
-        } catch (ex: ActivityNotFoundException) {
-            Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
-            //If there's no activity associated with this intent, display an error message
-            Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
-        }
-    }
 
-
+    // takes the user to Google Maps and searches for hikes near their location
     @SuppressLint("MissingPermission")
     private fun getHikes() {
-
         val priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
         val cancellationTokenSource = CancellationTokenSource()
 
@@ -399,7 +380,7 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
             }
     }
 
-
+    // uses the OpenWeatherMap API to get the weather at the current location
     private fun getWeather(){
         // make weather information visible
         mBoxWeather!!.visibility = View.VISIBLE
@@ -418,6 +399,22 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
         .addOnFailureListener {
             Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // takes the user to an online extended weather forecast for their location
+    private fun openWeatherIntent() {
+        val cityId = mSharedViewModel.getCityId()
+        val url = "https://openweathermap.org/city/$cityId"
+        val weatherIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        //If there's an activity associated with this intent, launch it
+        try {
+            startActivity(weatherIntent)
+            Log.d("Main_ButtonFrag", "onViewCreated: startActivity(weatherIntent) called successfully")
+        } catch (ex: ActivityNotFoundException) {
+            Log.e("Main_ButtonFrag", "onViewCreated: startActivity(mapIntent) failed")
+            //If there's no activity associated with this intent, display an error message
+            Toast.makeText(activity, "No activity found to handle this intent", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -442,18 +439,21 @@ class MainFrag : Fragment(), AdapterView.OnItemSelectedListener, View.OnClickLis
         }
     }
 
+    // making UI changes when the step counter is turned on
     fun counterOn() {
         mTvStepsLabel!!.text = "STEP COUNTER: ON (swipe off)"
         mTvArrowRight!!.visibility = View.GONE
         mTvArrowLeft!!.visibility = View.VISIBLE
     }
 
+    // making UI changes when the step counter is turned off
     fun counterOff(){
         mTvStepsLabel!!.text = "STEP COUNTER: off (swipe ON)"
         mTvArrowRight!!.visibility = View.VISIBLE
         mTvArrowLeft!!.visibility = View.GONE
     }
 
+    // making UI changes when the step count changes
     fun updateStepCounter(steps: Int){
         mTvSteps!!.text = steps.toString()
     }
